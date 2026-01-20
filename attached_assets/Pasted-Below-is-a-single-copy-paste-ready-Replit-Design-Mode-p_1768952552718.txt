@@ -1,0 +1,138 @@
+Below is a **single, copy-paste-ready Replit Design Mode prompt** that directly addresses the issue you described.
+
+It is written to **preserve the chatbot at all times** and render the **Swap modal as a scrollable layer above the chat**, not as a replacement view.
+
+---
+
+## Replit Design Mode Prompt — Fix Swap + Chat Layout
+
+> **Context**
+> You are working on a DeFi application called **Mantua.AI** with a persistent chat-first interface.
+> The chatbot is the primary interaction surface and must **never be unmounted or hidden** when users open other features.
+
+---
+
+### Problem to Fix (Do Not Ignore)
+
+Currently:
+
+* When the user clicks **Swap** in the sidebar **or types “Swap”**,
+* The Swap modal appears, **but the chatbot disappears**.
+
+This is **incorrect behavior**.
+
+---
+
+### Required Behavior (Non-Negotiable)
+
+1. **The chatbot must always remain visible**
+
+   * The chat message history
+   * The chat input
+   * The chat scroll behavior
+
+2. **The Swap modal must render ABOVE the chatbot**
+
+   * As an inline, stacked UI layer
+   * NOT as a route change
+   * NOT as a full-screen replacement
+   * NOT by unmounting the chat
+
+3. **The Swap modal must be scrollable independently**
+
+   * Long swap content scrolls
+   * Chat remains usable underneath
+   * Chat input stays pinned to the bottom
+
+---
+
+### Layout Architecture You MUST Implement
+
+Use a **stacked layout**, not conditional rendering that swaps views.
+
+```
+Main App Layout
+└── Chat Container (always mounted)
+    ├── Chat Messages (scrollable)
+    ├── Swap Modal Layer (conditionally visible, scrollable)
+    └── Chat Input (always visible, pinned bottom)
+```
+
+---
+
+### Implementation Rules
+
+* ✅ **Chat is the base layer**
+* ✅ **Swap is an overlay/inline layer**
+* ❌ Do NOT conditionally render Chat vs Swap
+* ❌ Do NOT navigate routes
+* ❌ Do NOT replace MainContent
+
+---
+
+### Swap Modal Rendering Rules
+
+* Render Swap inside the chat flow container
+* Constrain height (example: `max-h-[70vh]`)
+* Enable internal scrolling:
+
+  * `overflow-y-auto`
+* Visually separate with:
+
+  * Card background
+  * Border
+  * Subtle shadow
+* The user should be able to:
+
+  * Scroll Swap content
+  * Scroll chat history
+  * Continue typing in chat
+
+---
+
+### State Management Guidance
+
+* Use a boolean like `isSwapActive`
+* Toggle visibility only
+* Do NOT unmount components
+
+Example intent logic:
+
+* Sidebar “Swap” → `setIsSwapActive(true)`
+* Typing “Swap” → same state activation
+* Closing Swap → `setIsSwapActive(false)`
+
+---
+
+### UX Expectations
+
+* Swap feels like a **tool invoked by chat**, not a page
+* Chat remains the system of record
+* This should feel similar to:
+
+  * ChatGPT tools
+  * Inline Uniswap widgets
+  * Copilot-style panels
+
+---
+
+### Final Check Before Completion
+
+Confirm all of the following:
+
+* [ ] Chat never disappears
+* [ ] Swap scrolls independently
+* [ ] Chat input always visible
+* [ ] No route changes
+* [ ] No conditional unmounting
+* [ ] Swap works from both sidebar click and typed intent
+
+---
+
+**Implement exactly as specified.**
+This is a layout and state-management correction, not a redesign.
+
+If you want, next I can:
+
+* Give you a **React component skeleton** for this layout
+* Or a **diff-style checklist** to validate your current `MainContent` implementation before refactoring

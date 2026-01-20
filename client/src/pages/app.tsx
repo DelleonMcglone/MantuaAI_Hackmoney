@@ -773,21 +773,67 @@ export default function MantuaApp() {
         </header>
 
         {/* Main Content Area */}
-        <main style={{ flex: 1, display: 'flex', flexDirection: 'column', background: theme.bgPrimary, overflow: 'auto', position: 'relative' }}>
-          {showSwap && (
-            <SwapInterface onClose={() => setShowSwap(false)} swapDetails={swapDetails} theme={theme} isDark={isDark} />
-          )}
+        <main style={{ flex: 1, display: 'flex', flexDirection: 'column', background: theme.bgPrimary, overflow: 'hidden', position: 'relative' }}>
           
           {isConnected ? (
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 40 }}>
-              <div style={{ width: '100%', maxWidth: 700, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 32 }}>
-                <div style={{ textAlign: 'center' }}>
-                  <h1 style={{ fontFamily: '"Outfit", sans-serif', fontSize: 'clamp(28px, 4vw, 40px)', fontWeight: 600, marginBottom: 12, letterSpacing: '-0.02em' }}>Hi, {walletAddress}</h1>
-                  <p style={{ fontSize: 16, color: theme.textSecondary }}>What can I help you with today?</p>
-                </div>
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100%', position: 'relative' }}>
+              
+              {/* Chat Container - Scrollable */}
+              <div style={{ 
+                flex: 1, 
+                display: 'flex', 
+                flexDirection: 'column', 
+                alignItems: 'center', 
+                overflowY: 'auto', 
+                padding: '40px 20px 140px' // Bottom padding for fixed input
+              }}>
+                <div style={{ width: '100%', maxWidth: 700, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 32 }}>
+                  <div style={{ textAlign: 'center' }}>
+                    <h1 style={{ fontFamily: '"Outfit", sans-serif', fontSize: 'clamp(28px, 4vw, 40px)', fontWeight: 600, marginBottom: 12, letterSpacing: '-0.02em' }}>Hi, {walletAddress}</h1>
+                    <p style={{ fontSize: 16, color: theme.textSecondary }}>What can I help you with today?</p>
+                  </div>
 
-                {/* Chat Input */}
-                <div style={{ width: '100%', background: theme.bgCard, border: `1px solid ${theme.border}`, borderRadius: 16, padding: '16px 20px', boxShadow: isDark ? 'none' : '0 2px 8px rgba(0,0,0,0.04)' }}>
+                  {messages.map((msg, idx) => (
+                    <div key={idx} style={{ 
+                      alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start',
+                      background: msg.role === 'user' ? theme.accentLight : theme.bgCard,
+                      padding: '12px 16px',
+                      borderRadius: 12,
+                      maxWidth: '80%',
+                      marginBottom: 12,
+                      border: `1px solid ${theme.border}`
+                    }}>
+                      {msg.content}
+                    </div>
+                  ))}
+
+                  {/* Swap Overlay - Stacked within scrolling container but sticky if needed, or just inline */}
+                  {showSwap && (
+                    <div style={{ width: '100%', marginTop: 20, marginBottom: 20 }}>
+                      <SwapInterface 
+                        onClose={() => setShowSwap(false)} 
+                        swapDetails={swapDetails} 
+                        theme={theme} 
+                        isDark={isDark} 
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Fixed Chat Input Area */}
+              <div style={{ 
+                position: 'absolute', 
+                bottom: 0, 
+                left: 0, 
+                right: 0, 
+                padding: '20px 40px 40px', 
+                background: `linear-gradient(to top, ${theme.bgPrimary} 80%, transparent)`,
+                zIndex: 100,
+                display: 'flex',
+                justifyContent: 'center'
+              }}>
+                <div style={{ width: '100%', maxWidth: 700, background: theme.bgCard, border: `1px solid ${theme.border}`, borderRadius: 16, padding: '16px 20px', boxShadow: isDark ? 'none' : '0 2px 8px rgba(0,0,0,0.04)' }}>
                   <input 
                     type="text"
                     value={inputValue}
@@ -814,6 +860,7 @@ export default function MantuaApp() {
                   </div>
                 </div>
               </div>
+
             </div>
           ) : (
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 40 }}>

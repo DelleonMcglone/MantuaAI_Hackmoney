@@ -303,7 +303,7 @@ const HookOption = ({ name, description, icon, benefit, recommended, selected, o
 );
 
 // ============ SWAP INTERFACE ============
-const SwapInterface = ({ onClose, swapDetails, theme }) => {
+const SwapInterface = ({ onClose, swapDetails, theme, isDark }) => {
   const [selectedHook, setSelectedHook] = useState(swapDetails?.hook || 'mev');
   const [showAllHooks, setShowAllHooks] = useState(false);
   
@@ -775,7 +775,7 @@ export default function MantuaApp() {
         {/* Main Content Area */}
         <main style={{ flex: 1, display: 'flex', flexDirection: 'column', background: theme.bgPrimary, overflow: 'auto', position: 'relative' }}>
           {showSwap && (
-            <SwapInterface onClose={() => setShowSwap(false)} swapDetails={swapDetails} theme={theme} />
+            <SwapInterface onClose={() => setShowSwap(false)} swapDetails={swapDetails} theme={theme} isDark={isDark} />
           )}
           
           {isConnected ? (

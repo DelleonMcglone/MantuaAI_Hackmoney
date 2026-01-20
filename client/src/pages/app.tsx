@@ -47,6 +47,58 @@ const FarcasterIcon = ({ size = 18 }) => (
   </div>
 );
 
+const TrashIcon = ({ size = 16 }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>;
+
+const RecentChatItem = ({ chat, theme, onDelete }) => {
+  const [hovered, setHovered] = useState(false);
+  
+  return (
+    <button 
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{ 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'space-between',
+        width: '100%', 
+        padding: '8px 12px', 
+        borderRadius: 6, 
+        color: theme.textSecondary, 
+        fontSize: 13, 
+        cursor: 'pointer',
+        textAlign: 'left',
+        background: hovered ? theme.bgCard : 'transparent',
+        border: 'none',
+      }}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, overflow: 'hidden', flex: 1, minWidth: 0 }}>
+        <MessageSquareIcon />
+        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{chat}</span>
+      </div>
+      {hovered && (
+        <div 
+          onClick={(e) => {
+            e.stopPropagation();
+            onDelete();
+          }}
+          style={{
+            padding: 4,
+            borderRadius: 4,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginLeft: 4,
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.color = '#ef4444'; e.currentTarget.style.background = theme.bgPrimary; }}
+          onMouseLeave={(e) => { e.currentTarget.style.color = 'inherit'; e.currentTarget.style.background = 'transparent'; }}
+        >
+          <TrashIcon size={14} />
+        </div>
+      )}
+    </button>
+  );
+};
+
 // ============ THEMES ============
 const themes = {
   light: {
@@ -520,7 +572,7 @@ export default function MantuaApp() {
   const walletAddress = '0xbaac...DC87';
   const walletBalance = '0.0021 ETH';
   
-  const recentChats = ['swap', 'swap', 'pools', 'Swap ETH for USDC wi...', 'Swap ETH for USDC wi...', 'What is the price of ETh?', 'Analyze'];
+  const [recentChats, setRecentChats] = useState(['swap', 'swap', 'pools', 'Swap ETH for USDC wi...', 'Swap ETH for USDC wi...', 'What is the price of ETh?', 'Analyze']);
 
   const theme = isDark ? themes.dark : themes.light;
 
@@ -580,9 +632,16 @@ export default function MantuaApp() {
             {recentChatsOpen && isConnected && (
               <div style={{ paddingLeft: 20, marginTop: 4 }}>
                 {recentChats.map((chat, i) => (
-                  <button key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', padding: '8px 12px', background: 'transparent', border: 'none', borderRadius: 6, color: theme.textSecondary, fontSize: 13, cursor: 'pointer', textAlign: 'left', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    <MessageSquareIcon /> {chat}
-                  </button>
+                  <RecentChatItem 
+                    key={i} 
+                    chat={chat} 
+                    theme={theme} 
+                    onDelete={() => {
+                      const newChats = [...recentChats];
+                      newChats.splice(i, 1);
+                      setRecentChats(newChats);
+                    }} 
+                  />
                 ))}
               </div>
             )}

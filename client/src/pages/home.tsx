@@ -114,7 +114,7 @@ export default function MantuaLanding() {
 
   const [openFaq, setOpenFaq] = useState(null);
   const theme = isDark ? themes.dark : themes.light;
-  const logo = isDark ? LOGO_WHITE : LOGO_BLACK;
+  const logo = isDark ? LOGO_BLACK : LOGO_WHITE;
 
   return (
     <div style={{ minHeight: '100vh', fontFamily: '"DM Sans", sans-serif', background: theme.bgPrimary, color: theme.textPrimary, transition: 'background 0.3s, color 0.3s' }}>

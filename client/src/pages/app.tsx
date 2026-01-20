@@ -642,7 +642,7 @@ export default function MantuaApp() {
               <MenuIcon />
             </button>
             <div onClick={() => setLocation('/')} style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}>
-              <img src={isDark ? logoWhite : logoBlack} alt="Mantua.AI" style={{ height: 32 }} />
+              <img src={isDark ? logoBlack : logoWhite} alt="Mantua.AI" style={{ height: 32 }} />
               <span style={{ fontFamily: '"Outfit", sans-serif', fontSize: 18, fontWeight: 600, letterSpacing: '-0.02em' }}>Mantua.AI</span>
             </div>
           </div>

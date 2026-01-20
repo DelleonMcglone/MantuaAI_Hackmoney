@@ -6,7 +6,10 @@
  * chat interface, and swap functionality for DeFi interactions.
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useLocation } from 'wouter';
+import logoWhite from '@assets/Mantua_logo_white_1768946648374.png';
+import logoBlack from '@assets/Mantua_logo_black_1768946648374.png';
 
 // ============ ICONS ============
 const MenuIcon = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>;
@@ -492,7 +495,19 @@ const SwapInterface = ({ onClose, swapDetails }) => {
 
 // ============ MAIN APP ============
 export default function MantuaApp() {
-  const [isDark, setIsDark] = useState(false);
+  const [location, setLocation] = useLocation();
+  const [isDark, setIsDark] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('mantua-theme');
+      if (saved) return saved === 'dark';
+    }
+    return true;
+  });
+
+  useEffect(() => {
+    localStorage.setItem('mantua-theme', isDark ? 'dark' : 'light');
+  }, [isDark]);
+
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [recentChatsOpen, setRecentChatsOpen] = useState(true);
   const [portfolioOpen, setPortfolioOpen] = useState(false);
@@ -626,8 +641,8 @@ export default function MantuaApp() {
             <button onClick={() => setSidebarOpen(!sidebarOpen)} style={{ background: 'transparent', border: 'none', padding: 8, cursor: 'pointer', color: theme.textSecondary, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <MenuIcon />
             </button>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <div style={{ width: 32, height: 32, background: `linear-gradient(135deg, ${theme.accent}, #22c55e)`, borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontFamily: '"Outfit", sans-serif', fontWeight: 700, fontSize: 18 }}>M</div>
+            <div onClick={() => setLocation('/')} style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}>
+              <img src={isDark ? logoWhite : logoBlack} alt="Mantua.AI" style={{ height: 32 }} />
               <span style={{ fontFamily: '"Outfit", sans-serif', fontSize: 18, fontWeight: 600, letterSpacing: '-0.02em' }}>Mantua.AI</span>
             </div>
           </div>

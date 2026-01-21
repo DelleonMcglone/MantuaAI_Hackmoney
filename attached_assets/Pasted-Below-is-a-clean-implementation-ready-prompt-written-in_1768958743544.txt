@@ -1,0 +1,176 @@
+Below is a **clean, implementation-ready prompt** written in the same format and rigor as the prior Swap, Liquidity, and Agent prompts. This is suitable for **Replit Design Mode, v0, or direct engineering execution**.
+
+---
+
+## Chat Persistence & Welcome State Behavior — Prompt
+
+**Context**
+You are building a **chat-native application** where the sidebar chat list and the main chat panel must behave deterministically across sessions. Deleted chats must remain deleted, and the welcome state must not interfere with feature execution.
+
+---
+
+## 1. Chat Deletion Persistence (Critical)
+
+### Problem to Solve
+
+When a user deletes a chat, it currently reappears in the sidebar on the next login. This is incorrect behavior.
+
+---
+
+### Required Behavior
+
+#### Deletion Rules
+
+* When a user deletes a chat:
+
+  * The chat must be **permanently removed** from the sidebar
+  * The deletion must persist across:
+
+    * Page refresh
+    * Logout / login
+    * New sessions
+* Deleted chats must **never** rehydrate back into the sidebar
+
+---
+
+#### Persistence Requirements
+
+* Chat deletion state must be persisted using one of:
+
+  * Backend database (preferred)
+  * OR persistent client storage (localStorage / indexedDB) if backend is not yet wired
+* On app initialization:
+
+  * The sidebar chat list must be derived from the **persisted source of truth**
+  * Do not reconstruct chats from transient memory, mock data, or default seeds
+
+---
+
+#### Explicit Constraint
+
+❌ Do not recreate chats from:
+
+* Default welcome templates
+* Cached AI responses
+* Hardcoded example conversations
+
+If a chat ID is marked as deleted, it must be treated as **non-existent**.
+
+---
+
+## 2. Welcome Message Dismissal Logic (Critical UX Rule)
+
+### Current Issue
+
+The welcome message:
+
+> “Hi, <wallet address>. What can I help you with today?”
+
+continues to appear even after the user initiates an action.
+
+This is incorrect.
+
+---
+
+### Required Behavior
+
+#### Welcome Message Visibility
+
+* The welcome message should appear **only** when:
+
+  * The user has **not yet interacted** with the system
+  * No feature has been selected
+  * No intent has been detected
+  * No modal has been opened
+
+---
+
+#### When the Welcome Message Must Disappear
+
+Immediately hide and permanently dismiss the welcome message when **any** of the following occur:
+
+* User selects a feature from the sidebar:
+
+  * Swap
+  * Liquidity
+  * Agents
+* User types a feature intent in chat:
+
+  * “Swap ETH for USDC”
+  * “Add Liquidity”
+  * “Create an agent”
+* A modal opens (Swap / Liquidity / Agent Builder)
+* The first real chat message is sent or action is taken
+
+Once dismissed:
+
+* The welcome message must **not reappear**
+* Even if:
+
+  * The modal is closed
+  * The user navigates between features
+  * The user continues chatting in the same session
+
+---
+
+#### Persistence Rule (Recommended)
+
+* Track a boolean state such as:
+
+  * `hasUserInteracted = true`
+* Persist this state for the session (or longer if desired)
+* On render:
+
+  * If `hasUserInteracted === true`, never render the welcome message
+
+---
+
+## 3. Priority & Precedence Rules
+
+* Feature execution **always overrides** welcome UI
+* The welcome message is:
+
+  * A placeholder
+  * Not a chat message
+  * Not part of the conversation history
+
+❌ Do not treat the welcome message as a message bubble
+❌ Do not include it in chat logs
+❌ Do not reinsert it after actions
+
+---
+
+## 4. Expected Outcome
+
+The system should feel:
+
+* Deterministic
+* Professional
+* State-aware
+* Free of “demo-app” behavior
+
+From the user’s perspective:
+
+* Deleted chats stay deleted
+* The welcome message disappears the moment they start using the product
+* The interface respects intent and action over placeholder UI
+
+---
+
+## Success Criteria
+
+* Deleted chats never reappear in the sidebar
+* Welcome message disappears on first interaction
+* No duplicate or phantom UI states
+* Chat, modals, and sidebar remain in sync
+
+---
+
+If you want next, I can:
+
+* Write the **exact state machine** for chat + modal + welcome logic
+* Provide a **data model** for chat persistence
+* Give a **migration strategy** from mock chats → persisted chats
+* Or map this directly into your existing chat/sidebar components
+
+Tell me which you want next.

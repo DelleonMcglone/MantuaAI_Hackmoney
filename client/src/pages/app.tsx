@@ -1625,7 +1625,19 @@ export default function MantuaApp() {
   const walletAddress = '0xbaac...DC87';
   const walletBalance = '0.0021 ETH';
   
-  const [recentChats, setRecentChats] = useState(['swap', 'swap', 'pools', 'Swap ETH for USDC wi...', 'Swap ETH for USDC wi...', 'What is the price of ETh?', 'Analyze']);
+  const [recentChats, setRecentChats] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('mantua-recent-chats');
+      if (saved) return JSON.parse(saved);
+    }
+    return ['swap', 'swap', 'pools', 'Swap ETH for USDC wi...', 'Swap ETH for USDC wi...', 'What is the price of ETh?', 'Analyze'];
+  });
+
+  useEffect(() => {
+    localStorage.setItem('mantua-recent-chats', JSON.stringify(recentChats));
+  }, [recentChats]);
+
+  const [hasInteracted, setHasInteracted] = useState(false);
 
   const theme = isDark ? themes.dark : themes.light;
 
@@ -1648,6 +1660,8 @@ export default function MantuaApp() {
   const handleSend = () => {
     if (!inputValue.trim()) return;
     
+    setHasInteracted(true);
+
     // Check for Liquidity Intent
     if (inputValue.toLowerCase().includes('add liquidity') || inputValue.toLowerCase().includes('liquidity')) {
        setShowLiquidity(true);
@@ -1699,7 +1713,13 @@ export default function MantuaApp() {
       <aside style={{ width: sidebarOpen ? 260 : 0, minHeight: '100vh', background: theme.bgSidebar, borderRight: `1px solid ${theme.border}`, display: 'flex', flexDirection: 'column', overflow: 'hidden', transition: 'width 0.3s ease' }}>
         <div style={{ padding: '16px', flex: 1, overflowY: 'auto' }}>
           {/* New Chat */}
-          <button onClick={() => { setShowSwap(false); setShowLiquidity(false); setShowAgentBuilder(false); setMessages([]); }} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 12px', background: 'transparent', border: 'none', borderRadius: 8, color: theme.accent, fontSize: 14, fontWeight: 500, cursor: 'pointer', marginBottom: 8 }}>
+          <button onClick={() => { 
+             setShowSwap(false); 
+             setShowLiquidity(false); 
+             setShowAgentBuilder(false); 
+             setMessages([]); 
+             setHasInteracted(false); // Reset interaction state on New Chat
+          }} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 12px', background: 'transparent', border: 'none', borderRadius: 8, color: theme.accent, fontSize: 14, fontWeight: 500, cursor: 'pointer', marginBottom: 8 }}>
             <MessageSquarePlusIcon /> New Chat
           </button>
 
@@ -1728,17 +1748,17 @@ export default function MantuaApp() {
           </div>
 
           {/* Swap */}
-          <button onClick={() => { setShowSwap(true); setShowLiquidity(false); setShowAgentBuilder(false); setSwapDetails(null); }} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 12px', background: 'transparent', border: 'none', borderRadius: 8, color: theme.textPrimary, fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
+          <button onClick={() => { setShowSwap(true); setShowLiquidity(false); setShowAgentBuilder(false); setSwapDetails(null); setHasInteracted(true); }} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 12px', background: 'transparent', border: 'none', borderRadius: 8, color: theme.textPrimary, fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
             <ArrowLeftRightIcon /> Swap
           </button>
 
           {/* Liquidity */}
-          <button onClick={() => { setShowLiquidity(true); setShowSwap(false); setShowAgentBuilder(false); }} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 12px', background: 'transparent', border: 'none', borderRadius: 8, color: theme.textPrimary, fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
+          <button onClick={() => { setShowLiquidity(true); setShowSwap(false); setShowAgentBuilder(false); setHasInteracted(true); }} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 12px', background: 'transparent', border: 'none', borderRadius: 8, color: theme.textPrimary, fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
             <DropletsIcon /> Liquidity
           </button>
 
           {/* Agent */}
-          <button onClick={() => { setShowAgentBuilder(true); setShowSwap(false); setShowLiquidity(false); }} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 12px', background: 'transparent', border: 'none', borderRadius: 8, color: theme.textPrimary, fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
+          <button onClick={() => { setShowAgentBuilder(true); setShowSwap(false); setShowLiquidity(false); setHasInteracted(true); }} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 12px', background: 'transparent', border: 'none', borderRadius: 8, color: theme.textPrimary, fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
             <BotIcon /> Agent
           </button>
 
@@ -1820,10 +1840,12 @@ export default function MantuaApp() {
                 padding: '40px 20px 140px' // Bottom padding for fixed input
               }}>
                 <div style={{ width: '100%', maxWidth: 700, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 32 }}>
-                  <div style={{ textAlign: 'center' }}>
-                    <h1 style={{ fontFamily: '"Outfit", sans-serif', fontSize: 'clamp(28px, 4vw, 40px)', fontWeight: 600, marginBottom: 12, letterSpacing: '-0.02em' }}>Hi, {walletAddress}</h1>
-                    <p style={{ fontSize: 16, color: theme.textSecondary }}>What can I help you with today?</p>
-                  </div>
+                  {!hasInteracted && !showSwap && !showLiquidity && !showAgentBuilder && (
+                    <div style={{ textAlign: 'center' }}>
+                      <h1 style={{ fontFamily: '"Outfit", sans-serif', fontSize: 'clamp(28px, 4vw, 40px)', fontWeight: 600, marginBottom: 12, letterSpacing: '-0.02em' }}>Hi, {walletAddress}</h1>
+                      <p style={{ fontSize: 16, color: theme.textSecondary }}>What can I help you with today?</p>
+                    </div>
+                  )}
 
                   {messages.map((msg, idx) => (
                     <div key={idx} style={{ 

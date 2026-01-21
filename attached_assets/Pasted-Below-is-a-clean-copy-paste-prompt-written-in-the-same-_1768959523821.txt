@@ -1,0 +1,114 @@
+Below is a **clean, copy-paste prompt** written in the **same format and rigor** as your previous Swap / Liquidity / Agent / Portfolio prompts. This is suitable for **Replit Design Mode, v0, or direct engineering execution**.
+
+---
+
+## Duplicate Icon Declaration Fix — Prompt
+
+**Context**
+You are working in a Vite + React + TypeScript application. The app is failing to compile due to **duplicate identifier declarations** caused by inline icon components defined multiple times in the same file.
+
+---
+
+## Problem to Resolve
+
+The build is failing with the error:
+
+> `Identifier 'WalletIcon' has already been declared`
+
+This means the same icon component (e.g. `WalletIcon`) is declared more than once **within the same module scope**, which is invalid in JavaScript / TypeScript.
+
+This commonly occurs when UI blocks are copied into a large file (such as `app.tsx`) and each block defines its own inline icons.
+
+---
+
+## Required Fix (Non-Negotiable)
+
+### 1. Centralize Icon Definitions
+
+* Create a **single shared icon file**:
+
+  ```
+  client/src/components/icons.tsx
+  ```
+* Move **all SVG icon components** (WalletIcon, SwapIcon, BotIcon, etc.) into this file
+* Each icon must be declared **exactly once**
+* Export each icon as a named export
+
+Example:
+
+```tsx
+export const WalletIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/>
+    <path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/>
+    <path d="M18 12a2 2 0 0 0 0 4h4v-4h-4z"/>
+  </svg>
+);
+```
+
+---
+
+### 2. Import Icons Where Needed
+
+* In `app.tsx` (and any other file):
+
+  * Remove **all inline icon declarations**
+  * Import icons from the shared file
+
+Example:
+
+```ts
+import { WalletIcon } from "@/components/icons";
+```
+
+---
+
+### 3. Explicit Constraints
+
+❌ Do NOT declare icon components inline inside page files
+❌ Do NOT duplicate icon names in the same file
+❌ Do NOT suppress the error using `vite.hmr.overlay = false`
+
+This error must be **fixed at the source**, not hidden.
+
+---
+
+## Optional Temporary Fix (Not Recommended)
+
+If unblocking is needed immediately:
+
+* Rename duplicate icons locally:
+
+  ```ts
+  const SidebarWalletIcon = () => ( ... );
+  const PortfolioWalletIcon = () => ( ... );
+  ```
+
+This is acceptable only as a short-term workaround and should be replaced with centralized icons.
+
+---
+
+## Expected Outcome
+
+* The app compiles successfully
+* No duplicate identifier errors
+* Icons are reusable, consistent, and maintainable
+* `app.tsx` no longer contains inline SVG icon definitions
+
+---
+
+## Success Criteria
+
+* No `Identifier has already been declared` errors
+* All icons imported from a single source
+* Clean, deterministic build on refresh and restart
+
+---
+
+If you want next, I can:
+
+* Refactor your entire icon set cleanly
+* Split `app.tsx` safely into modular components
+* Define a naming convention to prevent future collisions
+
+Tell me the next step.

@@ -157,16 +157,52 @@ const MiniChart = ({ data, color = "#10b981" }) => {
   );
 };
 
+// Price Chart Component Placeholder
+const PriceChart = ({ pair, theme }) => {
+  // Simple candlestick visualization using SVG
+  return (
+    <svg width="100%" height="100%" viewBox="0 0 400 200" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="chartFill" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0%" stopColor="#10b981" stopOpacity="0.1" />
+          <stop offset="100%" stopColor="#10b981" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      {/* Grid lines */}
+      <line x1="0" y1="50" x2="400" y2="50" stroke={theme.border} strokeDasharray="4 4" />
+      <line x1="0" y1="100" x2="400" y2="100" stroke={theme.border} strokeDasharray="4 4" />
+      <line x1="0" y1="150" x2="400" y2="150" stroke={theme.border} strokeDasharray="4 4" />
+      
+      {/* Candles (mock data) */}
+      {[...Array(20)].map((_, i) => {
+        const x = i * 20 + 10;
+        const height = Math.random() * 60 + 20;
+        const y = 100 - Math.random() * 40;
+        const isGreen = Math.random() > 0.4;
+        const color = isGreen ? '#10b981' : '#ef4444';
+        
+        return (
+          <g key={i}>
+            <line x1={x} y1={y - 10} x2={x} y2={y + height + 10} stroke={color} strokeWidth="1" />
+            <rect x={x - 6} y={isGreen ? y : y + height * 0.2} width="12" height={isGreen ? height : height * 0.8} fill={color} rx="2" />
+          </g>
+        );
+      })}
+    </svg>
+  );
+};
+
 const TokenSelect = ({ token, balance, usdValue, side, amount, theme }) => (
   <div style={{
     background: theme ? theme.bgSecondary : 'rgba(249, 250, 251, 0.8)',
-    borderRadius: '12px',
+    borderRadius: '16px',
     padding: '16px',
     border: theme ? `1px solid ${theme.border}` : '1px solid rgba(139, 92, 246, 0.1)',
+    marginBottom: '4px'
   }}>
-    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-      <span style={{ color: theme ? theme.textSecondary : '#6b7280', fontSize: '13px', fontWeight: '500' }}>{side}</span>
-      <span style={{ color: theme ? theme.textMuted : '#9ca3af', fontSize: '12px' }}>Balance: {balance}</span>
+    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
+      <span style={{ color: theme ? theme.textSecondary : '#6b7280', fontSize: '14px', fontWeight: '500' }}>{side}</span>
+      <span style={{ color: theme ? theme.textMuted : '#9ca3af', fontSize: '13px' }}>Balance: {balance}</span>
     </div>
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
       <input
@@ -177,7 +213,7 @@ const TokenSelect = ({ token, balance, usdValue, side, amount, theme }) => (
           background: 'transparent',
           border: 'none',
           color: theme ? theme.textPrimary : '#111827',
-          fontSize: '28px',
+          fontSize: '32px',
           fontWeight: '600',
           width: '60%',
           outline: 'none',
@@ -188,18 +224,19 @@ const TokenSelect = ({ token, balance, usdValue, side, amount, theme }) => (
         display: 'flex',
         alignItems: 'center',
         gap: '8px',
-        padding: '8px 12px',
-        borderRadius: '10px',
+        padding: '8px 12px 8px 8px',
+        borderRadius: '24px',
         border: theme ? `1px solid ${theme.border}` : '1px solid rgba(139, 92, 246, 0.2)',
         background: theme ? theme.bgCard : 'white',
         color: theme ? theme.textPrimary : '#1f2937',
         cursor: 'pointer',
-        fontSize: '15px',
+        fontSize: '16px',
         fontWeight: '600',
+        boxShadow: '0 2px 4px rgba(0,0,0,0.02)'
       }}>
         <div style={{
-          width: '24px',
-          height: '24px',
+          width: '28px',
+          height: '28px',
           borderRadius: '50%',
           background: token === 'ETH' 
             ? 'linear-gradient(135deg, #627EEA 0%, #8B9FFF 100%)'
@@ -207,7 +244,7 @@ const TokenSelect = ({ token, balance, usdValue, side, amount, theme }) => (
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          fontSize: token === 'ETH' ? '14px' : '10px',
+          fontSize: token === 'ETH' ? '16px' : '12px',
           fontWeight: '700',
           color: 'white',
         }}>
@@ -221,95 +258,162 @@ const TokenSelect = ({ token, balance, usdValue, side, amount, theme }) => (
   </div>
 );
 
-const HookOption = ({ name, description, icon, benefit, recommended, selected, onClick, tag, compact, theme }) => (
-  <button
-    onClick={onClick}
-    style={{
-      display: 'flex',
-      alignItems: 'flex-start',
-      gap: '12px',
-      padding: compact ? '12px' : '14px',
-      borderRadius: '12px',
-      border: selected 
-        ? `2px solid ${theme ? theme.accent : '#8b5cf6'}`
-        : theme ? `1px solid ${theme.border}` : '1px solid rgba(139, 92, 246, 0.15)',
-      background: selected 
-        ? theme ? `${theme.accent}15` : 'rgba(139, 92, 246, 0.08)' 
-        : theme ? theme.bgCard : 'rgba(249, 250, 251, 0.8)',
-      cursor: 'pointer',
-      width: '100%',
-      textAlign: 'left',
-      transition: 'all 0.2s',
-      position: 'relative',
-    }}
-  >
-    {recommended && (
-      <div style={{
-        position: 'absolute',
-        top: '-8px',
-        right: '12px',
-        background: 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)',
-        color: 'white',
-        fontSize: '9px',
-        fontWeight: '700',
-        padding: '3px 8px',
-        borderRadius: '4px',
-        textTransform: 'uppercase',
-        letterSpacing: '0.5px',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '4px',
-      }}>
-        <StarIcon /> Recommended
-      </div>
-    )}
+// Hook Selector Modal
+const HookSelectorModal = ({ isOpen, onClose, hooks, selectedHook, onSelect, theme, isDark }) => {
+  if (!isOpen) return null;
+
+  return (
     <div style={{
-      width: compact ? '36px' : '40px',
-      height: compact ? '36px' : '40px',
-      borderRadius: '10px',
-      background: selected ? (theme ? `${theme.accent}20` : 'rgba(139, 92, 246, 0.15)') : (theme ? theme.bgSecondary : 'rgba(139, 92, 246, 0.08)'),
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      background: isDark ? 'rgba(0,0,0,0.8)' : 'rgba(255,255,255,0.8)',
+      backdropFilter: 'blur(4px)',
+      zIndex: 100,
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      color: selected ? (theme ? theme.accent : '#8b5cf6') : (theme ? theme.textSecondary : '#6b7280'),
-      flexShrink: 0,
+      borderRadius: '20px',
     }}>
-      {icon}
-    </div>
-    <div style={{ flex: 1, minWidth: 0 }}>
-      <div style={{ color: theme ? theme.textPrimary : '#1f2937', fontWeight: '600', fontSize: compact ? '13px' : '14px', marginBottom: '2px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-        {name}
-        {selected && <CheckIcon />}
-      </div>
-      <div style={{ color: theme ? theme.textSecondary : '#6b7280', fontSize: compact ? '11px' : '12px', lineHeight: '1.4' }}>{description}</div>
-      {benefit && !compact && (
-        <div style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: '4px',
-          marginTop: '6px',
-          padding: '4px 10px',
-          borderRadius: '6px',
-          background: 'rgba(16, 185, 129, 0.1)',
-          color: '#10b981',
-          fontSize: '11px',
-          fontWeight: '600',
-        }}>
-          {benefit}
+      <div style={{
+        width: '90%',
+        maxHeight: '90%',
+        background: theme.bgCard,
+        borderRadius: '20px',
+        border: `1px solid ${theme.border}`,
+        boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden'
+      }}>
+        <div style={{ padding: '20px', borderBottom: `1px solid ${theme.border}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '700' }}>Select Swap Hook</h3>
+          <button onClick={onClose} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: theme.textSecondary }}>
+            <CloseIcon />
+          </button>
         </div>
-      )}
+        
+        <div style={{ padding: '20px', overflowY: 'auto', flex: 1 }}>
+          <div style={{ 
+            background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(99, 102, 241, 0.05) 100%)', 
+            borderRadius: '12px', 
+            padding: '16px', 
+            marginBottom: '20px',
+            border: '1px solid rgba(139, 92, 246, 0.2)'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+              <div style={{ color: '#8b5cf6', marginTop: '2px' }}><StarIcon /></div>
+              <div>
+                <div style={{ fontWeight: '600', color: theme.textPrimary, marginBottom: '4px' }}>AI Recommendation</div>
+                <div style={{ fontSize: '13px', color: theme.textSecondary, lineHeight: '1.5' }}>
+                  Based on your trade size of <span style={{ fontWeight: '600', color: theme.textPrimary }}>$4,868</span>, we recommend <span style={{ fontWeight: '600', color: '#8b5cf6' }}>MEV Protection</span> to prevent sandwich attacks.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            {hooks.map(hook => (
+              <button
+                key={hook.id}
+                onClick={() => { onSelect(hook.id); onClose(); }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: '16px',
+                  padding: '16px',
+                  borderRadius: '12px',
+                  border: selectedHook === hook.id 
+                    ? `2px solid #8b5cf6` 
+                    : `1px solid ${theme.border}`,
+                  background: selectedHook === hook.id 
+                    ? (isDark ? 'rgba(139, 92, 246, 0.1)' : 'rgba(139, 92, 246, 0.05)') 
+                    : theme.bgSecondary,
+                  cursor: 'pointer',
+                  width: '100%',
+                  textAlign: 'left',
+                  transition: 'all 0.2s',
+                  position: 'relative',
+                }}
+              >
+                {hook.recommended && (
+                  <div style={{
+                    position: 'absolute',
+                    top: '12px',
+                    right: '12px',
+                    background: 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)',
+                    color: 'white',
+                    fontSize: '10px',
+                    fontWeight: '700',
+                    padding: '4px 8px',
+                    borderRadius: '4px',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px',
+                  }}>
+                    Recommended
+                  </div>
+                )}
+                <div style={{
+                  width: '40px',
+                  height: '40px',
+                  borderRadius: '10px',
+                  background: selectedHook === hook.id ? 'rgba(139, 92, 246, 0.2)' : (isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'),
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: selectedHook === hook.id ? '#8b5cf6' : theme.textSecondary,
+                  flexShrink: 0,
+                }}>
+                  {hook.icon}
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ color: theme.textPrimary, fontWeight: '600', fontSize: '15px', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    {hook.name}
+                    {selectedHook === hook.id && <CheckIcon />}
+                  </div>
+                  <div style={{ color: theme.textSecondary, fontSize: '13px', lineHeight: '1.4', marginBottom: '8px' }}>{hook.description}</div>
+                  {hook.benefit && (
+                    <div style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                      padding: '4px 10px',
+                      borderRadius: '6px',
+                      background: 'rgba(16, 185, 129, 0.1)',
+                      color: '#10b981',
+                      fontSize: '12px',
+                      fontWeight: '600',
+                    }}>
+                      {hook.benefit}
+                    </div>
+                  )}
+                </div>
+              </button>
+            ))}
+          </div>
+          
+          <div style={{ marginTop: '20px', borderTop: `1px solid ${theme.border}`, paddingTop: '20px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', cursor: 'pointer' }}>
+              <span style={{ fontWeight: '600', fontSize: '14px' }}>Custom Hook Address</span>
+              <ChevronDownIcon />
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-  </button>
-);
+  );
+};
 
 // ============ SWAP INTERFACE ============
 const SwapInterface = ({ onClose, swapDetails, theme, isDark }) => {
   const [selectedHook, setSelectedHook] = useState(swapDetails?.hook || 'mev');
-  const [showAllHooks, setShowAllHooks] = useState(false);
+  const [isHookModalOpen, setIsHookModalOpen] = useState(false);
   
   // Initialize amounts only if swapDetails is provided
   const initialFromAmount = swapDetails?.fromAmount || '';
-  const initialToAmount = swapDetails?.toAmount || ''; // usually calculated, but for mockup empty if no input
+  const initialToAmount = swapDetails?.toAmount || '';
 
   const hooks = [
     { id: 'auto', name: 'Auto (Smart Routing)', description: 'Mantua selects the optimal hook based on trade parameters', icon: <BoltIcon />, benefit: 'Best execution guaranteed' },
@@ -319,33 +423,34 @@ const SwapInterface = ({ onClose, swapDetails, theme, isDark }) => {
     { id: 'none', name: 'No Hook', description: 'Standard Uniswap v4 swap without modifications', icon: <SwapIcon /> },
   ];
 
-  const getSelectedHookName = () => {
-    if (selectedHook === 'custom') return 'Custom Hook';
-    return hooks.find(h => h.id === selectedHook)?.name || 'Select Hook';
+  useEffect(() => {
+    if (swapDetails?.hook) {
+        // Find if hook name matches
+        const hookId = hooks.find(h => h.name.toLowerCase().includes(swapDetails.hook.toLowerCase()) || h.id.toLowerCase() === swapDetails.hook.toLowerCase())?.id;
+        if (hookId) setSelectedHook(hookId);
+        else if (swapDetails.hook.toLowerCase().includes('custom')) setSelectedHook('custom');
+    }
+  }, [swapDetails]);
+
+  const getSelectedHookObj = () => {
+    return hooks.find(h => h.id === selectedHook) || hooks[4]; // Default to No Hook if not found
   };
 
-  const getSelectedHookIcon = () => {
-    if (selectedHook === 'custom') return <CodeIcon />;
-    return hooks.find(h => h.id === selectedHook)?.icon || <SwapIcon />;
-  };
+  const selectedHookObj = getSelectedHookObj();
 
   return (
     <div style={{ 
-      position: 'absolute',
-      bottom: '100px',
-      left: '50%',
-      transform: 'translateX(-50%)',
       width: '90%', 
       maxWidth: '900px',
-      maxHeight: 'calc(100vh - 150px)',
-      overflowY: 'auto',
+      margin: '0 auto 20px',
       zIndex: 50,
       background: theme.bgSecondary,
       borderRadius: '20px',
       border: `1px solid ${theme.border}`,
       boxShadow: '0 20px 50px -12px rgba(0, 0, 0, 0.5)',
       padding: '24px',
-      fontFamily: '"DM Sans", sans-serif'
+      fontFamily: '"DM Sans", sans-serif',
+      position: 'relative'
     }}>
       <div style={{ position: 'absolute', top: 16, right: 16 }}>
         <button onClick={onClose} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: theme.textSecondary }}>
@@ -353,236 +458,285 @@ const SwapInterface = ({ onClose, swapDetails, theme, isDark }) => {
         </button>
       </div>
 
+      {/* Hook Selector Modal */}
+      <HookSelectorModal 
+        isOpen={isHookModalOpen} 
+        onClose={() => setIsHookModalOpen(false)} 
+        hooks={hooks} 
+        selectedHook={selectedHook} 
+        onSelect={setSelectedHook} 
+        theme={theme}
+        isDark={isDark}
+      />
+
       {/* AI Response Banner */}
       {swapDetails && (
         <div style={{
-          marginBottom: '20px',
+          marginBottom: '24px',
           padding: '16px 20px',
           background: 'linear-gradient(90deg, rgba(139, 92, 246, 0.08) 0%, rgba(99, 102, 241, 0.05) 100%)',
-          borderRadius: '12px',
+          borderRadius: '16px',
           border: '1px solid rgba(139, 92, 246, 0.15)',
           display: 'flex',
           alignItems: 'center',
-          gap: '12px',
+          gap: '16px',
         }}>
           <div style={{
-            width: '32px',
-            height: '32px',
+            width: '36px',
+            height: '36px',
             borderRadius: '50%',
             background: 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             flexShrink: 0,
+            boxShadow: '0 4px 12px rgba(139, 92, 246, 0.3)'
           }}>
-            <span style={{ fontSize: '16px' }}>✨</span>
+            <span style={{ fontSize: '18px' }}>✨</span>
           </div>
           <div style={{ flex: 1 }}>
-            <span style={{ color: theme.textSecondary, fontSize: '14px', lineHeight: '1.5' }}>
-              <span style={{ color: theme.accent, fontWeight: '600' }}>Swapping {swapDetails.fromAmount} {swapDetails.fromToken} → {swapDetails.toToken}</span>
-              {' '}• I've enabled MEV Protection for this trade since it's over $1,000. This will protect you from sandwich attacks.
-            </span>
+            <div style={{ color: theme.textPrimary, fontWeight: '600', fontSize: '15px', marginBottom: '2px' }}>
+              Swapping {swapDetails.fromAmount} {swapDetails.fromToken} → {swapDetails.toToken}
+            </div>
+            <div style={{ color: theme.textSecondary, fontSize: '13px' }}>
+              Auto-selected <span style={{ color: '#8b5cf6', fontWeight: '600' }}>MEV Protection</span> to save ~$14.60
+            </div>
           </div>
-          <MiniChart data={[3200, 3180, 3220, 3250, 3230, 3280, 3245]} color={theme.accent} />
+          <div style={{ paddingRight: '10px' }}>
+             <MiniChart data={[3200, 3180, 3220, 3250, 3230, 3280, 3245]} color="#8b5cf6" />
+          </div>
         </div>
       )}
 
       {/* Main Content */}
-      <div style={{ display: 'grid', gridTemplateColumns: '420px 1fr', gap: '24px' }}>
-        {/* Swap Panel */}
+      <div style={{ display: 'grid', gridTemplateColumns: '420px 1fr', gap: '32px' }}>
+        
+        {/* LEFT COLUMN: Swap Panel */}
         <div style={{
           background: theme.bgCard,
-          borderRadius: '20px',
+          borderRadius: '24px',
           padding: '24px',
           border: `1px solid ${theme.border}`,
           boxShadow: '0 4px 20px rgba(0, 0, 0, 0.04)',
+          position: 'relative'
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-            <h2 style={{ color: theme.textPrimary, fontSize: '18px', fontWeight: '700', margin: 0 }}>Swap</h2>
-            <button style={{ background: 'transparent', border: 'none', color: theme.textMuted, cursor: 'pointer', padding: '4px' }}>
+            <h2 style={{ color: theme.textPrimary, fontSize: '20px', fontWeight: '700', margin: 0, letterSpacing: '-0.02em' }}>Swap</h2>
+            <button style={{ background: 'transparent', border: 'none', color: theme.textMuted, cursor: 'pointer', padding: '8px', borderRadius: '50%', '&:hover': { background: theme.bgSecondary } }}>
               <SettingsIcon />
             </button>
           </div>
 
-          <TokenSelect 
-            token={swapDetails?.fromToken || "ETH"} 
-            balance="3.245" 
-            usdValue={swapDetails?.fromAmount ? "4,868.25" : "0.00"} 
-            side="Sell" 
-            amount={swapDetails?.fromAmount || ""} 
-            theme={theme}
-          />
-          
-          <div style={{ display: 'flex', justifyContent: 'center', margin: '-8px 0', position: 'relative', zIndex: 2 }}>
-            <button style={{
-              width: '36px',
-              height: '36px',
-              borderRadius: '10px',
-              border: `2px solid ${theme.border}`,
-              background: theme.bgCard,
-              color: theme.accent,
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)',
+          <div style={{ position: 'relative' }}>
+            <TokenSelect 
+              token={swapDetails?.fromToken || "ETH"} 
+              balance="3.245" 
+              usdValue={swapDetails?.fromAmount ? "4,868.25" : "0.00"} 
+              side="Sell" 
+              amount={swapDetails?.fromAmount || ""} 
+              theme={theme}
+            />
+            
+            <div style={{ 
+              position: 'absolute', 
+              top: '50%', 
+              left: '50%', 
+              transform: 'translate(-50%, -50%)', 
+              zIndex: 10 
             }}>
-              <SwapIcon />
-            </button>
-          </div>
-
-          <TokenSelect 
-            token={swapDetails?.toToken || "USDC"} 
-            balance="12,450.00" 
-            usdValue={swapDetails?.fromAmount ? "4,868.25" : "0.00"} 
-            side="Buy" 
-            amount={swapDetails?.fromAmount ? "4,868.25" : ""} 
-            theme={theme}
-          />
-
-          {/* Hook Selection */}
-          <div style={{ marginTop: '20px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <span style={{ color: theme.textPrimary, fontSize: '14px', fontWeight: '600' }}>Swap Hook</span>
-                <div style={{ color: theme.textMuted, cursor: 'help' }}><InfoIcon /></div>
-              </div>
-              <button onClick={() => setShowAllHooks(!showAllHooks)} style={{ background: 'transparent', border: 'none', color: theme.accent, fontSize: '12px', fontWeight: '600', cursor: 'pointer' }}>
-                {showAllHooks ? 'Collapse' : 'Show All'}
+              <button style={{
+                width: '40px',
+                height: '40px',
+                borderRadius: '12px',
+                border: `4px solid ${theme.bgCard}`,
+                background: theme.bgSecondary,
+                color: theme.accent,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
+              }}>
+                <ArrowLeftRightIcon />
               </button>
             </div>
 
-            {!showAllHooks ? (
-              <button style={{
+            <TokenSelect 
+              token={swapDetails?.toToken || "USDC"} 
+              balance="12,450.00" 
+              usdValue={swapDetails?.fromAmount ? "4,868.25" : "0.00"} 
+              side="Buy" 
+              amount={swapDetails?.fromAmount ? "4,868.25" : ""} 
+              theme={theme}
+            />
+          </div>
+
+          {/* Hook Selection - Inline Preview */}
+          <div style={{ marginTop: '24px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+              <span style={{ color: theme.textSecondary, fontSize: '13px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Swap Hook</span>
+            </div>
+
+            <button 
+              onClick={() => setIsHookModalOpen(true)}
+              style={{
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 width: '100%',
-                padding: '14px 16px',
-                borderRadius: '12px',
-                border: `2px solid ${theme.border}`,
-                background: isDark ? 'rgba(255, 255, 255, 0.03)' : 'rgba(0, 0, 0, 0.02)',
+                padding: '16px',
+                borderRadius: '16px',
+                border: `1px solid ${theme.border}`,
+                background: isDark ? 'rgba(255, 255, 255, 0.02)' : 'rgba(0, 0, 0, 0.01)',
                 cursor: 'pointer',
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <div style={{
-                    width: '36px',
-                    height: '36px',
-                    borderRadius: '8px',
-                    background: `${theme.accent}20`,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: theme.accent,
-                  }}>
-                    {getSelectedHookIcon()}
-                  </div>
-                  <div style={{ textAlign: 'left' }}>
-                    <div style={{ color: theme.textPrimary, fontWeight: '600', fontSize: '14px' }}>{getSelectedHookName()}</div>
-                    <div style={{ color: '#10b981', fontSize: '12px', fontWeight: '500' }}>+$14.60 estimated savings</div>
+                transition: 'all 0.2s'
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                <div style={{
+                  width: '40px',
+                  height: '40px',
+                  borderRadius: '10px',
+                  background: `${theme.accent}15`,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: theme.accent,
+                }}>
+                  {selectedHookObj.icon}
+                </div>
+                <div style={{ textAlign: 'left' }}>
+                  <div style={{ color: theme.textPrimary, fontWeight: '700', fontSize: '15px' }}>{selectedHookObj.name}</div>
+                  <div style={{ color: '#10b981', fontSize: '13px', fontWeight: '500' }}>
+                    {selectedHookObj.benefit ? `+${selectedHookObj.benefit}` : 'Standard execution'}
                   </div>
                 </div>
-                <div style={{ color: theme.textSecondary, display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <span style={{ fontSize: '12px' }}>Change</span>
-                  <ChevronDownIcon />
-                </div>
-              </button>
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {hooks.slice(0, 3).map(hook => (
-                  <HookOption key={hook.id} {...hook} selected={selectedHook === hook.id} onClick={() => setSelectedHook(hook.id)} compact theme={theme} />
-                ))}
               </div>
-            )}
+              <div style={{ color: theme.accent, fontWeight: '600', fontSize: '13px' }}>
+                Change
+              </div>
+            </button>
           </div>
 
-          {/* Swap Details */}
-          <div style={{ marginTop: '16px', padding: '12px', background: isDark ? 'rgba(255, 255, 255, 0.03)' : 'rgba(0, 0, 0, 0.02)', borderRadius: '10px', fontSize: '13px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+          {/* Swap Details Breakdown */}
+          <div style={{ marginTop: '24px', padding: '16px', background: theme.bgSecondary, borderRadius: '16px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px', fontSize: '13px' }}>
               <span style={{ color: theme.textSecondary }}>Rate</span>
-              <span style={{ color: theme.textPrimary }}>1 ETH = 3,245.50 USDC</span>
+              <span style={{ color: theme.textPrimary, fontWeight: '500' }}>1 ETH = 3,245.50 USDC</span>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px', fontSize: '13px' }}>
               <span style={{ color: theme.textSecondary }}>Network Fee</span>
-              <span style={{ color: theme.textPrimary }}>~$2.45</span>
+              <span style={{ color: theme.textPrimary, fontWeight: '500' }}>~$2.45</span>
             </div>
-            <div style={{ borderTop: `1px solid ${theme.border}`, marginTop: '8px', paddingTop: '8px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+            
+            <div style={{ borderTop: `1px solid ${theme.border}`, margin: '12px 0', padding: '12px 0' }}>
+              <div style={{ color: theme.textSecondary, fontSize: '11px', fontWeight: '600', textTransform: 'uppercase', marginBottom: '8px' }}>Fee Architecture</div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px', fontSize: '13px' }}>
+                <span style={{ color: theme.textMuted }}>LP Fee (Dynamic)</span>
+                <span style={{ color: theme.textPrimary }}>0.05%</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px', fontSize: '13px' }}>
+                <span style={{ color: theme.textMuted }}>Protocol Fee</span>
+                <span style={{ color: theme.textPrimary }}>0.00%</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
+                <span style={{ color: theme.textMuted }}>Hook Fee</span>
+                <span style={{ color: theme.textPrimary }}>0.01%</span>
+              </div>
+            </div>
+
+            <div style={{ borderTop: `1px solid ${theme.border}`, paddingTop: '12px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '13px' }}>
                 <span style={{ color: theme.textSecondary }}>Price Impact</span>
                 <span style={{ color: '#10b981' }}>&lt;0.01%</span>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
                 <span style={{ color: theme.textSecondary }}>Hook Benefit</span>
-                <span style={{ color: '#10b981', fontWeight: '600' }}>+$14.60 saved</span>
+                <span style={{ color: '#10b981', fontWeight: '700' }}>+$14.60 saved</span>
               </div>
             </div>
           </div>
 
-          {/* Swap Button */}
+          {/* Swap Execution Button */}
           <button style={{
             width: '100%',
-            padding: '16px',
-            marginTop: '16px',
-            borderRadius: '12px',
+            padding: '18px',
+            marginTop: '24px',
+            borderRadius: '16px',
             border: 'none',
             background: 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)',
             color: 'white',
             fontSize: '16px',
             fontWeight: '700',
             cursor: 'pointer',
-            boxShadow: '0 4px 14px rgba(139, 92, 246, 0.3)',
+            boxShadow: '0 8px 20px rgba(139, 92, 246, 0.3)',
+            transition: 'transform 0.1s',
           }}>
-            Swap {swapDetails?.fromToken || 'Tokens'}
+            Swap ETH → USDC with {selectedHookObj.name.replace(' (Smart Routing)', '')}
           </button>
         </div>
 
-        {/* Chart Panel */}
-        <div>
+        {/* RIGHT COLUMN: Chart & Stats */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           <div style={{
             background: theme.bgCard,
-            borderRadius: '16px',
-            padding: '20px',
+            borderRadius: '24px',
+            padding: '24px',
             border: `1px solid ${theme.border}`,
+            flex: 1,
+            minHeight: '300px'
           }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
               <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
                   <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'linear-gradient(135deg, #627EEA 0%, #8B9FFF 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: '600', color: 'white', marginRight: '-8px', zIndex: 2, border: `2px solid ${theme.bgCard}` }}>Ξ</div>
-                    <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'linear-gradient(135deg, #2775CA 0%, #4A9FE8 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: '700', color: 'white', border: `2px solid ${theme.bgCard}` }}>$</div>
+                    <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'linear-gradient(135deg, #627EEA 0%, #8B9FFF 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', fontWeight: '600', color: 'white', marginRight: '-10px', zIndex: 2, border: `3px solid ${theme.bgCard}` }}>Ξ</div>
+                    <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'linear-gradient(135deg, #2775CA 0%, #4A9FE8 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', fontWeight: '700', color: 'white', border: `3px solid ${theme.bgCard}` }}>$</div>
                   </div>
-                  <span style={{ color: theme.textPrimary, fontWeight: '600', fontSize: '16px' }}>ETH / USDC</span>
+                  <span style={{ color: theme.textPrimary, fontWeight: '700', fontSize: '18px' }}>ETH / USDC</span>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px' }}>
-                  <span style={{ color: theme.textPrimary, fontSize: '28px', fontWeight: '700', fontFamily: 'SF Mono, Monaco, monospace' }}>$3,245.50</span>
-                  <span style={{ color: '#10b981', fontSize: '14px', fontWeight: '600' }}>↑ 2.34%</span>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px' }}>
+                  <span style={{ color: theme.textPrimary, fontSize: '32px', fontWeight: '700', fontFamily: 'SF Mono, Monaco, monospace', letterSpacing: '-0.03em' }}>$3,245.50</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', background: 'rgba(16, 185, 129, 0.1)', padding: '4px 8px', borderRadius: '6px' }}>
+                    <span style={{ color: '#10b981', fontSize: '13px', fontWeight: '700' }}>+2.34%</span>
+                  </div>
                 </div>
               </div>
-              <div style={{ display: 'flex', gap: '4px' }}>
+              <div style={{ display: 'flex', gap: '4px', background: theme.bgSecondary, padding: '4px', borderRadius: '10px' }}>
                 {['1H', '4H', '1D', '1W'].map((tf, i) => (
-                  <button key={tf} style={{ padding: '6px 10px', borderRadius: '6px', border: 'none', background: i === 2 ? `${theme.accent}20` : 'transparent', color: i === 2 ? theme.accent : theme.textSecondary, fontSize: '12px', fontWeight: '500', cursor: 'pointer' }}>{tf}</button>
+                  <button key={tf} style={{ 
+                    padding: '6px 12px', 
+                    borderRadius: '8px', 
+                    border: 'none', 
+                    background: i === 2 ? theme.bgCard : 'transparent', 
+                    color: i === 2 ? theme.textPrimary : theme.textSecondary, 
+                    fontSize: '13px', 
+                    fontWeight: '600', 
+                    cursor: 'pointer',
+                    boxShadow: i === 2 ? '0 2px 4px rgba(0,0,0,0.05)' : 'none'
+                  }}>{tf}</button>
                 ))}
               </div>
             </div>
             
-            <div style={{ height: '180px', background: isDark ? 'rgba(255, 255, 255, 0.03)' : 'rgba(0, 0, 0, 0.02)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: theme.textMuted }}>
-              Price Chart Placeholder
+            <div style={{ height: '240px', width: '100%' }}>
+               <PriceChart pair="ETH/USDC" theme={theme} />
             </div>
           </div>
           
-          {/* Info Cards */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginTop: '16px' }}>
-            <div style={{ background: theme.bgCard, borderRadius: '12px', padding: '16px', border: `1px solid ${theme.border}` }}>
-              <div style={{ color: theme.textSecondary, fontSize: '12px', marginBottom: '4px' }}>24h Volume</div>
-              <div style={{ color: theme.textPrimary, fontSize: '18px', fontWeight: '700' }}>$2.4B</div>
+          {/* Market Stats */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
+            <div style={{ background: theme.bgCard, borderRadius: '20px', padding: '20px', border: `1px solid ${theme.border}` }}>
+              <div style={{ color: theme.textSecondary, fontSize: '13px', marginBottom: '8px', fontWeight: '500' }}>24h Volume</div>
+              <div style={{ color: theme.textPrimary, fontSize: '20px', fontWeight: '700' }}>$2.4B</div>
             </div>
-            <div style={{ background: theme.bgCard, borderRadius: '12px', padding: '16px', border: `1px solid ${theme.border}` }}>
-              <div style={{ color: theme.textSecondary, fontSize: '12px', marginBottom: '4px' }}>Pool TVL</div>
-              <div style={{ color: theme.textPrimary, fontSize: '18px', fontWeight: '700' }}>$847M</div>
+            <div style={{ background: theme.bgCard, borderRadius: '20px', padding: '20px', border: `1px solid ${theme.border}` }}>
+              <div style={{ color: theme.textSecondary, fontSize: '13px', marginBottom: '8px', fontWeight: '500' }}>Pool TVL</div>
+              <div style={{ color: theme.textPrimary, fontSize: '20px', fontWeight: '700' }}>$847M</div>
             </div>
-            <div style={{ background: theme.bgCard, borderRadius: '12px', padding: '16px', border: `1px solid ${theme.border}` }}>
-              <div style={{ color: theme.textSecondary, fontSize: '12px', marginBottom: '4px' }}>Current Fee</div>
-              <div style={{ color: theme.textPrimary, fontSize: '18px', fontWeight: '700' }}>0.05%</div>
+            <div style={{ background: theme.bgCard, borderRadius: '20px', padding: '20px', border: `1px solid ${theme.border}` }}>
+              <div style={{ color: theme.textSecondary, fontSize: '13px', marginBottom: '8px', fontWeight: '500' }}>Current Fee</div>
+              <div style={{ color: theme.textPrimary, fontSize: '20px', fontWeight: '700' }}>0.05%</div>
             </div>
           </div>
         </div>
@@ -590,7 +744,6 @@ const SwapInterface = ({ onClose, swapDetails, theme, isDark }) => {
     </div>
   );
 };
-
 
 // ============ MAIN APP ============
 export default function MantuaApp() {

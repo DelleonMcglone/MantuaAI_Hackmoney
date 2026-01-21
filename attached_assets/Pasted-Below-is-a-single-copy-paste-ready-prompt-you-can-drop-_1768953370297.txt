@@ -1,0 +1,253 @@
+Below is a **single, copy-paste-ready prompt** you can drop directly into **Replit Design Mode** (or Replit AI) to update your existing Swap interface to match the **exact structure, behavior, and UX intent** of the React implementation you provided.
+
+This prompt is written to **replace the current Swap UI**, not refactor logic unless required.
+
+---
+
+## Replit Design Mode Prompt — Mantua Swap Interface Upgrade
+
+**Context**
+You are working inside an existing React + Tailwind (or inline-style) codebase for a DeFi application called **Mantua**.
+There is already a Swap page/component. Your task is to **update the Swap interface UI and UX** to match the specification below.
+
+This is a **production-grade trading interface**, not a mockup or demo.
+Do **not** simplify the UI. Do **not** remove advanced features.
+
+---
+
+## Objective
+
+Replace the current Swap interface with a **two-column, execution-first Swap experience** that:
+
+1. Preserves the chatbot / AI narrative layer
+2. Makes Uniswap v4 hooks feel **powerful but optional**
+3. Supports **inline hook preview + modal selection**
+4. Surfaces **fee architecture, savings, and protection**
+5. Looks credible next to Uniswap, CowSwap, and Coinbase Advanced
+
+---
+
+## High-Level Layout (Non-Negotiable)
+
+### Page Layout
+
+* Centered container
+* Max width ≈ **900px**
+* Two columns:
+
+  * **Left (≈420px): Swap Panel**
+  * **Right (flex): Price Chart + Market Stats**
+* Light background (`#fafafa`)
+* White cards with subtle purple accents
+
+---
+
+## Required Components (Must Match Behavior)
+
+### 1. AI Response Banner (Top)
+
+* Full-width banner above the swap
+* Shows:
+
+  * Swap intent summary (e.g. “Swapping 1.5 ETH → USDC”)
+  * Why a hook was auto-selected
+  * Estimated savings
+  * Mini sparkline chart
+* This must feel like a **chatbot response rendered inline**, not a toast
+
+---
+
+### 2. Swap Panel (Left Column)
+
+#### Header
+
+* Title: **Swap**
+* Settings icon (no modal required yet)
+
+#### Token Inputs
+
+* Two stacked token cards:
+
+  * Sell (ETH)
+  * Buy (USDC)
+* Each card includes:
+
+  * Amount input (large mono font)
+  * Token selector button (icon + symbol)
+  * Balance
+  * USD equivalent
+* Center swap-direction button floating between cards
+
+---
+
+### 3. Hook Selection (Critical)
+
+#### Inline Hook Preview (Default)
+
+* A single selectable row showing:
+
+  * Selected hook icon
+  * Hook name
+  * Estimated savings
+  * “Change” CTA
+* Clicking opens **Hook Selector Modal**
+
+#### Expandable Inline List
+
+* “Show All / Collapse” toggle
+* Shows **top 3 hooks** in compact form
+* “View All Hooks & Custom Address” CTA
+
+---
+
+### 4. Hook Selector Modal
+
+Must include:
+
+#### Header
+
+* Title: **Select Swap Hook**
+* Close button
+
+#### AI Recommendation Banner
+
+* Explains *why* a hook is recommended
+* Contextual to trade size
+
+#### Hook Options
+
+Each hook card supports:
+
+* Icon
+* Name
+* Description
+* Benefit pill
+* Optional tags:
+
+  * `Recommended`
+  * `New`
+* Selected state with checkmark
+
+Hooks to include:
+
+* Auto (Smart Routing)
+* MEV Protection (recommended)
+* Directional Fee
+* JIT Rebalancing
+* No Hook
+
+#### Custom Hook Address (Expandable)
+
+* Toggle section
+* Input for `0x…` address
+* Validate button with states:
+
+  * loading
+  * valid
+  * invalid
+* Show:
+
+  * Hook name
+  * Permissions
+  * Audit status
+* Recent custom hooks list
+
+#### Apply Button
+
+* Applies hook and closes modal
+
+---
+
+### 5. Swap Details Section
+
+Inline breakdown card showing:
+
+* Rate
+* Network fee
+* **Fee Architecture (v4-specific)**
+
+  * LP Fee (dynamic)
+  * Protocol Fee
+  * Hook Fee
+* Price impact
+* Slippage
+* Hook benefit (savings)
+
+This section must **teach** users how v4 fees work.
+
+---
+
+### 6. Swap Execution Button
+
+* Full-width
+* Gradient purple
+* Text includes selected hook name:
+
+  * “Swap ETH → USDC with MEV Protection”
+
+---
+
+### 7. Chart Panel (Right Column)
+
+#### Price Chart Card
+
+* ETH / USDC
+* Candlestick-style visualization
+* Timeframe toggles (1H / 4H / 1D / 1W)
+* Current price + % change
+
+#### Market Stat Cards
+
+* 24h Volume
+* Pool TVL
+* Current Fee
+
+---
+
+## Implementation Rules
+
+* You may:
+
+  * Create new components if needed
+  * Reorganize layout and JSX
+* You may NOT:
+
+  * Remove hook logic
+  * Remove advanced fee explanations
+  * Replace with placeholders
+* Keep logic mock-friendly if data is not wired yet
+* Prefer composability and readability
+
+---
+
+## Visual Style
+
+* White cards
+* Soft purple accents (`#8b5cf6`, `#6366f1`)
+* Rounded corners (12–20px)
+* Subtle borders
+* No heavy shadows
+* Typography:
+
+  * System UI
+  * Monospace for prices and addresses
+
+---
+
+## Final Instruction
+
+**Implement this as the new Swap interface UI.**
+If something already exists, **upgrade it** to match this spec rather than duplicating it.
+
+Do not explain the changes.
+Do not summarize.
+Only produce the updated implementation.
+
+---
+
+If you want, next I can:
+
+* Convert this into a **pure Tailwind version**
+* Break this into **atomic components**
+* Adapt it to **OnchainKit / wagmi execution**
+* Refactor it for **chat-embedded rendering** instead of a standalone page

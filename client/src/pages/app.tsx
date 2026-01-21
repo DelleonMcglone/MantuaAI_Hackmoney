@@ -12,10 +12,717 @@ import logoWhite from '@assets/Mantua_logo_white_1768946648374.png';
 import logoBlack from '@assets/Mantua_logo_black_1768946648374.png';
 
 // ============ ICONS ============
-const MenuIcon = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>;
-const SearchIcon = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>;
-const PlusIcon = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>;
-const MoonIcon = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>;
+// Icons
+const WalletIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/>
+    <path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/>
+    <path d="M18 12a2 2 0 0 0 0 4h4v-4h-4z"/>
+  </svg>
+);
+
+const TrendUpIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+    <polyline points="17 6 23 6 23 12"/>
+  </svg>
+);
+
+const TrendDownIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/>
+    <polyline points="17 18 23 18 23 12"/>
+  </svg>
+);
+
+const PlusCircleIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <circle cx="12" cy="12" r="10"/>
+    <line x1="12" y1="8" x2="12" y2="16"/>
+    <line x1="8" y1="12" x2="16" y2="12"/>
+  </svg>
+);
+
+const MinusCircleIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <circle cx="12" cy="12" r="10"/>
+    <line x1="8" y1="12" x2="16" y2="12"/>
+  </svg>
+);
+
+const CheckCircleIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+    <polyline points="22 4 12 14.01 9 11.01"/>
+  </svg>
+);
+
+const ClockIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <circle cx="12" cy="12" r="10"/>
+    <polyline points="12 6 12 12 16 14"/>
+  </svg>
+);
+
+const XCircleIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <circle cx="12" cy="12" r="10"/>
+    <line x1="15" y1="9" x2="9" y2="15"/>
+    <line x1="9" y1="9" x2="15" y2="15"/>
+  </svg>
+);
+
+const UserIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+    <circle cx="12" cy="7" r="4"/>
+  </svg>
+);
+
+// Token icon component
+const TokenIcon = ({ token, size = 32 }) => {
+  const getTokenColor = (token) => {
+    const colors = {
+      'ETH': 'linear-gradient(135deg, #627EEA 0%, #8B9FFF 100%)',
+      'USDC': 'linear-gradient(135deg, #2775CA 0%, #4A9FE8 100%)',
+      'LP': 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)',
+    };
+    return colors[token] || 'linear-gradient(135deg, #6b7280 0%, #9ca3af 100%)';
+  };
+
+  const getTokenSymbol = (token) => {
+    if (token === 'ETH') return 'Ξ';
+    if (token === 'USDC') return '$';
+    if (token === 'LP') return '◈';
+    return token.charAt(0);
+  };
+
+  return (
+    <div style={{
+      width: size,
+      height: size,
+      borderRadius: '50%',
+      background: getTokenColor(token),
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      fontSize: size * 0.45,
+      fontWeight: '600',
+      color: 'white',
+    }}>
+      {getTokenSymbol(token)}
+    </div>
+  );
+};
+
+// Token pair icon
+const TokenPairIcon = ({ token1, token2 }) => (
+  <div style={{ display: 'flex', alignItems: 'center' }}>
+    <TokenIcon token={token1} size={28} />
+    <div style={{ marginLeft: -8, zIndex: 1 }}>
+      <TokenIcon token={token2} size={28} />
+    </div>
+  </div>
+);
+
+// Status badge component
+const StatusBadge = ({ status, type = 'default' }) => {
+  const configs = {
+    'Manual': { color: '#6b7280', bg: 'rgba(107, 114, 128, 0.1)' },
+    'Active': { color: '#10b981', bg: 'rgba(16, 185, 129, 0.1)' },
+    'Paused': { color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.1)' },
+    'Out of range': { color: '#ef4444', bg: 'rgba(239, 68, 68, 0.1)' },
+    'Pending': { color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.1)' },
+    'Completed': { color: '#10b981', bg: 'rgba(16, 185, 129, 0.1)' },
+    'Failed': { color: '#ef4444', bg: 'rgba(239, 68, 68, 0.1)' },
+    'Standard': { color: '#6b7280', bg: 'rgba(107, 114, 128, 0.1)' },
+    'MEV Protection': { color: '#8b5cf6', bg: 'rgba(139, 92, 246, 0.1)' },
+    'JiT Rebalance': { color: '#10b981', bg: 'rgba(16, 185, 129, 0.1)' },
+    'Directional Fee': { color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.1)' },
+  };
+
+  const config = configs[status] || configs['default'];
+
+  return (
+    <span style={{
+      display: 'inline-flex',
+      alignItems: 'center',
+      gap: '4px',
+      padding: '4px 10px',
+      borderRadius: '6px',
+      background: config.bg,
+      color: config.color,
+      fontSize: '12px',
+      fontWeight: '600',
+    }}>
+      {status === 'Active' && <span style={{ width: 6, height: 6, borderRadius: '50%', background: config.color }} />}
+      {status}
+    </span>
+  );
+};
+
+// Chain badge
+const ChainBadge = () => (
+  <div style={{
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '6px',
+    padding: '6px 12px',
+    borderRadius: '8px',
+    background: 'rgba(59, 130, 246, 0.1)',
+    color: '#3b82f6',
+    fontSize: '12px',
+    fontWeight: '600',
+  }}>
+    <div style={{
+      width: '8px',
+      height: '8px',
+      borderRadius: '50%',
+      background: '#3b82f6',
+    }} />
+    Base Sepolia
+  </div>
+);
+
+// Portfolio Summary Card
+const PortfolioSummary = ({ data }) => (
+  <div style={{
+    background: 'white',
+    borderRadius: '16px',
+    padding: '24px',
+    border: '1px solid rgba(139, 92, 246, 0.1)',
+    marginBottom: '24px',
+  }}>
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
+      <div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+          <h2 style={{ color: '#111827', fontSize: '18px', fontWeight: '700', margin: 0 }}>
+            Portfolio Summary
+          </h2>
+        </div>
+        <ChainBadge />
+      </div>
+      <div style={{ textAlign: 'right' }}>
+        <div style={{ color: '#6b7280', fontSize: '13px', marginBottom: '4px' }}>Total Value</div>
+        <div style={{ 
+          color: '#111827', 
+          fontSize: '32px', 
+          fontWeight: '700',
+          fontFamily: 'SF Mono, Monaco, monospace',
+        }}>
+          ${data.totalValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+        </div>
+      </div>
+    </div>
+
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
+      <div style={{
+        padding: '16px',
+        background: 'rgba(249, 250, 251, 0.8)',
+        borderRadius: '12px',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+          <TokenIcon token="ETH" size={24} />
+          <span style={{ color: '#6b7280', fontSize: '13px', fontWeight: '500' }}>ETH Balance</span>
+        </div>
+        <div style={{ 
+          color: '#111827', 
+          fontSize: '20px', 
+          fontWeight: '700',
+          fontFamily: 'SF Mono, Monaco, monospace',
+        }}>
+          {data.ethBalance.toFixed(4)} ETH
+        </div>
+        <div style={{ color: '#6b7280', fontSize: '12px', marginTop: '2px' }}>
+          ${(data.ethBalance * data.ethPrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+        </div>
+      </div>
+
+      <div style={{
+        padding: '16px',
+        background: 'rgba(249, 250, 251, 0.8)',
+        borderRadius: '12px',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+          <TokenIcon token="USDC" size={24} />
+          <span style={{ color: '#6b7280', fontSize: '13px', fontWeight: '500' }}>USDC Balance</span>
+        </div>
+        <div style={{ 
+          color: '#111827', 
+          fontSize: '20px', 
+          fontWeight: '700',
+          fontFamily: 'SF Mono, Monaco, monospace',
+        }}>
+          {data.usdcBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+        </div>
+        <div style={{ color: '#6b7280', fontSize: '12px', marginTop: '2px' }}>
+          ${data.usdcBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+        </div>
+      </div>
+
+      <div style={{
+        padding: '16px',
+        background: 'rgba(249, 250, 251, 0.8)',
+        borderRadius: '12px',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+          <TokenIcon token="LP" size={24} />
+          <span style={{ color: '#6b7280', fontSize: '13px', fontWeight: '500' }}>LP Positions</span>
+        </div>
+        <div style={{ 
+          color: '#111827', 
+          fontSize: '20px', 
+          fontWeight: '700',
+          fontFamily: 'SF Mono, Monaco, monospace',
+        }}>
+          {data.lpPositions}
+        </div>
+        <div style={{ color: '#6b7280', fontSize: '12px', marginTop: '2px' }}>
+          ${data.lpValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} value
+        </div>
+      </div>
+
+      <div style={{
+        padding: '16px',
+        background: data.netPnl >= 0 ? 'rgba(16, 185, 129, 0.08)' : 'rgba(239, 68, 68, 0.08)',
+        borderRadius: '12px',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+          {data.netPnl >= 0 ? <TrendUpIcon /> : <TrendDownIcon />}
+          <span style={{ color: '#6b7280', fontSize: '13px', fontWeight: '500' }}>Net PnL</span>
+        </div>
+        <div style={{ 
+          color: data.netPnl >= 0 ? '#10b981' : '#ef4444', 
+          fontSize: '20px', 
+          fontWeight: '700',
+          fontFamily: 'SF Mono, Monaco, monospace',
+        }}>
+          {data.netPnl >= 0 ? '+' : ''}{data.netPnl.toFixed(2)}%
+        </div>
+        <div style={{ color: data.netPnl >= 0 ? '#10b981' : '#ef4444', fontSize: '12px', marginTop: '2px' }}>
+          {data.netPnl >= 0 ? '+' : ''}${data.netPnlUsd.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+// Assets Table
+const AssetsTable = ({ assets }) => (
+  <div style={{
+    background: 'white',
+    borderRadius: '16px',
+    border: '1px solid rgba(139, 92, 246, 0.1)',
+    marginBottom: '24px',
+    overflow: 'hidden',
+  }}>
+    <div style={{ padding: '20px 24px', borderBottom: '1px solid rgba(139, 92, 246, 0.1)' }}>
+      <h3 style={{ color: '#111827', fontSize: '16px', fontWeight: '700', margin: 0 }}>Assets</h3>
+    </div>
+    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+      <thead>
+        <tr style={{ background: 'rgba(249, 250, 251, 0.5)' }}>
+          <th style={{ padding: '12px 24px', textAlign: 'left', color: '#6b7280', fontSize: '12px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Asset</th>
+          <th style={{ padding: '12px 24px', textAlign: 'right', color: '#6b7280', fontSize: '12px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Balance</th>
+          <th style={{ padding: '12px 24px', textAlign: 'right', color: '#6b7280', fontSize: '12px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>USD Value</th>
+          <th style={{ padding: '12px 24px', textAlign: 'right', color: '#6b7280', fontSize: '12px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>% of Portfolio</th>
+        </tr>
+      </thead>
+      <tbody>
+        {assets.map((asset, index) => (
+          <tr key={index} style={{ borderBottom: '1px solid rgba(139, 92, 246, 0.08)' }}>
+            <td style={{ padding: '16px 24px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <TokenIcon token={asset.symbol} size={36} />
+                <div>
+                  <div style={{ color: '#111827', fontWeight: '600', fontSize: '14px' }}>{asset.name}</div>
+                  <div style={{ color: '#6b7280', fontSize: '12px' }}>{asset.symbol}</div>
+                </div>
+              </div>
+            </td>
+            <td style={{ padding: '16px 24px', textAlign: 'right' }}>
+              <span style={{ color: '#111827', fontFamily: 'SF Mono, Monaco, monospace', fontSize: '14px', fontWeight: '500' }}>
+                {asset.balance.toLocaleString(undefined, { minimumFractionDigits: asset.symbol === 'ETH' ? 4 : 2, maximumFractionDigits: asset.symbol === 'ETH' ? 4 : 2 })}
+              </span>
+            </td>
+            <td style={{ padding: '16px 24px', textAlign: 'right' }}>
+              <span style={{ color: '#111827', fontFamily: 'SF Mono, Monaco, monospace', fontSize: '14px', fontWeight: '500' }}>
+                ${asset.usdValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </span>
+            </td>
+            <td style={{ padding: '16px 24px', textAlign: 'right' }}>
+              <div style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+              }}>
+                <div style={{
+                  width: '60px',
+                  height: '6px',
+                  background: 'rgba(139, 92, 246, 0.1)',
+                  borderRadius: '3px',
+                  overflow: 'hidden',
+                }}>
+                  <div style={{
+                    width: `${asset.percentage}%`,
+                    height: '100%',
+                    background: 'linear-gradient(90deg, #8b5cf6, #6366f1)',
+                    borderRadius: '3px',
+                  }} />
+                </div>
+                <span style={{ color: '#374151', fontSize: '13px', fontWeight: '600', minWidth: '45px' }}>
+                  {asset.percentage.toFixed(1)}%
+                </span>
+              </div>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+);
+
+// Liquidity Positions
+const LiquidityPositions = ({ positions }) => (
+  <div style={{
+    background: 'white',
+    borderRadius: '16px',
+    border: '1px solid rgba(139, 92, 246, 0.1)',
+    marginBottom: '24px',
+    overflow: 'hidden',
+  }}>
+    <div style={{ padding: '20px 24px', borderBottom: '1px solid rgba(139, 92, 246, 0.1)' }}>
+      <h3 style={{ color: '#111827', fontSize: '16px', fontWeight: '700', margin: 0 }}>Liquidity Positions</h3>
+    </div>
+    
+    {positions.length === 0 ? (
+      <div style={{ padding: '48px', textAlign: 'center', color: '#6b7280' }}>
+        <p style={{ fontSize: '14px' }}>No liquidity positions yet</p>
+      </div>
+    ) : (
+      <div style={{ padding: '16px' }}>
+        {positions.map((position, index) => (
+          <div
+            key={index}
+            style={{
+              padding: '16px',
+              background: 'rgba(249, 250, 251, 0.5)',
+              borderRadius: '12px',
+              marginBottom: index < positions.length - 1 ? '12px' : 0,
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <TokenPairIcon token1={position.token1} token2={position.token2} />
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                    <span style={{ color: '#111827', fontWeight: '600', fontSize: '15px' }}>
+                      {position.token1} / {position.token2}
+                    </span>
+                    <StatusBadge status={position.status} />
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <StatusBadge status={position.hookName || 'Standard'} />
+                  </div>
+                </div>
+              </div>
+              
+              <div style={{ textAlign: 'right' }}>
+                <div style={{ color: '#6b7280', fontSize: '12px', marginBottom: '2px' }}>TVL in Position</div>
+                <div style={{ 
+                  color: '#111827', 
+                  fontSize: '18px', 
+                  fontWeight: '700',
+                  fontFamily: 'SF Mono, Monaco, monospace',
+                }}>
+                  ${position.tvl.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </div>
+              </div>
+            </div>
+            
+            <div style={{ 
+              display: 'flex', 
+              gap: '24px', 
+              marginTop: '12px', 
+              paddingTop: '12px',
+              borderTop: '1px solid rgba(139, 92, 246, 0.1)',
+            }}>
+              <div>
+                <span style={{ color: '#6b7280', fontSize: '12px' }}>Fees Earned</span>
+                <div style={{ color: '#10b981', fontSize: '14px', fontWeight: '600', fontFamily: 'SF Mono, Monaco, monospace' }}>
+                  +${position.feesEarned.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </div>
+              </div>
+              <div>
+                <span style={{ color: '#6b7280', fontSize: '12px' }}>Fee Tier</span>
+                <div style={{ color: '#374151', fontSize: '14px', fontWeight: '600' }}>
+                  {position.feeTier}%
+                </div>
+              </div>
+              <div>
+                <span style={{ color: '#6b7280', fontSize: '12px' }}>Range</span>
+                <div style={{ color: '#374151', fontSize: '14px', fontWeight: '600', fontFamily: 'SF Mono, Monaco, monospace' }}>
+                  {position.rangeLow} - {position.rangeHigh}
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    )}
+  </div>
+);
+
+// Activity Item
+const ActivityItem = ({ activity }) => {
+  const getActionIcon = (type) => {
+    switch (type) {
+      case 'Swap': return <SwapIcon />;
+      case 'Add Liquidity': return <PlusCircleIcon />;
+      case 'Remove Liquidity': return <MinusCircleIcon />;
+      case 'Hook Action': return <BoltIcon />;
+      default: return <SwapIcon />;
+    }
+  };
+
+  const getActionColor = (type) => {
+    switch (type) {
+      case 'Swap': return '#3b82f6';
+      case 'Add Liquidity': return '#10b981';
+      case 'Remove Liquidity': return '#f59e0b';
+      case 'Hook Action': return '#8b5cf6';
+      default: return '#6b7280';
+    }
+  };
+
+  const getStatusIcon = (status) => {
+    switch (status) {
+      case 'Completed': return <CheckCircleIcon />;
+      case 'Pending': return <ClockIcon />;
+      case 'Failed': return <XCircleIcon />;
+      default: return <CheckCircleIcon />;
+    }
+  };
+
+  return (
+    <div style={{
+      display: 'flex',
+      alignItems: 'flex-start',
+      gap: '12px',
+      padding: '16px',
+      borderBottom: '1px solid rgba(139, 92, 246, 0.08)',
+    }}>
+      <div style={{
+        width: '36px',
+        height: '36px',
+        borderRadius: '10px',
+        background: `${getActionColor(activity.type)}15`,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: getActionColor(activity.type),
+        flexShrink: 0,
+      }}>
+        {getActionIcon(activity.type)}
+      </div>
+      
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+          <span style={{ color: '#111827', fontWeight: '600', fontSize: '14px' }}>
+            {activity.type}
+          </span>
+          <StatusBadge status={activity.status} />
+        </div>
+        <div style={{ color: '#374151', fontSize: '13px', marginBottom: '4px' }}>
+          {activity.description}
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+          <div style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '4px',
+            color: '#6b7280',
+            fontSize: '12px',
+          }}>
+            {activity.initiator === 'Agent' ? <BotIcon /> : <UserIcon />}
+            {activity.initiator}
+          </div>
+          <span style={{ color: '#9ca3af', fontSize: '12px' }}>
+            {activity.timestamp}
+          </span>
+          <a
+            href={`https://sepolia.basescan.org/tx/${activity.txHash}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              color: '#8b5cf6',
+              fontSize: '12px',
+              textDecoration: 'none',
+            }}
+          >
+            {activity.txHash.slice(0, 6)}...{activity.txHash.slice(-4)}
+            <ExternalLinkIcon />
+          </a>
+        </div>
+      </div>
+      
+      <div style={{ textAlign: 'right', flexShrink: 0 }}>
+        <div style={{ 
+          color: '#111827', 
+          fontSize: '14px', 
+          fontWeight: '600',
+          fontFamily: 'SF Mono, Monaco, monospace',
+        }}>
+          {activity.amount}
+        </div>
+        {activity.amountUsd && (
+          <div style={{ color: '#6b7280', fontSize: '12px' }}>
+            ${activity.amountUsd}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// Activity Feed
+const ActivityFeed = ({ activities, filter, setFilter }) => {
+  const filters = ['All', 'Swaps', 'Liquidity'];
+  
+  const filteredActivities = activities.filter(a => {
+    if (filter === 'All') return true;
+    if (filter === 'Swaps' && a.type === 'Swap') return true;
+    if (filter === 'Liquidity' && (a.type === 'Add Liquidity' || a.type === 'Remove Liquidity')) return true;
+    return false;
+  });
+
+  return (
+    <div style={{
+      background: 'white',
+      borderRadius: '16px',
+      border: '1px solid rgba(139, 92, 246, 0.1)',
+      overflow: 'hidden',
+    }}>
+      <div style={{
+        padding: '20px 24px',
+        borderBottom: '1px solid rgba(139, 92, 246, 0.1)',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+      }}>
+        <h3 style={{ color: '#111827', fontSize: '16px', fontWeight: '700', margin: 0 }}>Activity</h3>
+        
+        <div style={{ display: 'flex', gap: '8px', background: '#f3f4f6', padding: '4px', borderRadius: '8px' }}>
+          {filters.map(f => (
+            <button
+              key={f}
+              onClick={() => setFilter(f)}
+              style={{
+                padding: '6px 12px',
+                borderRadius: '6px',
+                border: 'none',
+                background: filter === f ? 'white' : 'transparent',
+                color: filter === f ? '#111827' : '#6b7280',
+                fontSize: '12px',
+                fontWeight: '600',
+                cursor: 'pointer',
+                boxShadow: filter === f ? '0 1px 2px rgba(0,0,0,0.05)' : 'none',
+              }}
+            >
+              {f}
+            </button>
+          ))}
+        </div>
+      </div>
+      
+      {filteredActivities.length === 0 ? (
+        <div style={{ padding: '48px', textAlign: 'center', color: '#6b7280' }}>
+          <p style={{ fontSize: '14px' }}>No recent activity</p>
+        </div>
+      ) : (
+        <div>
+          {filteredActivities.map((activity, index) => (
+            <ActivityItem key={index} activity={activity} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ============ PORTFOLIO INTERFACE ============
+const PortfolioInterface = ({ onClose, type, theme, isDark }) => {
+  const [activityFilter, setActivityFilter] = useState('All');
+
+  // Mock data tailored for empty/filled states based on requirements
+  // For now, we will render empty states if type is 'Agent' to match prompt requirements of "not prefilled"
+  // User portfolio can show some dummy data for visualization
+  
+  const isAgent = type === 'Agent';
+  const hasData = !isAgent; // Only user portfolio has data for now
+
+  const portfolioData = hasData ? {
+    totalValue: 12450.25,
+    ethBalance: 3.245,
+    ethPrice: 3245.50,
+    usdcBalance: 1850.45,
+    lpPositions: 2,
+    lpValue: 4250.80,
+    netPnl: 12.5,
+    netPnlUsd: 1450.20
+  } : {
+    totalValue: 0,
+    ethBalance: 0,
+    ethPrice: 0,
+    usdcBalance: 0,
+    lpPositions: 0,
+    lpValue: 0,
+    netPnl: 0,
+    netPnlUsd: 0
+  };
+
+  const assets = hasData ? [
+    { name: 'Ethereum', symbol: 'ETH', balance: 3.245, usdValue: 10531.64, percentage: 84.5 },
+    { name: 'USD Coin', symbol: 'USDC', balance: 1850.45, usdValue: 1850.45, percentage: 14.8 },
+  ] : [];
+
+  const liquidityPositions = hasData ? [
+    { token1: 'ETH', token2: 'USDC', status: 'Active', hookName: 'MEV Protection', tvl: 2450.50, feesEarned: 124.50, feeTier: 0.05, rangeLow: 2800, rangeHigh: 3600 }
+  ] : [];
+
+  const activities = hasData ? [
+    { type: 'Swap', status: 'Completed', description: 'Swapped ETH for USDC', initiator: 'User', timestamp: '2 mins ago', txHash: '0x123...abc', amount: '1.2 ETH', amountUsd: '3,894.50' },
+    { type: 'Add Liquidity', status: 'Completed', description: 'Added liquidity to ETH/USDC', initiator: 'User', timestamp: '4 hours ago', txHash: '0x456...def', amount: '2.5 ETH', amountUsd: '8,113.75' },
+  ] : [];
+
+  return (
+    <div style={{ width: '100%', fontFamily: '"DM Sans", sans-serif' }}>
+      <div style={{
+        background: '#f3f4f6', // Light gray background for contrast within modal
+        borderRadius: '16px',
+        border: `1px solid ${theme.border}`,
+        padding: '24px',
+        maxHeight: '85vh',
+        overflowY: 'auto'
+      }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+           <h1 style={{ margin: 0, fontSize: '24px', color: '#111827' }}>{type} Portfolio</h1>
+           <button onClick={onClose} style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '8px' }}>
+             <CloseIcon />
+           </button>
+        </div>
+
+        <PortfolioSummary data={portfolioData} />
+        <AssetsTable assets={assets} />
+        <LiquidityPositions positions={liquidityPositions} />
+        <ActivityFeed activities={activities} filter={activityFilter} setFilter={setActivityFilter} />
+      </div>
+    </div>
+  );
+};
 const SunIcon = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>;
 const MessageSquarePlusIcon = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="12" y1="8" x2="12" y2="14"/><line x1="9" y1="11" x2="15" y2="11"/></svg>;
 const MessageSquareIcon = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>;
@@ -1683,6 +2390,34 @@ export default function MantuaApp() {
         return;
     }
 
+    // Check for Portfolio Intent
+    const portfolioKeywords = ['portfolio', 'open portfolio', 'show my portfolio', 'user portfolio', 'agent portfolio', 'show agent portfolio'];
+    if (portfolioKeywords.some(keyword => inputValue.toLowerCase().includes(keyword))) {
+        setHasInteracted(true);
+        if (inputValue.toLowerCase().includes('agent')) {
+            setPortfolioType('Agent');
+            setShowPortfolioModal(true);
+        } else if (inputValue.toLowerCase().includes('user') || inputValue.toLowerCase().includes('my')) {
+            setPortfolioType('User');
+            setShowPortfolioModal(true);
+        } else {
+           // Ambiguous - open sidebar dropdown
+           setPortfolioOpen(true);
+           setSidebarOpen(true);
+           // Maybe focus on sidebar? For now just opening is enough indication
+        }
+        setMessages([...messages, { role: 'user', content: inputValue }]);
+        setInputValue('');
+        
+        // Hide other modals if opening portfolio
+        if (inputValue.toLowerCase().includes('agent') || inputValue.toLowerCase().includes('user') || inputValue.toLowerCase().includes('my')) {
+           setShowSwap(false);
+           setShowLiquidity(false);
+           setShowAgentBuilder(false);
+        }
+        return;
+    }
+
     const swapCmd = parseSwapCommand(inputValue);
     if (swapCmd) {
       setSwapDetails(swapCmd);
@@ -1770,8 +2505,32 @@ export default function MantuaApp() {
             </button>
             {portfolioOpen && (
               <div style={{ paddingLeft: 20, marginTop: 4 }}>
-                <button style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', padding: '8px 12px', background: 'transparent', border: 'none', borderRadius: 6, color: theme.textSecondary, fontSize: 13, cursor: 'pointer', textAlign: 'left' }}>User Portfolio</button>
-                <button style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', padding: '8px 12px', background: 'transparent', border: 'none', borderRadius: 6, color: theme.textSecondary, fontSize: 13, cursor: 'pointer', textAlign: 'left' }}>Agent Portfolio</button>
+                <button 
+                  onClick={() => {
+                    setPortfolioType('User');
+                    setShowPortfolioModal(true);
+                    setHasInteracted(true);
+                    setShowSwap(false);
+                    setShowLiquidity(false);
+                    setShowAgentBuilder(false);
+                  }}
+                  style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', padding: '8px 12px', background: 'transparent', border: 'none', borderRadius: 6, color: theme.textSecondary, fontSize: 13, cursor: 'pointer', textAlign: 'left' }}
+                >
+                  User Portfolio
+                </button>
+                <button 
+                   onClick={() => {
+                    setPortfolioType('Agent');
+                    setShowPortfolioModal(true);
+                    setHasInteracted(true);
+                    setShowSwap(false);
+                    setShowLiquidity(false);
+                    setShowAgentBuilder(false);
+                  }}
+                  style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', padding: '8px 12px', background: 'transparent', border: 'none', borderRadius: 6, color: theme.textSecondary, fontSize: 13, cursor: 'pointer', textAlign: 'left' }}
+                >
+                  Agent Portfolio
+                </button>
               </div>
             )}
           </div>
@@ -1827,6 +2586,31 @@ export default function MantuaApp() {
         {/* Main Content Area */}
         <main style={{ flex: 1, display: 'flex', flexDirection: 'column', background: theme.bgPrimary, overflow: 'hidden', position: 'relative' }}>
           
+          {/* Portfolio Overlay */}
+          {showPortfolioModal && (
+            <div style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              zIndex: 150, // Higher than other modals
+              background: 'rgba(0, 0, 0, 0.4)',
+              backdropFilter: 'blur(4px)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '20px'
+            }}>
+                <PortfolioInterface 
+                  type={portfolioType} 
+                  onClose={() => setShowPortfolioModal(false)}
+                  theme={theme}
+                  isDark={isDark}
+                />
+            </div>
+          )}
+
           {isConnected ? (
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100%', position: 'relative' }}>
               

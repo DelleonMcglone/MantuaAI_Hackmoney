@@ -1,0 +1,184 @@
+Below is a **clean, copy-paste prompt** written in the **same execution-first style** as Swap, Liquidity, and Agent. This is ready for **Replit Design Mode, v0, or direct frontend implementation**.
+
+---
+
+## Portfolio Modal Invocation — Prompt
+
+**Context**
+You are building a **chat-native DeFi application** where core surfaces (Swap, Liquidity, Agents, Portfolio) are rendered as **modals layered above the chatbot**, not as page navigations.
+
+Portfolio is a **read + manage surface**, but it must still behave as a **first-class primitive**, consistent with Swap, Liquidity, and Agent.
+
+---
+
+## 1. Sidebar Interaction (Primary Trigger)
+
+### Portfolio Entry Behavior
+
+* When a user clicks **“Portfolio”** in the sidebar:
+
+  * Do **not** immediately open a portfolio view
+  * Instead, expand a **dropdown selector** directly under “Portfolio” with two options:
+
+    * **User Portfolio**
+    * **Agent Portfolio**
+
+This dropdown is a **choice gate**, not a page.
+
+---
+
+## 2. Portfolio Selection Rules
+
+### User Portfolio
+
+* When the user selects **“User Portfolio”**:
+
+  * Render the **Portfolio modal** above the chatbot
+  * Load the **User Portfolio view**
+  * The portfolio is **not prefilled**
+
+    * No default wallet data
+    * No mocked balances
+    * No placeholder charts
+  * The UI structure is rendered empty until data is available
+
+---
+
+### Agent Portfolio
+
+* When the user selects **“Agent Portfolio”**:
+
+  * Render the **same Portfolio modal** above the chatbot
+  * Load the **Agent Portfolio view**
+  * The portfolio is **not prefilled**
+
+    * No default agent
+    * No pre-selected strategy
+    * No mocked activity
+  * Data is populated only after an agent exists or is selected
+
+---
+
+## 3. UI Parity (Critical)
+
+The **User Portfolio** and **Agent Portfolio** must share:
+
+* The **exact same UI layout**
+* The same components:
+
+  * Portfolio Summary
+  * Assets
+  * Liquidity Positions
+  * Activity Feed
+* The only difference is the **data source**, not the interface
+
+❌ No visual branching
+❌ No separate pages
+❌ No duplicated components
+
+Portfolio is a **single UI with two contexts**.
+
+---
+
+## 4. Chat Intent Trigger (Natural Language)
+
+The following chat inputs must trigger the Portfolio flow (case-insensitive):
+
+* `Portfolio`
+* `Open portfolio`
+* `Show my portfolio`
+* `User portfolio`
+* `Agent portfolio`
+* `Show agent portfolio`
+
+### Behavior
+
+* If intent is **ambiguous** (e.g. “Portfolio”):
+
+  * Open the **Portfolio dropdown selector**
+* If intent is **explicit**:
+
+  * “User portfolio” → open User Portfolio modal
+  * “Agent portfolio” → open Agent Portfolio modal
+
+In all cases:
+
+* Do **not** return a chatbot text response
+* The modal opening is the response
+
+---
+
+## 5. Modal Behavior (Must Match Swap / Liquidity / Agent)
+
+The Portfolio modal must:
+
+* Render **above the chatbot**
+* Use the **same overlay, z-index, animation, and close behavior**
+* Disable chat input while open
+* Close via:
+
+  * × icon
+  * Backdrop click
+
+Portfolio is not a page — it is a **layered execution surface**.
+
+---
+
+## 6. State & Persistence Rules
+
+* Portfolio selection (User vs Agent):
+
+  * Is **session-scoped**
+  * Does not permanently override future selections
+* Closing the modal:
+
+  * Does **not** auto-reopen on refresh
+* Switching between User ↔ Agent:
+
+  * Happens via re-selecting from the Portfolio dropdown
+
+---
+
+## 7. Intent Priority
+
+* Portfolio intent **overrides**:
+
+  * Welcome message
+  * Default chatbot prompts
+* Once Portfolio is opened:
+
+  * The welcome “Hi, wallet address…” must not reappear
+* Portfolio is treated as an **action**, not a conversation
+
+---
+
+## 8. Expected Outcome
+
+From the user’s perspective:
+
+* Portfolio behaves exactly like Swap, Liquidity, and Agents
+* They explicitly choose **what portfolio context** they want
+* The UI never feels preloaded, mocked, or assumed
+* User and Agent portfolios feel equal, parallel, and intentional
+
+---
+
+## Success Criteria
+
+* No automatic portfolio view on click
+* Dropdown selection required (User vs Agent)
+* Same UI for both portfolios
+* No prefilled data
+* Modal-based, not page-based
+* Chat stays silent when Portfolio opens
+
+---
+
+If you want next, I can:
+
+* Define **empty-state designs** for User vs Agent portfolio
+* Write **intent-parser rules** for portfolio selection
+* Map this directly into `mantua-portfolio-interface.jsx`
+* Design **agent-switching inside Agent Portfolio**
+
+Tell me the next step.

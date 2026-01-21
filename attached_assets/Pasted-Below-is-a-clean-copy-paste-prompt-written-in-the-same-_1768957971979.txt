@@ -1,0 +1,128 @@
+Below is a **clean, copy-paste prompt** written in the **same style and precision** as the Swap and Liquidity prompts. This is ready for **Replit Design Mode, v0, or direct engineering implementation**.
+
+---
+
+## Agent Builder Modal Invocation — Prompt
+
+**Context**
+You are building a **chat-native DeFi operating system** where advanced actions (Swap, Liquidity, Agents) are executed through **modals rendered above the chatbot**, not through page navigation.
+
+The **Agent Builder** is a first-class execution surface and must follow the **exact same interaction model** as Swap and Liquidity.
+
+---
+
+### Agent Builder Modal Trigger Rules
+
+#### 1. Sidebar Interaction (Primary Trigger)
+
+* When a user clicks **“Agents”** (or **“Agent Builder”**) in the sidebar:
+
+  * Render the **Agent Builder modal**
+  * The modal appears **above the chatbot**, using the **same overlay, z-index, and animation** as the Swap and Liquidity modals
+  * The chatbot remains visible in the background but is **non-interactive** while the modal is open
+  * Do **not** navigate to a new page or route
+
+---
+
+#### 2. Chat Intent Trigger (Natural Language)
+
+* When a user types any **agent-creation intent** into the chatbot:
+
+  * Immediately open the **Agent Builder modal**
+  * Do **not** return a text response from the chatbot
+  * The modal opening itself is the response
+
+Examples that **must trigger** the Agent Builder modal (case-insensitive):
+
+* `Create an agent`
+* `Build an agent`
+* `Create a swap agent`
+* `Build a liquidity agent`
+* `I want an AI agent`
+* `Set up an agent`
+* `Create a trading bot`
+* `Build a DeFi agent`
+
+---
+
+#### 3. Modal Behavior (Parity Rules)
+
+The Agent Builder modal must behave **identically** to Swap and Liquidity:
+
+* Same:
+
+  * Overlay opacity
+  * Entrance animation
+  * Exit animation
+  * Close behavior (× icon or backdrop click)
+* Same blocking behavior:
+
+  * Chat input disabled while modal is open
+* Same stacking order:
+
+  * Agent Builder always renders **above chat messages**
+
+Agents are treated as **execution flows**, not informational pages.
+
+---
+
+#### 4. Intent Priority (Non-Negotiable)
+
+* Agent-related intents **override** normal chatbot responses
+* If intent = agent creation:
+
+  * Open Agent Builder modal
+  * Skip LLM response
+  * No confirmations
+  * No fallback text
+  * No “Sure, let’s do that…”
+
+The system responds by **acting**, not talking.
+
+---
+
+#### 5. Internal Flow (Post-Modal)
+
+* Once the Agent Builder modal is open:
+
+  * Users can select:
+
+    * A predefined agent template
+    * Or a custom build path
+* The chat remains dormant until:
+
+  * The modal is closed
+  * Or an agent creation step explicitly hands control back to chat
+
+---
+
+### Design Outcome
+
+The user should feel that:
+
+* Agents are **native capabilities**, not add-ons
+* Natural language is a **shortcut to execution**
+* Swap, Liquidity, and Agents all behave as **equal-level primitives**
+* The interface is **command-driven**, not conversational
+
+If the user knows how to open Swap, they already know how to open the Agent Builder.
+
+---
+
+### Success Criteria
+
+* No page navigation
+* No duplicate chat messages
+* One intent → one modal
+* Zero ambiguity in execution
+
+---
+
+If you want next, I can:
+
+* Define **agent-type routing** (swap vs LP vs monitoring)
+* Write **intent-parser rules** for agents
+* Map agent prompts directly to your `mantua-agent-builder.jsx`
+* Or design the **Agent Creation Step 1 → Step N modal flow**
+
+Tell me the next step.

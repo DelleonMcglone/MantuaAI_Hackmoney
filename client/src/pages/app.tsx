@@ -1419,6 +1419,183 @@ const LiquidityInterface = ({ onClose, theme, isDark }) => {
   );
 };
 
+
+// ============ AGENT BUILDER INTERFACE ============
+const AgentBuilderInterface = ({ onClose, theme, isDark }) => {
+  const promptOptions = [
+    {
+      title: 'Create a swap agent',
+      subtitle: 'that executes trades based on price targets',
+    },
+    {
+      title: 'Build an MEV protection agent',
+      subtitle: 'to monitor and protect my transactions',
+    },
+    {
+      title: 'Create a liquidity manager',
+      subtitle: 'that rebalances my LP positions automatically',
+    },
+    {
+      title: 'Build a price alert agent',
+      subtitle: 'for ETH, BTC, and USDC price movements',
+    },
+    {
+      title: 'Create a DCA agent',
+      subtitle: 'to dollar-cost average into ETH weekly',
+    },
+    {
+      title: 'Build a portfolio rebalancer',
+      subtitle: 'that maintains 60/40 ETH/USDC allocation',
+    },
+  ];
+
+  const handlePromptClick = (prompt) => {
+    console.log('Selected:', prompt.title, prompt.subtitle);
+    // Handle prompt selection - for now just log
+  };
+
+  const PromptCard = ({ title, subtitle, onClick }) => (
+    <button
+      onClick={onClick}
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'flex-start',
+        padding: '20px',
+        background: theme.bgCard,
+        border: `1px solid ${theme.border}`,
+        borderRadius: '12px',
+        cursor: 'pointer',
+        textAlign: 'left',
+        transition: 'all 0.2s',
+        minHeight: '90px',
+        width: '100%',
+        boxSizing: 'border-box'
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.borderColor = `${theme.accent}66`;
+        e.currentTarget.style.boxShadow = `0 4px 12px ${theme.accent}1A`;
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.borderColor = theme.border;
+        e.currentTarget.style.boxShadow = 'none';
+      }}
+    >
+      <div style={{ 
+        color: theme.textPrimary, 
+        fontWeight: '600', 
+        fontSize: '15px',
+        marginBottom: '6px',
+        lineHeight: '1.4',
+      }}>
+        {title}
+      </div>
+      <div style={{ 
+        color: theme.textSecondary, 
+        fontSize: '14px',
+        lineHeight: '1.4',
+      }}>
+        {subtitle}
+      </div>
+    </button>
+  );
+
+  return (
+    <div style={{ width: '100%', fontFamily: '"DM Sans", sans-serif' }}>
+      {/* Welcome Card */}
+      <div style={{
+        background: theme.bgCard,
+        borderRadius: '16px',
+        border: `1px solid ${theme.border}`,
+        padding: '32px',
+        marginBottom: '32px',
+        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.04)',
+        position: 'relative'
+      }}>
+        <button onClick={onClose} style={{ position: 'absolute', top: '24px', right: '24px', background: 'transparent', border: 'none', color: theme.textMuted, cursor: 'pointer', padding: '8px', borderRadius: '50%' }}>
+            <CloseIcon />
+        </button>
+
+        <div style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          gap: '16px',
+          marginBottom: '16px',
+        }}>
+          <div style={{
+            width: '48px',
+            height: '48px',
+            borderRadius: '12px',
+            background: 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: 'white',
+          }}>
+            <BotIcon />
+          </div>
+          <div>
+            <h1 style={{ 
+              color: theme.textPrimary, 
+              fontSize: '24px', 
+              fontWeight: '700', 
+              margin: '0 0 4px 0',
+            }}>
+              Welcome to Agent Builder
+            </h1>
+            <div style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '6px 12px',
+                borderRadius: '20px',
+                background: 'rgba(59, 130, 246, 0.1)',
+                color: '#3b82f6',
+                fontSize: '12px',
+                fontWeight: '600',
+            }}>
+                <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#3b82f6' }} />
+                Base Sepolia
+            </div>
+          </div>
+        </div>
+        
+        <p style={{ 
+          color: theme.textSecondary, 
+          fontSize: '15px', 
+          lineHeight: '1.6',
+          margin: 0,
+          maxWidth: '600px'
+        }}>
+          Create AI-powered agents that automate your DeFi strategies on Uniswap v4. 
+          Agents can execute swaps, manage liquidity, monitor prices, and leverage hooks 
+          like{' '}
+          <span style={{ color: theme.accent, fontWeight: '500' }}>MEV Protection</span>,{' '}
+          <span style={{ color: theme.accent, fontWeight: '500' }}>Directional Fee</span>, and{' '}
+          <span style={{ color: theme.accent, fontWeight: '500' }}>JiT Rebalancing</span>.
+        </p>
+      </div>
+
+      {/* Prompt Grid */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(2, 1fr)',
+        gap: '16px',
+        marginBottom: '32px',
+      }}>
+        {promptOptions.map((prompt, index) => (
+          <PromptCard
+            key={index}
+            title={prompt.title}
+            subtitle={prompt.subtitle}
+            onClick={() => handlePromptClick(prompt)}
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
+
 // ============ MAIN APP ============
 export default function MantuaApp() {
   const [location, setLocation] = useLocation();
@@ -1441,6 +1618,7 @@ export default function MantuaApp() {
   const [inputValue, setInputValue] = useState('');
   const [showSwap, setShowSwap] = useState(false);
   const [showLiquidity, setShowLiquidity] = useState(false);
+  const [showAgentBuilder, setShowAgentBuilder] = useState(false);
   const [swapDetails, setSwapDetails] = useState(null);
   const [messages, setMessages] = useState([]);
   
@@ -1474,9 +1652,21 @@ export default function MantuaApp() {
     if (inputValue.toLowerCase().includes('add liquidity') || inputValue.toLowerCase().includes('liquidity')) {
        setShowLiquidity(true);
        setShowSwap(false);
+       setShowAgentBuilder(false);
        setMessages([...messages, { role: 'user', content: inputValue }]);
        setInputValue('');
        return;
+    }
+
+    // Check for Agent Builder Intent
+    const agentKeywords = ['create an agent', 'build an agent', 'create a swap agent', 'build a liquidity agent', 'i want an ai agent', 'set up an agent', 'create a trading bot', 'build a defi agent'];
+    if (agentKeywords.some(keyword => inputValue.toLowerCase().includes(keyword))) {
+        setShowAgentBuilder(true);
+        setShowSwap(false);
+        setShowLiquidity(false);
+        setMessages([...messages, { role: 'user', content: inputValue }]);
+        setInputValue('');
+        return;
     }
 
     const swapCmd = parseSwapCommand(inputValue);
@@ -1484,6 +1674,7 @@ export default function MantuaApp() {
       setSwapDetails(swapCmd);
       setShowSwap(true);
       setShowLiquidity(false);
+      setShowAgentBuilder(false);
       setMessages([...messages, { role: 'user', content: inputValue }]);
     } else {
       // Regular message
@@ -1508,7 +1699,7 @@ export default function MantuaApp() {
       <aside style={{ width: sidebarOpen ? 260 : 0, minHeight: '100vh', background: theme.bgSidebar, borderRight: `1px solid ${theme.border}`, display: 'flex', flexDirection: 'column', overflow: 'hidden', transition: 'width 0.3s ease' }}>
         <div style={{ padding: '16px', flex: 1, overflowY: 'auto' }}>
           {/* New Chat */}
-          <button onClick={() => { setShowSwap(false); setShowLiquidity(false); setMessages([]); }} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 12px', background: 'transparent', border: 'none', borderRadius: 8, color: theme.accent, fontSize: 14, fontWeight: 500, cursor: 'pointer', marginBottom: 8 }}>
+          <button onClick={() => { setShowSwap(false); setShowLiquidity(false); setShowAgentBuilder(false); setMessages([]); }} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 12px', background: 'transparent', border: 'none', borderRadius: 8, color: theme.accent, fontSize: 14, fontWeight: 500, cursor: 'pointer', marginBottom: 8 }}>
             <MessageSquarePlusIcon /> New Chat
           </button>
 
@@ -1537,17 +1728,17 @@ export default function MantuaApp() {
           </div>
 
           {/* Swap */}
-          <button onClick={() => { setShowSwap(true); setShowLiquidity(false); setSwapDetails(null); }} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 12px', background: 'transparent', border: 'none', borderRadius: 8, color: theme.textPrimary, fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
+          <button onClick={() => { setShowSwap(true); setShowLiquidity(false); setShowAgentBuilder(false); setSwapDetails(null); }} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 12px', background: 'transparent', border: 'none', borderRadius: 8, color: theme.textPrimary, fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
             <ArrowLeftRightIcon /> Swap
           </button>
 
           {/* Liquidity */}
-          <button onClick={() => { setShowLiquidity(true); setShowSwap(false); }} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 12px', background: 'transparent', border: 'none', borderRadius: 8, color: theme.textPrimary, fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
+          <button onClick={() => { setShowLiquidity(true); setShowSwap(false); setShowAgentBuilder(false); }} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 12px', background: 'transparent', border: 'none', borderRadius: 8, color: theme.textPrimary, fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
             <DropletsIcon /> Liquidity
           </button>
 
           {/* Agent */}
-          <button style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 12px', background: 'transparent', border: 'none', borderRadius: 8, color: theme.textPrimary, fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
+          <button onClick={() => { setShowAgentBuilder(true); setShowSwap(false); setShowLiquidity(false); }} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 12px', background: 'transparent', border: 'none', borderRadius: 8, color: theme.textPrimary, fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
             <BotIcon /> Agent
           </button>
 
@@ -1649,7 +1840,7 @@ export default function MantuaApp() {
                   ))}
 
                   {/* Swap Overlay - Stacked within scrolling container but sticky if needed, or just inline */}
-                  {showSwap && !showLiquidity && (
+                  {showSwap && !showLiquidity && !showAgentBuilder && (
                     <div style={{ width: '100%', marginTop: 20, marginBottom: 20 }}>
                       <SwapInterface 
                         onClose={() => setShowSwap(false)} 
@@ -1661,10 +1852,21 @@ export default function MantuaApp() {
                   )}
 
                   {/* Liquidity Overlay */}
-                  {showLiquidity && !showSwap && (
+                  {showLiquidity && !showSwap && !showAgentBuilder && (
                     <div style={{ width: '100%', marginTop: 20, marginBottom: 20 }}>
                       <LiquidityInterface 
                         onClose={() => setShowLiquidity(false)} 
+                        theme={theme} 
+                        isDark={isDark} 
+                      />
+                    </div>
+                  )}
+
+                  {/* Agent Builder Overlay */}
+                  {showAgentBuilder && !showSwap && !showLiquidity && (
+                    <div style={{ width: '100%', marginTop: 20, marginBottom: 20 }}>
+                      <AgentBuilderInterface 
+                        onClose={() => setShowAgentBuilder(false)} 
                         theme={theme} 
                         isDark={isDark} 
                       />

@@ -192,7 +192,114 @@ const PriceChart = ({ pair, theme }) => {
   );
 };
 
-const TokenSelect = ({ token, balance, usdValue, side, amount, theme }) => (
+// Token Select Modal
+const TokenSelectModal = ({ isOpen, onClose, onSelect, theme, isDark }) => {
+  if (!isOpen) return null;
+
+  const tokens = [
+    { symbol: 'mUSDC', icon: '$' },
+    { symbol: 'mETH', icon: 'Ξ' },
+    { symbol: 'ETH', icon: 'Ξ' },
+    { symbol: 'mDAI', icon: '◈' },
+    { symbol: 'mBTC', icon: '₿' },
+    { symbol: 'mLINK', icon: '⬡' },
+  ];
+
+  const getTokenIcon = (token) => {
+    // Reuse base asset icons logic
+    const baseSymbol = token.symbol.replace('m', '');
+    
+    let background = 'linear-gradient(135deg, #627EEA 0%, #8B9FFF 100%)'; // Default ETH
+    if (baseSymbol === 'USDC') background = 'linear-gradient(135deg, #2775CA 0%, #4A9FE8 100%)';
+    if (baseSymbol === 'DAI') background = 'linear-gradient(135deg, #F5AC37 0%, #FFD166 100%)';
+    if (baseSymbol === 'BTC') background = 'linear-gradient(135deg, #F7931A 0%, #FFAB4A 100%)';
+    if (baseSymbol === 'LINK') background = 'linear-gradient(135deg, #2A5ADA 0%, #5480F0 100%)';
+
+    return (
+      <div style={{
+        width: '32px',
+        height: '32px',
+        borderRadius: '50%',
+        background: background,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontSize: '16px',
+        fontWeight: '700',
+        color: 'white',
+        flexShrink: 0
+      }}>
+        {token.icon}
+      </div>
+    );
+  };
+
+  return (
+    <div style={{
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      background: isDark ? 'rgba(0,0,0,0.8)' : 'rgba(255,255,255,0.8)',
+      backdropFilter: 'blur(4px)',
+      zIndex: 100,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      borderRadius: '20px',
+    }}>
+      <div style={{
+        width: '360px',
+        maxHeight: '80%',
+        background: theme.bgCard,
+        borderRadius: '20px',
+        border: `1px solid ${theme.border}`,
+        boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden'
+      }}>
+        <div style={{ padding: '16px 20px', borderBottom: `1px solid ${theme.border}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '700' }}>Select a token</h3>
+          <button onClick={onClose} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: theme.textSecondary }}>
+            <CloseIcon />
+          </button>
+        </div>
+        
+        <div style={{ padding: '8px 0', overflowY: 'auto', flex: 1 }}>
+          {tokens.map(token => (
+            <button
+              key={token.symbol}
+              onClick={() => { onSelect(token.symbol); onClose(); }}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                width: '100%',
+                padding: '12px 20px',
+                background: 'transparent',
+                border: 'none',
+                cursor: 'pointer',
+                textAlign: 'left',
+                transition: 'background 0.2s',
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.background = theme.bgSecondary}
+              onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+            >
+              {getTokenIcon(token)}
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <span style={{ color: theme.textPrimary, fontWeight: '600', fontSize: '16px' }}>{token.symbol}</span>
+              </div>
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const TokenSelect = ({ token, balance, usdValue, side, amount, theme, onTokenClick, onAmountChange }) => (
   <div style={{
     background: theme ? theme.bgSecondary : 'rgba(249, 250, 251, 0.8)',
     borderRadius: '16px',
@@ -202,12 +309,13 @@ const TokenSelect = ({ token, balance, usdValue, side, amount, theme }) => (
   }}>
     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
       <span style={{ color: theme ? theme.textSecondary : '#6b7280', fontSize: '14px', fontWeight: '500' }}>{side}</span>
-      <span style={{ color: theme ? theme.textMuted : '#9ca3af', fontSize: '13px' }}>Balance: {balance}</span>
+      {balance && <span style={{ color: theme ? theme.textMuted : '#9ca3af', fontSize: '13px' }}>Balance: {balance}</span>}
     </div>
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
       <input
         type="text"
-        defaultValue={amount}
+        value={amount}
+        onChange={(e) => onAmountChange && onAmountChange(e.target.value)}
         placeholder="0.00"
         style={{
           background: 'transparent',
@@ -220,7 +328,9 @@ const TokenSelect = ({ token, balance, usdValue, side, amount, theme }) => (
           fontFamily: 'SF Mono, Monaco, monospace',
         }}
       />
-      <button style={{
+      <button 
+        onClick={onTokenClick}
+        style={{
         display: 'flex',
         alignItems: 'center',
         gap: '8px',
@@ -238,23 +348,35 @@ const TokenSelect = ({ token, balance, usdValue, side, amount, theme }) => (
           width: '28px',
           height: '28px',
           borderRadius: '50%',
-          background: token === 'ETH' 
+          background: token.includes('ETH') 
             ? 'linear-gradient(135deg, #627EEA 0%, #8B9FFF 100%)'
-            : 'linear-gradient(135deg, #2775CA 0%, #4A9FE8 100%)',
+            : token.includes('USDC')
+              ? 'linear-gradient(135deg, #2775CA 0%, #4A9FE8 100%)'
+              : token.includes('DAI')
+                ? 'linear-gradient(135deg, #F5AC37 0%, #FFD166 100%)'
+                : token.includes('BTC')
+                  ? 'linear-gradient(135deg, #F7931A 0%, #FFAB4A 100%)'
+                  : token.includes('LINK')
+                    ? 'linear-gradient(135deg, #2A5ADA 0%, #5480F0 100%)'
+                    : 'linear-gradient(135deg, #9ca3af 0%, #d1d5db 100%)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          fontSize: token === 'ETH' ? '16px' : '12px',
+          fontSize: token.includes('ETH') ? '16px' : '12px',
           fontWeight: '700',
           color: 'white',
         }}>
-          {token === 'ETH' ? 'Ξ' : '$'}
+          {token.includes('ETH') ? 'Ξ' : 
+           token.includes('USDC') ? '$' :
+           token.includes('DAI') ? '◈' :
+           token.includes('BTC') ? '₿' :
+           token.includes('LINK') ? '⬡' : '?'}
         </div>
         {token || 'Select'}
         <ChevronDownIcon />
       </button>
     </div>
-    <div style={{ color: theme ? theme.textMuted : '#9ca3af', fontSize: '13px', marginTop: '4px' }}>≈ ${usdValue}</div>
+    {usdValue && <div style={{ color: theme ? theme.textMuted : '#9ca3af', fontSize: '13px', marginTop: '4px' }}>≈ ${usdValue}</div>}
   </div>
 );
 
@@ -559,12 +681,48 @@ const SwapInterface = ({ onClose, swapDetails, theme, isDark }) => {
   const [selectedHook, setSelectedHook] = useState(swapDetails?.hook || 'mev');
   const [isHookModalOpen, setIsHookModalOpen] = useState(false);
   
-  // Initialize amounts only if swapDetails is provided
-  const initialFromAmount = swapDetails?.fromAmount || '';
-  const initialToAmount = swapDetails?.toAmount || '';
+  // State for token selector
+  const [isTokenSelectorOpen, setIsTokenSelectorOpen] = useState(false);
+  const [selectingSide, setSelectingSide] = useState(null); // 'from' or 'to'
+  
+  // Swap state
+  const [fromToken, setFromToken] = useState(swapDetails?.fromToken || "ETH");
+  const [toToken, setToToken] = useState(swapDetails?.toToken || "USDC");
+  const [fromAmount, setFromAmount] = useState(swapDetails?.fromAmount || "");
+  // To amount is just a placeholder for now as we don't have real pricing logic in this mock
+  const [toAmount, setToAmount] = useState(swapDetails?.toAmount || ""); 
+  
+  // Update local state when props change
+  useEffect(() => {
+     if (swapDetails) {
+        setFromToken(swapDetails.fromToken || "ETH");
+        setToToken(swapDetails.toToken || "USDC");
+        setFromAmount(swapDetails.fromAmount || "");
+        setToAmount(swapDetails.toAmount || "");
+     }
+  }, [swapDetails]);
+
+  const handleTokenSelect = (tokenSymbol) => {
+    if (selectingSide === 'from') {
+        setFromToken(tokenSymbol);
+        // Clear inputs on selection as per requirements
+        setFromAmount('');
+        setToAmount('');
+    } else {
+        setToToken(tokenSymbol);
+        // Clear inputs on selection as per requirements
+        setFromAmount('');
+        setToAmount('');
+    }
+    setIsTokenSelectorOpen(false);
+  };
+
+  const openTokenSelector = (side) => {
+    setSelectingSide(side);
+    setIsTokenSelectorOpen(true);
+  };
 
   const hooks = [
-    { id: 'auto', name: 'Auto (Smart Routing)', description: 'Mantua selects the optimal hook based on trade parameters', icon: <BoltIcon />, benefit: 'Best execution guaranteed' },
     { id: 'mev', name: 'MEV Protection', description: 'Randomized execution timing protects against sandwich attacks', icon: <ShieldIcon />, benefit: 'Save ~0.3% on trades >$1k', recommended: true },
     { id: 'directional', name: 'Directional Fee', description: 'Dynamic fees based on trade direction (Nezlobin algorithm)', icon: <TrendIcon />, benefit: 'Lower fees in stable markets' },
     { id: 'jit', name: 'JIT Rebalancing', description: 'Concentrates liquidity around your trade for better execution', icon: <BoltIcon />, benefit: 'Better rates on large trades' },
@@ -613,6 +771,15 @@ const SwapInterface = ({ onClose, swapDetails, theme, isDark }) => {
         hooks={hooks} 
         selectedHook={selectedHook} 
         onSelect={setSelectedHook} 
+        theme={theme}
+        isDark={isDark}
+      />
+
+      {/* Token Selector Modal */}
+      <TokenSelectModal 
+        isOpen={isTokenSelectorOpen}
+        onClose={() => setIsTokenSelectorOpen(false)}
+        onSelect={handleTokenSelect}
         theme={theme}
         isDark={isDark}
       />
@@ -677,12 +844,14 @@ const SwapInterface = ({ onClose, swapDetails, theme, isDark }) => {
 
           <div style={{ position: 'relative' }}>
             <TokenSelect 
-              token={swapDetails?.fromToken || "ETH"} 
+              token={fromToken} 
               balance="3.245" 
-              usdValue={swapDetails?.fromAmount ? "4,868.25" : "0.00"} 
+              usdValue={fromAmount ? "4,868.25" : "0.00"} 
               side="Sell" 
-              amount={swapDetails?.fromAmount || ""} 
+              amount={fromAmount} 
               theme={theme}
+              onTokenClick={() => openTokenSelector('from')}
+              onAmountChange={(val) => setFromAmount(val)}
             />
             
             <div style={{ 
@@ -710,12 +879,13 @@ const SwapInterface = ({ onClose, swapDetails, theme, isDark }) => {
             </div>
 
             <TokenSelect 
-              token={swapDetails?.toToken || "USDC"} 
+              token={toToken} 
               balance="12,450.00" 
-              usdValue={swapDetails?.fromAmount ? "4,868.25" : "0.00"} 
+              usdValue={fromAmount ? "4,868.25" : "0.00"} 
               side="Buy" 
-              amount={swapDetails?.fromAmount ? "4,868.25" : ""} 
+              amount={toAmount} 
               theme={theme}
+              onTokenClick={() => openTokenSelector('to')}
             />
           </div>
 

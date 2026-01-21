@@ -1,0 +1,139 @@
+Below is a **clean, copy-paste prompt** you can use directly in **Replit Design Mode**, **v0**, or any UI-generation flow to implement this behavior exactly.
+
+---
+
+## Swap Modal Token Selector — Design & Behavior Prompt
+
+**Context**
+You are implementing the **Swap modal token selector** for a DeFi application (Mantua.AI-style UX). The selector must be deterministic, minimal, and consistent with Uniswap-style patterns.
+
+---
+
+### Token Selector Requirements
+
+When a user clicks the **token selector dropdown** (for either Sell or Buy):
+
+#### 1. Available Tokens (Fixed List Only)
+
+Display **only** the following tokens, in this exact order, with their corresponding icons:
+
+1. **mUSDC**
+
+   * Label: `mUSDC`
+   * Icon: **USDC icon**
+
+2. **mETH**
+
+   * Label: `mETH`
+   * Icon: **ETH icon**
+
+3. **ETH**
+
+   * Label: `ETH`
+   * Icon: **ETH icon**
+
+4. **mDAI**
+
+   * Label: `mDAI`
+   * Icon: **DAI icon**
+
+5. **mBTC**
+
+   * Label: `mBTC`
+   * Icon: **BTC icon**
+
+6. **mLINK**
+
+   * Label: `mLINK`
+   * Icon: **Chainlink (LINK) icon**
+
+❌ No search bar
+❌ No “popular tokens”
+❌ No wallet-derived token list
+❌ No additional tokens
+
+This is a **hard-coded dropdown**, not a dynamic registry.
+
+---
+
+### 2. Icon Rules
+
+* Use **standard token icons** (ETH, USDC, DAI, BTC, LINK)
+* `m`-prefixed tokens reuse the **base asset icon**
+* Icons appear:
+
+  * Left-aligned
+  * Circular container
+  * Same size as current ETH / USDC selector icons
+
+---
+
+### 3. Selection Behavior (Critical)
+
+When a user selects **any token** from the dropdown:
+
+1. **Clear the input amount**
+
+   * Set amount to empty or `0`
+   * Do NOT retain previous numeric value
+
+2. **Clear the USD estimate**
+
+   * Remove `≈ $X.XX` until a new amount is entered
+
+3. **Clear displayed balance**
+
+   * Hide or reset the `Balance:` value
+   * Do not show wallet balances for selected tokens in this modal
+
+4. **Do NOT auto-populate**
+
+   * No default amounts
+   * No auto-quoting
+   * No inferred swaps
+
+The user must **manually re-enter** the amount after token selection.
+
+---
+
+### 4. UX Consistency Rules
+
+* Dropdown styling matches existing Swap modal
+* Selection closes dropdown immediately
+* Selected token replaces previous token pill
+* No animations beyond standard dropdown open/close
+* Behavior is identical for **Sell** and **Buy** selectors
+
+---
+
+### 5. Intentional Constraints
+
+This selector is designed for:
+
+* Predictability
+* Demo / MVP clarity
+* No wallet coupling
+* No balance-driven logic
+
+Treat it as a **controlled UI component**, not a smart selector.
+
+---
+
+### Outcome
+
+The final behavior should feel:
+
+* Deterministic
+* Clean
+* Uniswap-adjacent
+* Impossible to misinterpret
+
+If a user switches tokens, **everything resets except the selected token**.
+
+---
+
+If you want, next we can:
+
+* Add a **token metadata map** (symbol → decimals → icon)
+* Define **mToken semantics** (wrapped, synthetic, margin asset, etc.)
+* Wire this cleanly into the swap execution layer without leaks

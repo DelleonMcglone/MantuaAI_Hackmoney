@@ -194,16 +194,24 @@ const PriceChart = ({ pair, theme }) => {
 
 // Token Select Modal
 const TokenSelectModal = ({ isOpen, onClose, onSelect, theme, isDark }) => {
+  const [searchQuery, setSearchQuery] = useState('');
+
   if (!isOpen) return null;
 
   const tokens = [
-    { symbol: 'mUSDC', icon: '$' },
-    { symbol: 'mETH', icon: 'Ξ' },
-    { symbol: 'ETH', icon: 'Ξ' },
-    { symbol: 'mDAI', icon: '◈' },
-    { symbol: 'mBTC', icon: '₿' },
-    { symbol: 'mLINK', icon: '⬡' },
+    { symbol: 'mUSDC', name: 'Mock USDC', address: '0x9F78...9b4d', balance: '1,250.00', usdValue: '$1,250.00', icon: '$' },
+    { symbol: 'mETH', name: 'Mock ETH', address: '0x3a2c...1e4f', balance: '4.52', usdValue: '$14,667.90', icon: 'Ξ' },
+    { symbol: 'ETH', name: 'Ethereum', address: '0x0000...0000', balance: '0.85', usdValue: '$2,758.25', icon: 'Ξ' },
+    { symbol: 'mDAI', name: 'Mock DAI', address: '0x5d3a...8c2b', balance: '400.00', usdValue: '$400.00', icon: '◈' },
+    { symbol: 'mBTC', name: 'Mock BTC', address: '0x2b1a...7d9e', balance: '0.15', usdValue: '$14,250.00', icon: '₿' },
+    { symbol: 'mLINK', name: 'Mock LINK', address: '0x8f4e...2a1c', balance: '150.00', usdValue: '$2,850.00', icon: '⬡' },
   ];
+
+  const filteredTokens = tokens.filter(token => 
+    token.symbol.toLowerCase().includes(searchQuery.toLowerCase()) || 
+    token.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    token.address.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const getTokenIcon = (token) => {
     // Reuse base asset icons logic
@@ -217,17 +225,18 @@ const TokenSelectModal = ({ isOpen, onClose, onSelect, theme, isDark }) => {
 
     return (
       <div style={{
-        width: '32px',
-        height: '32px',
+        width: '40px',
+        height: '40px',
         borderRadius: '50%',
         background: background,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        fontSize: '16px',
+        fontSize: '20px',
         fontWeight: '700',
         color: 'white',
-        flexShrink: 0
+        flexShrink: 0,
+        boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
       }}>
         {token.icon}
       </div>
@@ -241,58 +250,113 @@ const TokenSelectModal = ({ isOpen, onClose, onSelect, theme, isDark }) => {
       left: 0,
       right: 0,
       bottom: 0,
-      background: isDark ? 'rgba(0,0,0,0.8)' : 'rgba(255,255,255,0.8)',
-      backdropFilter: 'blur(4px)',
+      background: 'rgba(0,0,0,0.6)',
+      backdropFilter: 'blur(8px)',
       zIndex: 100,
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      borderRadius: '20px',
+      padding: '20px'
     }}>
       <div style={{
-        width: '360px',
-        maxHeight: '80%',
-        background: theme.bgCard,
+        width: '100%',
+        maxWidth: '480px',
+        maxHeight: '90vh',
+        background: isDark ? '#13131a' : '#ffffff',
         borderRadius: '20px',
         border: `1px solid ${theme.border}`,
-        boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
+        boxShadow: '0 24px 48px -12px rgba(0,0,0,0.5)',
         display: 'flex',
         flexDirection: 'column',
         overflow: 'hidden'
       }}>
-        <div style={{ padding: '16px 20px', borderBottom: `1px solid ${theme.border}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '700' }}>Select a token</h3>
-          <button onClick={onClose} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: theme.textSecondary }}>
+        {/* Header */}
+        <div style={{ padding: '20px 24px 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+          <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '600', color: theme.textPrimary }}>Swap From Token</h3>
+          <button onClick={onClose} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: theme.textSecondary, padding: '4px' }}>
             <CloseIcon />
           </button>
         </div>
+
+        {/* Search */}
+        <div style={{ padding: '0 24px 16px' }}>
+          <div style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            background: isDark ? 'rgba(255,255,255,0.05)' : '#f3f4f6', 
+            borderRadius: '12px', 
+            padding: '12px 16px',
+            border: `1px solid ${isDark ? 'rgba(255,255,255,0.05)' : 'transparent'}`
+          }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={theme.textMuted} strokeWidth="2" style={{ marginRight: '10px' }}>
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input 
+              type="text" 
+              placeholder="Search token" 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              autoFocus
+              style={{ 
+                background: 'transparent', 
+                border: 'none', 
+                outline: 'none', 
+                color: theme.textPrimary, 
+                fontSize: '16px', 
+                width: '100%' 
+              }} 
+            />
+          </div>
+        </div>
+
+        <div style={{ height: '1px', background: theme.border, opacity: 0.5, marginBottom: '8px' }}></div>
         
-        <div style={{ padding: '8px 0', overflowY: 'auto', flex: 1 }}>
-          {tokens.map(token => (
-            <button
-              key={token.symbol}
-              onClick={() => { onSelect(token.symbol); onClose(); }}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '12px',
-                width: '100%',
-                padding: '12px 20px',
-                background: 'transparent',
-                border: 'none',
-                cursor: 'pointer',
-                textAlign: 'left',
-                transition: 'background 0.2s',
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.background = theme.bgSecondary}
-              onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
-            >
-              {getTokenIcon(token)}
-              <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <span style={{ color: theme.textPrimary, fontWeight: '600', fontSize: '16px' }}>{token.symbol}</span>
-              </div>
-            </button>
-          ))}
+        {/* Token List */}
+        <div style={{ padding: '0 8px 16px', overflowY: 'auto', flex: 1 }}>
+          {filteredTokens.length > 0 ? (
+            filteredTokens.map(token => (
+              <button
+                key={token.symbol}
+                onClick={() => { onSelect(token.symbol); onClose(); }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  width: '100%',
+                  padding: '12px 16px',
+                  background: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                  borderRadius: '12px',
+                  transition: 'background 0.2s',
+                  marginBottom: '2px'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.background = isDark ? 'rgba(255,255,255,0.05)' : '#f3f4f6'}
+                onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                  {getTokenIcon(token)}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                    <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
+                      <span style={{ color: theme.textPrimary, fontWeight: '600', fontSize: '16px' }}>{token.symbol}</span>
+                      <span style={{ color: theme.textMuted, fontSize: '12px' }}>{token.name}</span>
+                    </div>
+                    <span style={{ color: theme.textSecondary, fontSize: '12px', fontFamily: 'SF Mono, Monaco, monospace' }}>{token.address}</span>
+                  </div>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '2px' }}>
+                  <span style={{ color: theme.textPrimary, fontWeight: '600', fontSize: '16px' }}>{token.balance}</span>
+                  <span style={{ color: theme.textSecondary, fontSize: '13px' }}>{token.usdValue}</span>
+                </div>
+              </button>
+            ))
+          ) : (
+            <div style={{ padding: '32px', textAlign: 'center', color: theme.textSecondary }}>
+              No tokens found
+            </div>
+          )}
         </div>
       </div>
     </div>

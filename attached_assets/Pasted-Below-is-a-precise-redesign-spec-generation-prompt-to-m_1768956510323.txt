@@ -1,0 +1,195 @@
+Below is a **precise redesign spec + generation prompt** to make the **right token selector** visually and behaviorally match the **left (Uniswap-style) selector**. This is written so a designer, Replit Design Mode, v0, or frontend engineer can implement it **without interpretation gaps**.
+
+---
+
+## Visual Reference (Target Style)
+
+![Image](https://support.uniswap.org/hc/article_attachments/21267132444429)
+
+![Image](https://support.uniswap.org/hc/article_attachments/24477439392909)
+
+The **left screenshot** is the target. The **right screenshot** is the starting point.
+
+---
+
+# Token Selector Modal — Redesign Specification
+
+**Goal:** Make the selector feel **wallet-native, balance-aware, and execution-focused**, not a generic list.
+
+---
+
+## 1. Modal Container
+
+**Background**
+
+* Dark gradient surface (near-black)
+* Subtle vertical depth (top slightly lighter than bottom)
+* No flat navy / purple panel
+
+**Shape**
+
+* Rounded corners: `16–20px`
+* Full-height modal on mobile
+* Centered floating modal on desktop
+
+**Header**
+
+* Left-aligned title:
+  **“Swap From Token”**
+* Right-aligned close icon (×)
+* Divider line under header (very subtle, 1px, low opacity)
+
+---
+
+## 2. Search Bar (Critical Addition)
+
+Add a **full-width search input** at the top.
+
+**Design**
+
+* Rounded pill container
+* Darker than modal background
+* Left-aligned search icon
+* Placeholder:
+  `Search token`
+
+**Behavior**
+
+* Filters token list by:
+
+  * Symbol
+  * Contract address (optional, truncated display)
+* No results state: muted text, no empty boxes
+
+---
+
+## 3. Token Row Layout (Primary Change)
+
+Each token row must follow this exact structure:
+
+### Left Section
+
+* **Token icon** (circular, 36–40px)
+* **Token symbol** (bold)
+* **Contract address** (secondary, muted, truncated)
+
+Example:
+
+```
+aUSDT
+0x9F78...9b4dC
+```
+
+### Right Section
+
+* **Balance (large, bold)**
+* **USD value (small, muted)**
+
+Example:
+
+```
+400.0000
+$400.00
+```
+
+---
+
+## 4. Token Icons (Important)
+
+Replace flat icons with **asset-identifiable icons**:
+
+| Token | Icon Style     |
+| ----- | -------------- |
+| mUSDC | USDC icon      |
+| mETH  | ETH icon       |
+| ETH   | ETH icon       |
+| mDAI  | DAI icon       |
+| mBTC  | BTC icon       |
+| mLINK | Chainlink icon |
+
+Rules:
+
+* `m`-tokens reuse **base asset icon**
+* Icon background matches asset color
+* Subtle inner ring or glow (very light)
+
+---
+
+## 5. Row States & Interactions
+
+**Hover**
+
+* Slight background highlight
+* Cursor: pointer
+* No borders
+
+**Selected Token**
+
+* Checkmark on the right side
+* Row background slightly brighter
+* Checkmark only appears for active selection
+
+**Disabled / Zero Balance**
+
+* Muted balance text
+* Still selectable (do NOT hide)
+
+---
+
+## 6. Remove These Elements (Mandatory)
+
+❌ No simple vertical list
+❌ No centered icons with only labels
+❌ No flat purple panel
+❌ No “minimal” picker look
+❌ No balance-less rows
+
+This must feel like a **wallet-integrated trading surface**, even if balances are mocked.
+
+---
+
+## 7. Behavior Parity (Must Match Left Screenshot)
+
+When a token is selected:
+
+* Modal closes immediately
+* Selected token updates swap input
+* Amount field resets
+* USD estimate clears
+* No animation delay
+
+---
+
+## 8. Typography & Spacing
+
+* Token symbol: `font-semibold`
+* Balance: `font-semibold`, slightly larger
+* Addresses + USD: muted gray
+* Row padding: `16px vertical`
+* Tight vertical rhythm (dense but readable)
+
+---
+
+## 9. Final Outcome
+
+The redesigned selector should feel:
+
+* **Professional**
+* **Execution-first**
+* **Uniswap-adjacent**
+* **Wallet-native**
+* **Not like a demo UI**
+
+If someone saw this in isolation, they should assume:
+
+> “This is a real swap interface.”
+
+---
+
+If you want next:
+
+* I can give you **exact Tailwind / shadcn component markup**
+* Or a **drop-in Replit Design Mode prompt**
+* Or a **before/after diff checklist** for engineers
+
+Tell me which one you want.

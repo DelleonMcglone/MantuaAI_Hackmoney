@@ -1,0 +1,790 @@
+import React, { useState } from 'react';
+
+// Icons
+const ChevronDown = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M6 9l6 6 6-6"/>
+  </svg>
+);
+
+const ChevronUp = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M18 15l-6-6-6 6"/>
+  </svg>
+);
+
+const SearchIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <circle cx="11" cy="11" r="8"/>
+    <path d="M21 21l-4.35-4.35"/>
+  </svg>
+);
+
+const FilterIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+  </svg>
+);
+
+const ShieldIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+  </svg>
+);
+
+const BoltIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+  </svg>
+);
+
+const TrendIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+    <polyline points="17 6 23 6 23 12"/>
+  </svg>
+);
+
+const ClockIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <circle cx="12" cy="12" r="10"/>
+    <polyline points="12 6 12 12 16 14"/>
+  </svg>
+);
+
+const PlusIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <line x1="12" y1="5" x2="12" y2="19"/>
+    <line x1="5" y1="12" x2="19" y2="12"/>
+  </svg>
+);
+
+const ExternalLinkIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+    <polyline points="15 3 21 3 21 9"/>
+    <line x1="10" y1="14" x2="21" y2="3"/>
+  </svg>
+);
+
+const InfoIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <circle cx="12" cy="12" r="10"/>
+    <path d="M12 16v-4"/>
+    <path d="M12 8h.01"/>
+  </svg>
+);
+
+// Token icons component
+const TokenPairIcon = ({ token1, token2 }) => {
+  const getTokenColor = (token) => {
+    const colors = {
+      'ETH': 'linear-gradient(135deg, #627EEA 0%, #8B9FFF 100%)',
+      'mETH': 'linear-gradient(135deg, #627EEA 0%, #8B9FFF 100%)',
+      'USDC': 'linear-gradient(135deg, #2775CA 0%, #4A9FE8 100%)',
+      'mUSDC': 'linear-gradient(135deg, #2775CA 0%, #4A9FE8 100%)',
+      'USDT': 'linear-gradient(135deg, #26A17B 0%, #50D9A3 100%)',
+      'mUSDT': 'linear-gradient(135deg, #26A17B 0%, #50D9A3 100%)',
+      'BTC': 'linear-gradient(135deg, #F7931A 0%, #FFAB4A 100%)',
+      'mBTC': 'linear-gradient(135deg, #F7931A 0%, #FFAB4A 100%)',
+      'DAI': 'linear-gradient(135deg, #F5AC37 0%, #FFD166 100%)',
+      'mDAI': 'linear-gradient(135deg, #F5AC37 0%, #FFD166 100%)',
+      'WETH': 'linear-gradient(135deg, #627EEA 0%, #8B9FFF 100%)',
+    };
+    return colors[token] || 'linear-gradient(135deg, #6b7280 0%, #9ca3af 100%)';
+  };
+
+  const getTokenSymbol = (token) => {
+    if (token.includes('ETH') || token.includes('WETH')) return 'Ξ';
+    if (token.includes('BTC')) return '₿';
+    if (token.includes('USDC')) return '$';
+    if (token.includes('USDT')) return '₮';
+    if (token.includes('DAI')) return '◈';
+    return token.charAt(0);
+  };
+
+  return (
+    <div style={{ display: 'flex', alignItems: 'center' }}>
+      <div style={{
+        width: '32px',
+        height: '32px',
+        borderRadius: '50%',
+        background: getTokenColor(token1),
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontSize: '14px',
+        fontWeight: '600',
+        color: 'white',
+        marginRight: '-10px',
+        zIndex: 2,
+        border: '2px solid white',
+      }}>
+        {getTokenSymbol(token1)}
+      </div>
+      <div style={{
+        width: '32px',
+        height: '32px',
+        borderRadius: '50%',
+        background: getTokenColor(token2),
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontSize: '14px',
+        fontWeight: '600',
+        color: 'white',
+        border: '2px solid white',
+      }}>
+        {getTokenSymbol(token2)}
+      </div>
+    </div>
+  );
+};
+
+// Hook badge component
+const HookBadge = ({ hook }) => {
+  const hookConfig = {
+    'MEV Protection': {
+      icon: <ShieldIcon />,
+      color: '#8b5cf6',
+      bg: 'rgba(139, 92, 246, 0.1)',
+    },
+    'Directional Fee': {
+      icon: <TrendIcon />,
+      color: '#f59e0b',
+      bg: 'rgba(245, 158, 11, 0.1)',
+    },
+    'JIT Rebalancing': {
+      icon: <BoltIcon />,
+      color: '#10b981',
+      bg: 'rgba(16, 185, 129, 0.1)',
+    },
+    'None': {
+      icon: null,
+      color: '#6b7280',
+      bg: 'rgba(107, 114, 128, 0.1)',
+    },
+  };
+
+  const config = hookConfig[hook] || hookConfig['None'];
+
+  return (
+    <div style={{
+      display: 'inline-flex',
+      alignItems: 'center',
+      gap: '4px',
+      padding: '4px 8px',
+      borderRadius: '6px',
+      background: config.bg,
+      color: config.color,
+      fontSize: '11px',
+      fontWeight: '600',
+    }}>
+      {config.icon}
+      {hook}
+    </div>
+  );
+};
+
+// Pool type badge
+const PoolTypeBadge = ({ type }) => {
+  const isStable = type === 'Stable';
+  return (
+    <span style={{
+      padding: '3px 8px',
+      borderRadius: '4px',
+      background: isStable ? 'rgba(16, 185, 129, 0.1)' : 'rgba(107, 114, 128, 0.1)',
+      color: isStable ? '#10b981' : '#6b7280',
+      fontSize: '11px',
+      fontWeight: '500',
+    }}>
+      {type}
+    </span>
+  );
+};
+
+// Yield badge
+const YieldBadge = ({ value }) => {
+  const numValue = parseFloat(value);
+  const isPositive = numValue > 0;
+  
+  return (
+    <span style={{
+      padding: '4px 10px',
+      borderRadius: '6px',
+      background: isPositive ? 'rgba(16, 185, 129, 0.15)' : 'rgba(107, 114, 128, 0.1)',
+      color: isPositive ? '#10b981' : '#6b7280',
+      fontSize: '13px',
+      fontWeight: '600',
+    }}>
+      {value}%
+    </span>
+  );
+};
+
+// Sortable column header
+const SortableHeader = ({ label, sortKey, currentSort, onSort }) => {
+  const isActive = currentSort.key === sortKey;
+  const isAsc = currentSort.direction === 'asc';
+
+  return (
+    <button
+      onClick={() => onSort(sortKey)}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '4px',
+        background: 'transparent',
+        border: 'none',
+        color: isActive ? '#8b5cf6' : '#6b7280',
+        fontSize: '12px',
+        fontWeight: '600',
+        cursor: 'pointer',
+        padding: '0',
+        textTransform: 'uppercase',
+        letterSpacing: '0.5px',
+      }}
+    >
+      {label}
+      <span style={{ opacity: isActive ? 1 : 0.3 }}>
+        {isActive && isAsc ? <ChevronUp /> : <ChevronDown />}
+      </span>
+    </button>
+  );
+};
+
+// Stats Card
+const StatsCard = ({ label, value, change }) => (
+  <div style={{
+    background: 'white',
+    borderRadius: '12px',
+    padding: '20px',
+    border: '1px solid rgba(139, 92, 246, 0.1)',
+    flex: 1,
+  }}>
+    <div style={{ 
+      color: '#6b7280', 
+      fontSize: '11px', 
+      fontWeight: '600',
+      textTransform: 'uppercase',
+      letterSpacing: '0.5px',
+      marginBottom: '8px',
+    }}>
+      {label}
+    </div>
+    <div style={{ 
+      color: '#111827', 
+      fontSize: '24px', 
+      fontWeight: '700',
+      fontFamily: 'SF Mono, Monaco, monospace',
+    }}>
+      {value}
+    </div>
+    {change && (
+      <div style={{
+        color: change.startsWith('+') ? '#10b981' : '#ef4444',
+        fontSize: '12px',
+        fontWeight: '500',
+        marginTop: '4px',
+      }}>
+        {change} vs last week
+      </div>
+    )}
+  </div>
+);
+
+// Pool Row Component
+const PoolRow = ({ pool, onAddLiquidity }) => (
+  <tr style={{ borderBottom: '1px solid rgba(139, 92, 246, 0.08)' }}>
+    <td style={{ padding: '16px 12px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <TokenPairIcon token1={pool.token1} token2={pool.token2} />
+        <div>
+          <div style={{ 
+            color: '#111827', 
+            fontWeight: '600', 
+            fontSize: '14px',
+            marginBottom: '4px',
+          }}>
+            {pool.token1} / {pool.token2}
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <PoolTypeBadge type={pool.type} />
+            <HookBadge hook={pool.hook} />
+          </div>
+        </div>
+      </div>
+    </td>
+    <td style={{ padding: '16px 12px' }}>
+      <span style={{ color: '#374151', fontFamily: 'SF Mono, Monaco, monospace', fontSize: '14px' }}>
+        ${pool.volume.toLocaleString()}
+      </span>
+    </td>
+    <td style={{ padding: '16px 12px' }}>
+      <span style={{ color: '#374151', fontFamily: 'SF Mono, Monaco, monospace', fontSize: '14px' }}>
+        ${pool.fees.toLocaleString()}
+      </span>
+    </td>
+    <td style={{ padding: '16px 12px' }}>
+      <span style={{ color: '#374151', fontFamily: 'SF Mono, Monaco, monospace', fontSize: '14px' }}>
+        ${pool.liquidity.toLocaleString()}
+      </span>
+    </td>
+    <td style={{ padding: '16px 12px' }}>
+      <YieldBadge value={pool.yield} />
+    </td>
+    <td style={{ padding: '16px 12px' }}>
+      <button
+        onClick={() => onAddLiquidity(pool)}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '6px',
+          padding: '8px 14px',
+          borderRadius: '8px',
+          border: '1px solid rgba(139, 92, 246, 0.3)',
+          background: 'rgba(139, 92, 246, 0.05)',
+          color: '#8b5cf6',
+          fontSize: '13px',
+          fontWeight: '600',
+          cursor: 'pointer',
+          transition: 'all 0.2s',
+        }}
+      >
+        <PlusIcon />
+        Add
+      </button>
+    </td>
+  </tr>
+);
+
+// Main Liquidity Interface Component
+export default function MantuaLiquidityInterface() {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedHookFilter, setSelectedHookFilter] = useState('All');
+  const [selectedTypeFilter, setSelectedTypeFilter] = useState('All');
+  const [sort, setSort] = useState({ key: 'liquidity', direction: 'desc' });
+  const [selectedPool, setSelectedPool] = useState(null);
+
+  const pools = [
+    { 
+      token1: 'mUSDT', token2: 'mETH', type: 'Standard', hook: 'MEV Protection',
+      volume: 59199.58, fees: 19.60, liquidity: 318789.34, yield: '2.24'
+    },
+    { 
+      token1: 'mUSDC', token2: 'mBTC', type: 'Standard', hook: 'Directional Fee',
+      volume: 4500.00, fees: 12.50, liquidity: 368081.08, yield: '1.85'
+    },
+    { 
+      token1: 'mUSDC', token2: 'mUSDT', type: 'Stable', hook: 'Directional Fee',
+      volume: 80.55, fees: 0.40, liquidity: 971950.29, yield: '0.01'
+    },
+    { 
+      token1: 'ETH', token2: 'mUSDT', type: 'Standard', hook: 'JIT Rebalancing',
+      volume: 3195.71, fees: 1.20, liquidity: 1500.96, yield: '29.14'
+    },
+    { 
+      token1: 'mBTC', token2: 'mETH', type: 'Standard', hook: 'MEV Protection',
+      volume: 4366.80, fees: 1.69, liquidity: 370896.77, yield: '0.17'
+    },
+    { 
+      token1: 'mUSDC', token2: 'mDAI', type: 'Stable', hook: 'None',
+      volume: 0.00, fees: 0.00, liquidity: 4040.35, yield: '0.00'
+    },
+    { 
+      token1: 'mDAI', token2: 'mETH', type: 'Standard', hook: 'MEV Protection',
+      volume: 1250.00, fees: 0.85, liquidity: 24750.85, yield: '1.12'
+    },
+    { 
+      token1: 'WETH', token2: 'mUSDC', type: 'Standard', hook: 'Directional Fee',
+      volume: 15780.25, fees: 8.45, liquidity: 125000.00, yield: '3.45'
+    },
+  ];
+
+  const hookOptions = ['All', 'MEV Protection', 'Directional Fee', 'JIT Rebalancing', 'None'];
+  const typeOptions = ['All', 'Standard', 'Stable'];
+
+  // Filter and sort pools
+  const filteredPools = pools
+    .filter(pool => {
+      const matchesSearch = searchQuery === '' || 
+        `${pool.token1} ${pool.token2}`.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesHook = selectedHookFilter === 'All' || pool.hook === selectedHookFilter;
+      const matchesType = selectedTypeFilter === 'All' || pool.type === selectedTypeFilter;
+      return matchesSearch && matchesHook && matchesType;
+    })
+    .sort((a, b) => {
+      const multiplier = sort.direction === 'asc' ? 1 : -1;
+      if (sort.key === 'yield') {
+        return (parseFloat(a.yield) - parseFloat(b.yield)) * multiplier;
+      }
+      return (a[sort.key] - b[sort.key]) * multiplier;
+    });
+
+  const handleSort = (key) => {
+    setSort(prev => ({
+      key,
+      direction: prev.key === key && prev.direction === 'desc' ? 'asc' : 'desc'
+    }));
+  };
+
+  const handleAddLiquidity = (pool) => {
+    setSelectedPool(pool);
+    // This would open the add liquidity modal
+    console.log('Add liquidity to:', pool);
+  };
+
+  // Calculate totals
+  const totalTVL = pools.reduce((sum, p) => sum + p.liquidity, 0);
+  const totalVolume = pools.reduce((sum, p) => sum + p.volume, 0);
+  const totalFees = pools.reduce((sum, p) => sum + p.fees, 0);
+
+  return (
+    <div style={{
+      padding: '24px',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+      background: '#fafafa',
+      minHeight: '100vh',
+    }}>
+      {/* AI Response Banner */}
+      <div style={{
+        maxWidth: '1100px',
+        margin: '0 auto 24px',
+        padding: '16px 20px',
+        background: 'linear-gradient(90deg, rgba(139, 92, 246, 0.08) 0%, rgba(99, 102, 241, 0.05) 100%)',
+        borderRadius: '12px',
+        border: '1px solid rgba(139, 92, 246, 0.15)',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '12px',
+      }}>
+        <div style={{
+          width: '32px',
+          height: '32px',
+          borderRadius: '50%',
+          background: 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          flexShrink: 0,
+        }}>
+          <span style={{ fontSize: '16px' }}>✨</span>
+        </div>
+        <div style={{ flex: 1 }}>
+          <span style={{ color: '#4b5563', fontSize: '14px', lineHeight: '1.5' }}>
+            <span style={{ color: '#8b5cf6', fontWeight: '600' }}>Showing {filteredPools.length} liquidity pools</span>
+            {' '}• Pools with <strong>MEV Protection</strong> hooks help shield your LP positions from sandwich attacks. 
+            <strong> Directional Fee</strong> pools adjust fees dynamically based on trade flow.
+          </span>
+        </div>
+      </div>
+
+      <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
+        {/* Header */}
+        <div style={{ marginBottom: '24px' }}>
+          <h1 style={{ 
+            color: '#111827', 
+            fontSize: '24px', 
+            fontWeight: '700', 
+            margin: '0 0 4px 0' 
+          }}>
+            Liquidity Pools
+          </h1>
+          <p style={{ 
+            color: '#6b7280', 
+            fontSize: '14px', 
+            margin: 0 
+          }}>
+            Explore and manage your liquidity positions with Uniswap v4 hooks.
+          </p>
+        </div>
+
+        {/* Stats Cards */}
+        <div style={{ 
+          display: 'flex', 
+          gap: '16px', 
+          marginBottom: '24px' 
+        }}>
+          <StatsCard 
+            label="TVL" 
+            value={`$${totalTVL.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+            change="+12.5%"
+          />
+          <StatsCard 
+            label="MCAP" 
+            value="$4,250,000"
+            change="+18.2%"
+          />
+          <StatsCard 
+            label="Volume (24H)" 
+            value={`$${totalVolume.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+            change="+8.3%"
+          />
+          <StatsCard 
+            label="Fees (24H)" 
+            value={`$${totalFees.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+            change="+5.2%"
+          />
+        </div>
+
+        {/* Filters */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px',
+          marginBottom: '16px',
+        }}>
+          {/* Search */}
+          <div style={{ position: 'relative', flex: 1, maxWidth: '300px' }}>
+            <div style={{
+              position: 'absolute',
+              left: '12px',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              color: '#9ca3af',
+            }}>
+              <SearchIcon />
+            </div>
+            <input
+              type="text"
+              placeholder="Search pools..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '10px 12px 10px 40px',
+                borderRadius: '10px',
+                border: '1px solid rgba(139, 92, 246, 0.2)',
+                background: 'white',
+                color: '#1f2937',
+                fontSize: '14px',
+                outline: 'none',
+                boxSizing: 'border-box',
+              }}
+            />
+          </div>
+
+          {/* Hook Filter */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{ color: '#6b7280', fontSize: '13px', fontWeight: '500' }}>Hook:</span>
+            <select
+              value={selectedHookFilter}
+              onChange={(e) => setSelectedHookFilter(e.target.value)}
+              style={{
+                padding: '10px 32px 10px 12px',
+                borderRadius: '10px',
+                border: '1px solid rgba(139, 92, 246, 0.2)',
+                background: 'white',
+                color: '#1f2937',
+                fontSize: '13px',
+                fontWeight: '500',
+                cursor: 'pointer',
+                outline: 'none',
+                appearance: 'none',
+                backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")`,
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition: 'right 10px center',
+              }}
+            >
+              {hookOptions.map(option => (
+                <option key={option} value={option}>{option}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Type Filter */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{ color: '#6b7280', fontSize: '13px', fontWeight: '500' }}>Type:</span>
+            <select
+              value={selectedTypeFilter}
+              onChange={(e) => setSelectedTypeFilter(e.target.value)}
+              style={{
+                padding: '10px 32px 10px 12px',
+                borderRadius: '10px',
+                border: '1px solid rgba(139, 92, 246, 0.2)',
+                background: 'white',
+                color: '#1f2937',
+                fontSize: '13px',
+                fontWeight: '500',
+                cursor: 'pointer',
+                outline: 'none',
+                appearance: 'none',
+                backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")`,
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition: 'right 10px center',
+              }}
+            >
+              {typeOptions.map(option => (
+                <option key={option} value={option}>{option}</option>
+              ))}
+            </select>
+          </div>
+
+          <div style={{ flex: 1 }} />
+
+          {/* Create Pool Button */}
+          <button
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '10px 18px',
+              borderRadius: '10px',
+              border: 'none',
+              background: 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)',
+              color: 'white',
+              fontSize: '14px',
+              fontWeight: '600',
+              cursor: 'pointer',
+              boxShadow: '0 2px 8px rgba(139, 92, 246, 0.3)',
+            }}
+          >
+            <PlusIcon />
+            Create Pool
+          </button>
+        </div>
+
+        {/* Pools Table */}
+        <div style={{
+          background: 'white',
+          borderRadius: '16px',
+          border: '1px solid rgba(139, 92, 246, 0.1)',
+          overflow: 'hidden',
+        }}>
+          <table style={{ 
+            width: '100%', 
+            borderCollapse: 'collapse',
+          }}>
+            <thead>
+              <tr style={{ 
+                borderBottom: '1px solid rgba(139, 92, 246, 0.1)',
+                background: 'rgba(249, 250, 251, 0.5)',
+              }}>
+                <th style={{ 
+                  padding: '14px 12px', 
+                  textAlign: 'left',
+                  color: '#6b7280',
+                  fontSize: '12px',
+                  fontWeight: '600',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px',
+                }}>
+                  Pool
+                </th>
+                <th style={{ padding: '14px 12px', textAlign: 'left' }}>
+                  <SortableHeader 
+                    label="Volume (24h)" 
+                    sortKey="volume" 
+                    currentSort={sort} 
+                    onSort={handleSort} 
+                  />
+                </th>
+                <th style={{ padding: '14px 12px', textAlign: 'left' }}>
+                  <SortableHeader 
+                    label="Fees (24h)" 
+                    sortKey="fees" 
+                    currentSort={sort} 
+                    onSort={handleSort} 
+                  />
+                </th>
+                <th style={{ padding: '14px 12px', textAlign: 'left' }}>
+                  <SortableHeader 
+                    label="Liquidity" 
+                    sortKey="liquidity" 
+                    currentSort={sort} 
+                    onSort={handleSort} 
+                  />
+                </th>
+                <th style={{ padding: '14px 12px', textAlign: 'left' }}>
+                  <SortableHeader 
+                    label="Yield (7d)" 
+                    sortKey="yield" 
+                    currentSort={sort} 
+                    onSort={handleSort} 
+                  />
+                </th>
+                <th style={{ padding: '14px 12px', textAlign: 'left' }}>
+                  <span style={{ 
+                    color: '#6b7280',
+                    fontSize: '12px',
+                    fontWeight: '600',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px',
+                  }}>
+                    Action
+                  </span>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredPools.map((pool, index) => (
+                <PoolRow 
+                  key={index} 
+                  pool={pool} 
+                  onAddLiquidity={handleAddLiquidity}
+                />
+              ))}
+            </tbody>
+          </table>
+
+          {filteredPools.length === 0 && (
+            <div style={{
+              padding: '48px',
+              textAlign: 'center',
+              color: '#6b7280',
+            }}>
+              <p style={{ fontSize: '16px', fontWeight: '500', marginBottom: '8px' }}>
+                No pools found
+              </p>
+              <p style={{ fontSize: '14px' }}>
+                Try adjusting your search or filters
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* Hook Legend */}
+        <div style={{
+          marginTop: '20px',
+          padding: '16px 20px',
+          background: 'white',
+          borderRadius: '12px',
+          border: '1px solid rgba(139, 92, 246, 0.1)',
+        }}>
+          <div style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '8px',
+            marginBottom: '12px',
+            color: '#374151',
+            fontSize: '14px',
+            fontWeight: '600',
+          }}>
+            <InfoIcon />
+            Hook Types
+          </div>
+          <div style={{ 
+            display: 'flex', 
+            flexWrap: 'wrap',
+            gap: '16px',
+            fontSize: '13px',
+            color: '#6b7280',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <HookBadge hook="MEV Protection" />
+              <span>Protects against sandwich attacks</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <HookBadge hook="Directional Fee" />
+              <span>Dynamic fees based on trade flow</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <HookBadge hook="JIT Rebalancing" />
+              <span>Just-in-time liquidity concentration</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

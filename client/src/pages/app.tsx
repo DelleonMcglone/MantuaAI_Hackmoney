@@ -1131,6 +1131,292 @@ const SwapInterface = ({ onClose, swapDetails, theme, isDark }) => {
   );
 };
 
+// ============ LIQUIDITY INTERFACE ============
+const LiquidityInterface = ({ onClose, theme, isDark }) => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedHookFilter, setSelectedHookFilter] = useState('All');
+  const [selectedTypeFilter, setSelectedTypeFilter] = useState('All');
+  const [sort, setSort] = useState({ key: 'liquidity', direction: 'desc' });
+  
+  const pools = [
+    { 
+      token1: 'mUSDT', token2: 'mETH', type: 'Standard', hook: 'MEV Protection',
+      volume: 59199.58, fees: 19.60, liquidity: 318789.34, yield: '2.24'
+    },
+    { 
+      token1: 'mUSDC', token2: 'mBTC', type: 'Standard', hook: 'Directional Fee',
+      volume: 4500.00, fees: 12.50, liquidity: 368081.08, yield: '1.85'
+    },
+    { 
+      token1: 'mUSDC', token2: 'mUSDT', type: 'Stable', hook: 'Directional Fee',
+      volume: 80.55, fees: 0.40, liquidity: 971950.29, yield: '0.01'
+    },
+    { 
+      token1: 'ETH', token2: 'mUSDT', type: 'Standard', hook: 'JIT Rebalancing',
+      volume: 3195.71, fees: 1.20, liquidity: 1500.96, yield: '29.14'
+    },
+    { 
+      token1: 'mBTC', token2: 'mETH', type: 'Standard', hook: 'MEV Protection',
+      volume: 4366.80, fees: 1.69, liquidity: 370896.77, yield: '0.17'
+    },
+    { 
+      token1: 'mUSDC', token2: 'mDAI', type: 'Stable', hook: 'None',
+      volume: 0.00, fees: 0.00, liquidity: 4040.35, yield: '0.00'
+    },
+    { 
+      token1: 'mDAI', token2: 'mETH', type: 'Standard', hook: 'MEV Protection',
+      volume: 1250.00, fees: 0.85, liquidity: 24750.85, yield: '1.12'
+    },
+    { 
+      token1: 'WETH', token2: 'mUSDC', type: 'Standard', hook: 'Directional Fee',
+      volume: 15780.25, fees: 8.45, liquidity: 125000.00, yield: '3.45'
+    },
+  ];
+
+  const hookOptions = ['All', 'MEV Protection', 'Directional Fee', 'JIT Rebalancing', 'None'];
+  const typeOptions = ['All', 'Standard', 'Stable'];
+
+  // Filter and sort pools
+  const filteredPools = pools
+    .filter(pool => {
+      const matchesSearch = searchQuery === '' || 
+        `${pool.token1} ${pool.token2}`.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesHook = selectedHookFilter === 'All' || pool.hook === selectedHookFilter;
+      const matchesType = selectedTypeFilter === 'All' || pool.type === selectedTypeFilter;
+      return matchesSearch && matchesHook && matchesType;
+    })
+    .sort((a, b) => {
+      const multiplier = sort.direction === 'asc' ? 1 : -1;
+      if (sort.key === 'yield') {
+        return (parseFloat(a.yield) - parseFloat(b.yield)) * multiplier;
+      }
+      return (a[sort.key] - b[sort.key]) * multiplier;
+    });
+
+  const handleSort = (key) => {
+    setSort(prev => ({
+      key,
+      direction: prev.key === key && prev.direction === 'desc' ? 'asc' : 'desc'
+    }));
+  };
+
+  // Helper components for Liquidity Interface
+  const SortableHeader = ({ label, sortKey, currentSort, onSort }) => {
+    const isActive = currentSort.key === sortKey;
+    const isAsc = currentSort.direction === 'asc';
+  
+    return (
+      <button
+        onClick={() => onSort(sortKey)}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '4px',
+          background: 'transparent',
+          border: 'none',
+          color: isActive ? theme.accent : theme.textSecondary,
+          fontSize: '12px',
+          fontWeight: '600',
+          cursor: 'pointer',
+          padding: '0',
+          textTransform: 'uppercase',
+          letterSpacing: '0.5px',
+        }}
+      >
+        {label}
+        <span style={{ opacity: isActive ? 1 : 0.3 }}>
+          {isActive && isAsc ? <ChevronUp /> : <ChevronDown />}
+        </span>
+      </button>
+    );
+  };
+
+  const HookBadge = ({ hook }) => {
+    const hookConfig = {
+      'MEV Protection': { icon: <ShieldIcon />, color: '#8b5cf6', bg: 'rgba(139, 92, 246, 0.1)' },
+      'Directional Fee': { icon: <TrendIcon />, color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.1)' },
+      'JIT Rebalancing': { icon: <BoltIcon />, color: '#10b981', bg: 'rgba(16, 185, 129, 0.1)' },
+      'None': { icon: null, color: theme.textSecondary, bg: theme.bgSecondary },
+    };
+    const config = hookConfig[hook] || hookConfig['None'];
+    return (
+      <div style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '4px 8px', borderRadius: '6px', background: config.bg, color: config.color, fontSize: '11px', fontWeight: '600' }}>
+        {config.icon}
+        {hook}
+      </div>
+    );
+  };
+
+  const PoolTypeBadge = ({ type }) => {
+    const isStable = type === 'Stable';
+    return (
+      <span style={{ padding: '3px 8px', borderRadius: '4px', background: isStable ? 'rgba(16, 185, 129, 0.1)' : theme.bgSecondary, color: isStable ? '#10b981' : theme.textSecondary, fontSize: '11px', fontWeight: '500' }}>
+        {type}
+      </span>
+    );
+  };
+
+  const YieldBadge = ({ value }) => {
+    const numValue = parseFloat(value);
+    const isPositive = numValue > 0;
+    return (
+      <span style={{ padding: '4px 10px', borderRadius: '6px', background: isPositive ? 'rgba(16, 185, 129, 0.15)' : theme.bgSecondary, color: isPositive ? '#10b981' : theme.textSecondary, fontSize: '13px', fontWeight: '600' }}>
+        {value}%
+      </span>
+    );
+  };
+
+  const TokenPairIcon = ({ token1, token2 }) => {
+     // Reuse logic from attachment but simplified for brevity
+     const getColor = (t) => {
+         if (t.includes('ETH')) return 'linear-gradient(135deg, #627EEA 0%, #8B9FFF 100%)';
+         if (t.includes('USDC')) return 'linear-gradient(135deg, #2775CA 0%, #4A9FE8 100%)';
+         if (t.includes('BTC')) return 'linear-gradient(135deg, #F7931A 0%, #FFAB4A 100%)';
+         if (t.includes('DAI')) return 'linear-gradient(135deg, #F5AC37 0%, #FFD166 100%)';
+         return 'linear-gradient(135deg, #6b7280 0%, #9ca3af 100%)';
+     };
+     const getSym = (t) => {
+         if (t.includes('ETH')) return 'Ξ';
+         if (t.includes('BTC')) return '₿';
+         if (t.includes('USDC')) return '$';
+         if (t.includes('DAI')) return '◈';
+         return t[0];
+     };
+     return (
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: getColor(token1), display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: '600', color: 'white', marginRight: '-10px', zIndex: 2, border: `2px solid ${theme.bgCard}` }}>{getSym(token1)}</div>
+          <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: getColor(token2), display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: '600', color: 'white', border: `2px solid ${theme.bgCard}` }}>{getSym(token2)}</div>
+        </div>
+     );
+  };
+
+  const StatsCard = ({ label, value, change }) => (
+    <div style={{ background: theme.bgCard, borderRadius: '12px', padding: '20px', border: `1px solid ${theme.border}`, flex: 1 }}>
+      <div style={{ color: theme.textSecondary, fontSize: '11px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px' }}>{label}</div>
+      <div style={{ color: theme.textPrimary, fontSize: '24px', fontWeight: '700', fontFamily: 'SF Mono, Monaco, monospace' }}>{value}</div>
+      {change && <div style={{ color: change.startsWith('+') ? '#10b981' : '#ef4444', fontSize: '12px', fontWeight: '500', marginTop: '4px' }}>{change} vs last week</div>}
+    </div>
+  );
+
+  // Calculate totals
+  const totalTVL = pools.reduce((sum, p) => sum + p.liquidity, 0);
+  const totalVolume = pools.reduce((sum, p) => sum + p.volume, 0);
+  const totalFees = pools.reduce((sum, p) => sum + p.fees, 0);
+
+  return (
+    <div style={{ width: '100%', fontFamily: '"DM Sans", sans-serif' }}>
+      {/* AI Response Banner */}
+      <div style={{
+        marginBottom: '24px',
+        padding: '16px 20px',
+        background: 'linear-gradient(90deg, rgba(139, 92, 246, 0.08) 0%, rgba(99, 102, 241, 0.05) 100%)',
+        borderRadius: '16px',
+        border: '1px solid rgba(139, 92, 246, 0.15)',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '12px',
+      }}>
+        <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 4px 12px rgba(139, 92, 246, 0.3)' }}>
+          <span style={{ fontSize: '16px' }}>✨</span>
+        </div>
+        <div style={{ flex: 1 }}>
+          <span style={{ color: theme.textSecondary, fontSize: '14px', lineHeight: '1.5' }}>
+            <span style={{ color: theme.accent, fontWeight: '600' }}>Showing {filteredPools.length} liquidity pools</span>
+            {' '}• Pools with <strong>MEV Protection</strong> hooks help shield your LP positions from sandwich attacks. 
+          </span>
+        </div>
+      </div>
+
+      <div style={{ background: theme.bgCard, borderRadius: '24px', border: `1px solid ${theme.border}`, padding: '24px', boxShadow: '0 4px 20px rgba(0, 0, 0, 0.04)' }}>
+        {/* Header */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
+          <div>
+            <h1 style={{ color: theme.textPrimary, fontSize: '24px', fontWeight: '700', margin: '0 0 4px 0' }}>Liquidity Pools</h1>
+            <p style={{ color: theme.textSecondary, fontSize: '14px', margin: 0 }}>Explore and manage your liquidity positions.</p>
+          </div>
+          <button onClick={onClose} style={{ background: 'transparent', border: 'none', color: theme.textMuted, cursor: 'pointer', padding: '8px', borderRadius: '50%' }}>
+            <CloseIcon />
+          </button>
+        </div>
+
+        {/* Stats Cards */}
+        <div style={{ display: 'flex', gap: '16px', marginBottom: '24px' }}>
+          <StatsCard label="TVL" value={`$${totalTVL.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`} change="+12.5%" />
+          <StatsCard label="Volume (24H)" value={`$${totalVolume.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`} change="+8.3%" />
+          <StatsCard label="Fees (24H)" value={`$${totalFees.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`} change="+5.2%" />
+        </div>
+
+        {/* Filters */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
+           <div style={{ position: 'relative', flex: 1 }}>
+            <div style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: theme.textMuted }}>
+              <SearchIcon />
+            </div>
+            <input
+              type="text"
+              placeholder="Search pools..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              style={{ width: '100%', padding: '10px 12px 10px 40px', borderRadius: '12px', border: `1px solid ${theme.border}`, background: theme.bgSecondary, color: theme.textPrimary, fontSize: '14px', outline: 'none' }}
+            />
+          </div>
+          
+          <select
+              value={selectedHookFilter}
+              onChange={(e) => setSelectedHookFilter(e.target.value)}
+              style={{ padding: '10px 32px 10px 12px', borderRadius: '12px', border: `1px solid ${theme.border}`, background: theme.bgSecondary, color: theme.textPrimary, fontSize: '13px', fontWeight: '500', cursor: 'pointer', outline: 'none', appearance: 'none', backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 10px center' }}
+            >
+              {hookOptions.map(o => <option key={o} value={o}>{o}</option>)}
+          </select>
+
+          <button style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 18px', borderRadius: '12px', border: 'none', background: 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)', color: 'white', fontSize: '14px', fontWeight: '600', cursor: 'pointer', boxShadow: '0 4px 12px rgba(139, 92, 246, 0.3)' }}>
+            <PlusIcon /> Create Pool
+          </button>
+        </div>
+
+        {/* Pools Table */}
+        <div style={{ border: `1px solid ${theme.border}`, borderRadius: '16px', overflow: 'hidden' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <thead>
+              <tr style={{ borderBottom: `1px solid ${theme.border}`, background: theme.bgSecondary }}>
+                <th style={{ padding: '14px 16px', textAlign: 'left', color: theme.textSecondary, fontSize: '12px', fontWeight: '600', textTransform: 'uppercase' }}>Pool</th>
+                <th style={{ padding: '14px 16px', textAlign: 'left' }}><SortableHeader label="Volume" sortKey="volume" currentSort={sort} onSort={handleSort} /></th>
+                <th style={{ padding: '14px 16px', textAlign: 'left' }}><SortableHeader label="TVL" sortKey="liquidity" currentSort={sort} onSort={handleSort} /></th>
+                <th style={{ padding: '14px 16px', textAlign: 'left' }}><SortableHeader label="Yield" sortKey="yield" currentSort={sort} onSort={handleSort} /></th>
+                <th style={{ padding: '14px 16px', textAlign: 'left' }}></th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredPools.map((pool, i) => (
+                <tr key={i} style={{ borderBottom: i === filteredPools.length - 1 ? 'none' : `1px solid ${theme.border}` }}>
+                  <td style={{ padding: '16px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      <TokenPairIcon token1={pool.token1} token2={pool.token2} />
+                      <div>
+                        <div style={{ color: theme.textPrimary, fontWeight: '600', fontSize: '14px', marginBottom: '4px' }}>{pool.token1} / {pool.token2}</div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <PoolTypeBadge type={pool.type} />
+                          <HookBadge hook={pool.hook} />
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                  <td style={{ padding: '16px' }}><span style={{ color: theme.textPrimary, fontFamily: 'SF Mono, Monaco, monospace', fontSize: '14px' }}>${pool.volume.toLocaleString()}</span></td>
+                  <td style={{ padding: '16px' }}><span style={{ color: theme.textPrimary, fontFamily: 'SF Mono, Monaco, monospace', fontSize: '14px' }}>${pool.liquidity.toLocaleString()}</span></td>
+                  <td style={{ padding: '16px' }}><YieldBadge value={pool.yield} /></td>
+                  <td style={{ padding: '16px', textAlign: 'right' }}>
+                     <button style={{ padding: '8px 14px', borderRadius: '8px', border: `1px solid ${theme.accent}40`, background: `${theme.accent}10`, color: theme.accent, fontSize: '13px', fontWeight: '600', cursor: 'pointer' }}>Add</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // ============ MAIN APP ============
 export default function MantuaApp() {
   const [location, setLocation] = useLocation();
@@ -1152,6 +1438,7 @@ export default function MantuaApp() {
   const [isConnected, setIsConnected] = useState(false);
   const [inputValue, setInputValue] = useState('');
   const [showSwap, setShowSwap] = useState(false);
+  const [showLiquidity, setShowLiquidity] = useState(false);
   const [swapDetails, setSwapDetails] = useState(null);
   const [messages, setMessages] = useState([]);
   
@@ -1181,10 +1468,23 @@ export default function MantuaApp() {
   const handleSend = () => {
     if (!inputValue.trim()) return;
     
+    // Check for Liquidity Intent
+    if (inputValue.toLowerCase().includes('add liquidity') || inputValue.toLowerCase().includes('liquidity')) {
+       setShowLiquidity(true);
+       setShowSwap(false);
+       setMessages([...messages, { role: 'user', content: inputValue }]);
+       setInputValue('');
+       return;
+    }
+
     const swapCmd = parseSwapCommand(inputValue);
     if (swapCmd) {
       setSwapDetails(swapCmd);
       setShowSwap(true);
+      setShowLiquidity(false);
+      setMessages([...messages, { role: 'user', content: inputValue }]);
+    } else {
+      // Regular message
       setMessages([...messages, { role: 'user', content: inputValue }]);
     }
     setInputValue('');
@@ -1206,7 +1506,7 @@ export default function MantuaApp() {
       <aside style={{ width: sidebarOpen ? 260 : 0, minHeight: '100vh', background: theme.bgSidebar, borderRight: `1px solid ${theme.border}`, display: 'flex', flexDirection: 'column', overflow: 'hidden', transition: 'width 0.3s ease' }}>
         <div style={{ padding: '16px', flex: 1, overflowY: 'auto' }}>
           {/* New Chat */}
-          <button onClick={() => { setShowSwap(false); setMessages([]); }} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 12px', background: 'transparent', border: 'none', borderRadius: 8, color: theme.accent, fontSize: 14, fontWeight: 500, cursor: 'pointer', marginBottom: 8 }}>
+          <button onClick={() => { setShowSwap(false); setShowLiquidity(false); setMessages([]); }} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 12px', background: 'transparent', border: 'none', borderRadius: 8, color: theme.accent, fontSize: 14, fontWeight: 500, cursor: 'pointer', marginBottom: 8 }}>
             <MessageSquarePlusIcon /> New Chat
           </button>
 
@@ -1235,12 +1535,12 @@ export default function MantuaApp() {
           </div>
 
           {/* Swap */}
-          <button onClick={() => { setShowSwap(true); setSwapDetails(null); }} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 12px', background: 'transparent', border: 'none', borderRadius: 8, color: theme.textPrimary, fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
+          <button onClick={() => { setShowSwap(true); setShowLiquidity(false); setSwapDetails(null); }} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 12px', background: 'transparent', border: 'none', borderRadius: 8, color: theme.textPrimary, fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
             <ArrowLeftRightIcon /> Swap
           </button>
 
           {/* Liquidity */}
-          <button style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 12px', background: 'transparent', border: 'none', borderRadius: 8, color: theme.textPrimary, fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
+          <button onClick={() => { setShowLiquidity(true); setShowSwap(false); }} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 12px', background: 'transparent', border: 'none', borderRadius: 8, color: theme.textPrimary, fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
             <DropletsIcon /> Liquidity
           </button>
 
@@ -1347,11 +1647,22 @@ export default function MantuaApp() {
                   ))}
 
                   {/* Swap Overlay - Stacked within scrolling container but sticky if needed, or just inline */}
-                  {showSwap && (
+                  {showSwap && !showLiquidity && (
                     <div style={{ width: '100%', marginTop: 20, marginBottom: 20 }}>
                       <SwapInterface 
                         onClose={() => setShowSwap(false)} 
                         swapDetails={swapDetails} 
+                        theme={theme} 
+                        isDark={isDark} 
+                      />
+                    </div>
+                  )}
+
+                  {/* Liquidity Overlay */}
+                  {showLiquidity && !showSwap && (
+                    <div style={{ width: '100%', marginTop: 20, marginBottom: 20 }}>
+                      <LiquidityInterface 
+                        onClose={() => setShowLiquidity(false)} 
                         theme={theme} 
                         isDark={isDark} 
                       />

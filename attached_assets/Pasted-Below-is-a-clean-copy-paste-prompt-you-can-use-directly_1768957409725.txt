@@ -1,0 +1,88 @@
+Below is a **clean, copy-paste prompt** you can use directly in **Replit Design Mode, v0, or any UI generation workflow**. It is intentionally precise and implementation-ready.
+
+---
+
+## Liquidity Modal Invocation — Prompt
+
+**Context**
+You are building a chat-native DeFi interface where core actions (Swap, Liquidity) render as **modals layered above the chatbot**, not as page navigations.
+
+The Liquidity experience must mirror the Swap experience in both **visual hierarchy** and **interaction logic**.
+
+---
+
+### Liquidity Modal Trigger Rules
+
+Implement the following behavior exactly:
+
+#### 1. Sidebar Interaction (Primary Trigger)
+
+* When a user clicks **“Liquidity”** in the sidebar:
+
+  * Render the **Liquidity modal**
+  * The modal appears **above the chatbot**, identical to how the **Swap modal** is displayed
+  * The chatbot remains visible in the background but is **non-interactive** while the modal is open
+  * Do **not** navigate to a new page or route
+
+---
+
+#### 2. Chat Intent Trigger (Natural Language)
+
+* When a user types **“Add Liquidity”** (case-insensitive) into the chatbot input:
+
+  * Immediately display the **Liquidity modal**
+  * Do **not** send a text response from the chatbot
+  * Do **not** show a confirmation message
+  * The modal opening itself is the response
+
+Examples that must trigger the modal:
+
+* `Add Liquidity`
+* `add liquidity`
+* `I want to add liquidity`
+* `add liquidity to a pool`
+
+---
+
+#### 3. Modal Parity with Swap
+
+The Liquidity modal must follow the same rules as the Swap modal:
+
+* Same z-index and overlay behavior
+* Same animation timing and easing
+* Same close behavior (× icon or backdrop click)
+* Same visual layering above the chat interface
+
+Liquidity is treated as a **first-class execution modal**, not a secondary feature.
+
+---
+
+#### 4. Intent Priority (Important)
+
+* Liquidity intent **overrides** normal chatbot replies
+* If intent = liquidity:
+
+  * Render modal
+  * Skip LLM response
+  * No fallback text
+
+---
+
+### Design Outcome
+
+The user should feel that:
+
+* Liquidity is an **action**, not a conversation
+* Natural language is a **shortcut to execution**
+* The system behaves consistently across Swap and Liquidity
+
+If the user knows how to open Swap, they already know how Liquidity works.
+
+---
+
+If you want next, I can:
+
+* Add **Remove Liquidity** intent handling
+* Define **Create Pool vs Add Liquidity** branching
+* Write the **intent-parser rules** explicitly
+* Or map this directly to your existing Liquidity component logic

@@ -2246,6 +2246,8 @@ export default function MantuaApp() {
   const [showSwap, setShowSwap] = useState(false);
   const [showLiquidity, setShowLiquidity] = useState(false);
   const [showAgentBuilder, setShowAgentBuilder] = useState(false);
+  const [showPortfolioModal, setShowPortfolioModal] = useState(false);
+  const [portfolioType, setPortfolioType] = useState('User');
   const [swapDetails, setSwapDetails] = useState(null);
   const [messages, setMessages] = useState([]);
   

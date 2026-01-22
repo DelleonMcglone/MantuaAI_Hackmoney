@@ -1462,22 +1462,31 @@ const SwapInterface = ({ onClose, swapDetails, theme, isDark }) => {
 
   return (
     <div style={{ 
-      width: '90%', 
-      maxWidth: '900px',
+      width: '95%', 
+      maxWidth: '1400px',
       margin: '0 auto 20px',
       zIndex: 50,
-      background: theme.bgSecondary,
-      borderRadius: '20px',
-      border: `1px solid ${theme.border}`,
-      boxShadow: '0 20px 50px -12px rgba(0, 0, 0, 0.5)',
-      padding: '24px',
+      background: 'transparent',
+      padding: '0',
       fontFamily: '"DM Sans", sans-serif',
       position: 'relative',
       marginLeft: 'auto', 
       marginRight: 'auto'
     }}>
-      <div style={{ position: 'absolute', top: 16, right: 16 }}>
-        <button onClick={onClose} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: theme.textSecondary }}>
+      <div style={{ position: 'absolute', top: 0, right: 0, zIndex: 100 }}>
+        <button onClick={onClose} style={{ 
+          background: theme.bgCard, 
+          border: `1px solid ${theme.border}`, 
+          borderRadius: '50%',
+          width: '36px',
+          height: '36px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          cursor: 'pointer', 
+          color: theme.textSecondary,
+          boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+        }}>
           <CloseIcon />
         </button>
       </div>
@@ -1542,7 +1551,14 @@ const SwapInterface = ({ onClose, swapDetails, theme, isDark }) => {
       )}
 
       {/* Main Content */}
-      <div style={{ display: 'grid', gridTemplateColumns: '420px 1fr', gap: '32px' }}>
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'flex-start', 
+        width: '100%', 
+        gap: '24px', 
+        flexWrap: 'wrap'
+      }}>
         
         {/* LEFT COLUMN: Swap Panel */}
         <div style={{
@@ -1551,7 +1567,10 @@ const SwapInterface = ({ onClose, swapDetails, theme, isDark }) => {
           padding: '24px',
           border: `1px solid ${theme.border}`,
           boxShadow: '0 4px 20px rgba(0, 0, 0, 0.04)',
-          position: 'relative'
+          position: 'relative',
+          width: '420px',
+          flexShrink: 0,
+          order: 2
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
             <h2 style={{ color: theme.textPrimary, fontSize: '20px', fontWeight: '700', margin: 0, letterSpacing: '-0.02em' }}>Swap</h2>
@@ -1717,7 +1736,15 @@ const SwapInterface = ({ onClose, swapDetails, theme, isDark }) => {
         </div>
 
         {/* RIGHT COLUMN: Chart & Stats */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        <div style={{ 
+          display: 'flex', 
+          flexDirection: 'column', 
+          gap: '20px', 
+          flex: '1 1 auto',
+          maxWidth: '900px',
+          minWidth: '500px',
+          order: 1
+        }}>
           <div style={{
             background: theme.bgCard,
             borderRadius: '24px',

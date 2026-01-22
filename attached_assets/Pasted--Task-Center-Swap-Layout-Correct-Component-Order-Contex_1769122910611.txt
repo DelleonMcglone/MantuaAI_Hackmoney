@@ -1,0 +1,103 @@
+# Task: Center Swap Layout + Correct Component Order
+
+## Context
+Two layout issues need fixing:
+1. Component order is reversed (swap should be RIGHT, chart should be LEFT)
+2. The entire layout is not centered in the viewport
+
+## Current State (Incorrect)
+┌──────────────────────────────────────────────────────────────────┐
+│ VIEWPORT                                                         │
+│                                                                  │
+│  [SWAP][CHART]                              (empty space)        │
+│  └── Left-aligned, wrong order                                   │
+│                                                                  │
+└──────────────────────────────────────────────────────────────────┘
+
+## Desired State (Per Reference)
+┌──────────────────────────────────────────────────────────────────┐
+│ VIEWPORT                                                         │
+│                                                                  │
+│         (space)    [CHART]  [SWAP]    (space)                    │
+│                    └── Centered, correct order                   │
+│                                                                  │
+└──────────────────────────────────────────────────────────────────┘
+
+## Fix Implementation
+
+### Step 1: Find the parent container holding both components
+Look for the flex container that wraps ChartComponent and SwapInterface.
+
+### Step 2: Apply these styles to the PARENT container
+```jsx
+<div style={{
+  display: 'flex',
+  justifyContent: 'center',      // <-- Centers children horizontally
+  alignItems: 'flex-start',      // <-- Aligns to top
+  width: '100%',                 // <-- Full width of viewport
+  padding: '20px',               // <-- Optional breathing room
+  gap: '24px',                   // <-- Space between chart and swap
+}}>
+  <ChartComponent ... />         {/* LEFT */}
+  <SwapInterface ... />          {/* RIGHT */}
+</div>
+```
+
+### Step 3: Ensure child components have appropriate widths
+```jsx
+// Chart - flexible but with max-width
+<div style={{ 
+  flex: '1 1 auto',
+  maxWidth: '900px',
+  minWidth: '500px',
+}}>
+  <ChartComponent />
+</div>
+
+// Swap - fixed width
+<div style={{ 
+  width: '420px',
+  flexShrink: 0,
+}}>
+  <SwapInterface />
+</div>
+```
+
+### Alternative: Wrapper approach
+If the components are deeply nested, add a centering wrapper:
+```jsx
+<div style={{
+  width: '100%',
+  display: 'flex',
+  justifyContent: 'center',
+}}>
+  <div style={{
+    display: 'flex',
+    gap: '24px',
+    maxWidth: '1400px',  // <-- Prevents over-stretching on wide screens
+  }}>
+    <ChartComponent />
+    <SwapInterface />
+  </div>
+</div>
+```
+
+## Success Criteria
+- [ ] Price chart displays on the LEFT
+- [ ] Swap interface displays on the RIGHT  
+- [ ] Combined layout is horizontally CENTERED in viewport
+- [ ] Equal spacing on left and right sides of the layout
+- [ ] Layout maintains centering on different screen widths
+- [ ] No horizontal scrollbar introduced
+
+## Search Pattern in Code
+Look for:
+1. The container with `display: 'flex'` that holds both chart and swap
+2. Any `marginLeft`, `alignItems: 'flex-start'`, or missing `justifyContent`
+3. The main content area wrapper (likely after sidebar)
+
+## Do NOT Change
+- Chart component internals or TradingView embed
+- Swap interface styling or functionality
+- Dark mode theming
+- Sidebar width or positioning

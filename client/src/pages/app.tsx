@@ -1472,7 +1472,9 @@ const SwapInterface = ({ onClose, swapDetails, theme, isDark }) => {
       boxShadow: '0 20px 50px -12px rgba(0, 0, 0, 0.5)',
       padding: '24px',
       fontFamily: '"DM Sans", sans-serif',
-      position: 'relative'
+      position: 'relative',
+      marginLeft: 'auto', 
+      marginRight: 'auto'
     }}>
       <div style={{ position: 'absolute', top: 16, right: 16 }}>
         <button onClick={onClose} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: theme.textSecondary }}>
@@ -1561,8 +1563,8 @@ const SwapInterface = ({ onClose, swapDetails, theme, isDark }) => {
           <div style={{ position: 'relative' }}>
             <TokenSelect 
               token={fromToken} 
-              balance="3.245" 
-              usdValue={fromAmount ? "4,868.25" : "0.00"} 
+              balance="0.00" 
+              usdValue={fromAmount ? "0.00" : "0.00"} 
               side="Sell" 
               amount={fromAmount} 
               theme={theme}
@@ -1596,8 +1598,8 @@ const SwapInterface = ({ onClose, swapDetails, theme, isDark }) => {
 
             <TokenSelect 
               token={toToken} 
-              balance="12,450.00" 
-              usdValue={fromAmount ? "4,868.25" : "0.00"} 
+              balance="0.00" 
+              usdValue={fromAmount ? "0.00" : "0.00"} 
               side="Buy" 
               amount={toAmount} 
               theme={theme}
@@ -1666,7 +1668,7 @@ const SwapInterface = ({ onClose, swapDetails, theme, isDark }) => {
             <div style={{ borderTop: `1px solid ${theme.border}`, margin: '12px 0', padding: '12px 0' }}>
               <div style={{ color: theme.textSecondary, fontSize: '11px', fontWeight: '600', textTransform: 'uppercase', marginBottom: '8px' }}>Fee Architecture</div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px', fontSize: '13px' }}>
-                <span style={{ color: theme.textMuted }}>LP Fee (Dynamic)</span>
+                <span style={{ color: theme.textMuted }}>LP Fee</span>
                 <span style={{ color: theme.textPrimary }}>0.05%</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px', fontSize: '13px' }}>

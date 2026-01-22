@@ -851,12 +851,12 @@ const TokenSelectModal = ({ isOpen, onClose, onSelect, theme, isDark }) => {
   if (!isOpen) return null;
 
   const tokens = [
-    { symbol: 'mUSDC', name: 'Mock USDC', address: '0x9F78...9b4d', balance: '1,250.00', usdValue: '$1,250.00', icon: '$' },
-    { symbol: 'mETH', name: 'Mock ETH', address: '0x3a2c...1e4f', balance: '4.52', usdValue: '$14,667.90', icon: 'Ξ' },
-    { symbol: 'ETH', name: 'Ethereum', address: '0x0000...0000', balance: '0.85', usdValue: '$2,758.25', icon: 'Ξ' },
-    { symbol: 'mDAI', name: 'Mock DAI', address: '0x5d3a...8c2b', balance: '400.00', usdValue: '$400.00', icon: '◈' },
-    { symbol: 'mBTC', name: 'Mock BTC', address: '0x2b1a...7d9e', balance: '0.15', usdValue: '$14,250.00', icon: '₿' },
-    { symbol: 'mLINK', name: 'Mock LINK', address: '0x8f4e...2a1c', balance: '150.00', usdValue: '$2,850.00', icon: '⬡' },
+    { symbol: 'mUSDC', name: 'Mock USDC', address: '0x9F78...9b4d', balance: '0.00', usdValue: '$0.00', icon: '$' },
+    { symbol: 'mETH', name: 'Mock ETH', address: '0x3a2c...1e4f', balance: '0.00', usdValue: '$0.00', icon: 'Ξ' },
+    { symbol: 'ETH', name: 'Ethereum', address: '0x0000...0000', balance: '0.00', usdValue: '$0.00', icon: 'Ξ' },
+    { symbol: 'mDAI', name: 'Mock DAI', address: '0x5d3a...8c2b', balance: '0.00', usdValue: '$0.00', icon: '◈' },
+    { symbol: 'mBTC', name: 'Mock BTC', address: '0x2b1a...7d9e', balance: '0.00', usdValue: '$0.00', icon: '₿' },
+    { symbol: 'mLINK', name: 'Mock LINK', address: '0x8f4e...2a1c', balance: '0.00', usdValue: '$0.00', icon: '⬡' },
   ];
 
   const filteredTokens = tokens.filter(token => 
@@ -1564,15 +1564,18 @@ const SwapInterface = ({ onClose, swapDetails, theme, isDark }) => {
         <div style={{
           background: theme.bgCard,
           borderRadius: '24px',
-          padding: '24px',
+          padding: '12px 16px',
           border: `1px solid ${theme.border}`,
           boxShadow: '0 4px 20px rgba(0, 0, 0, 0.04)',
           position: 'relative',
-          width: '420px',
+          width: '400px',
           flexShrink: 0,
-          order: 2
+          order: 2,
+          gap: '12px',
+          display: 'flex',
+          flexDirection: 'column'
         }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
             <h2 style={{ color: theme.textPrimary, fontSize: '20px', fontWeight: '700', margin: 0, letterSpacing: '-0.02em' }}>Swap</h2>
             <button style={{ background: 'transparent', border: 'none', color: theme.textMuted, cursor: 'pointer', padding: '8px', borderRadius: '50%', '&:hover': { background: theme.bgSecondary } }}>
               <SettingsIcon />
@@ -1627,9 +1630,9 @@ const SwapInterface = ({ onClose, swapDetails, theme, isDark }) => {
           </div>
 
           {/* Hook Selection - Inline Preview */}
-          <div style={{ marginTop: '24px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-              <span style={{ color: theme.textSecondary, fontSize: '13px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Swap Hook</span>
+          <div style={{ marginTop: '12px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+              <span style={{ color: theme.textSecondary, fontSize: '12px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Swap Hook</span>
             </div>
 
             <button 
@@ -1639,7 +1642,7 @@ const SwapInterface = ({ onClose, swapDetails, theme, isDark }) => {
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 width: '100%',
-                padding: '16px',
+                padding: '12px 16px',
                 borderRadius: '16px',
                 border: `1px solid ${theme.border}`,
                 background: isDark ? 'rgba(255, 255, 255, 0.02)' : 'rgba(0, 0, 0, 0.01)',
@@ -1674,23 +1677,23 @@ const SwapInterface = ({ onClose, swapDetails, theme, isDark }) => {
           </div>
 
           {/* Swap Details Breakdown */}
-          <div style={{ marginTop: '24px', padding: '16px', background: theme.bgSecondary, borderRadius: '16px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px', fontSize: '13px' }}>
+          <div style={{ marginTop: '12px', padding: '12px 16px', background: theme.bgSecondary, borderRadius: '16px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '13px' }}>
               <span style={{ color: theme.textSecondary }}>Rate</span>
               <span style={{ color: theme.textPrimary, fontWeight: '500' }}>1 ETH = 3,245.50 USDC</span>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px', fontSize: '13px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '13px' }}>
               <span style={{ color: theme.textSecondary }}>Network Fee</span>
               <span style={{ color: theme.textPrimary, fontWeight: '500' }}>~$2.45</span>
             </div>
             
-            <div style={{ borderTop: `1px solid ${theme.border}`, margin: '12px 0', padding: '12px 0' }}>
-              <div style={{ color: theme.textSecondary, fontSize: '11px', fontWeight: '600', textTransform: 'uppercase', marginBottom: '8px' }}>Fee Architecture</div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px', fontSize: '13px' }}>
+            <div style={{ borderTop: `1px solid ${theme.border}`, margin: '8px 0', padding: '8px 0' }}>
+              <div style={{ color: theme.textSecondary, fontSize: '11px', fontWeight: '600', textTransform: 'uppercase', marginBottom: '6px' }}>Fee Architecture</div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px', fontSize: '13px' }}>
                 <span style={{ color: theme.textMuted }}>LP Fee</span>
                 <span style={{ color: theme.textPrimary }}>0.05%</span>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px', fontSize: '13px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px', fontSize: '13px' }}>
                 <span style={{ color: theme.textMuted }}>Protocol Fee</span>
                 <span style={{ color: theme.textPrimary }}>0.00%</span>
               </div>
@@ -1700,12 +1703,12 @@ const SwapInterface = ({ onClose, swapDetails, theme, isDark }) => {
               </div>
             </div>
 
-            <div style={{ borderTop: `1px solid ${theme.border}`, paddingTop: '12px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '13px' }}>
+            <div style={{ borderTop: `1px solid ${theme.border}`, paddingTop: '8px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px', fontSize: '13px' }}>
                 <span style={{ color: theme.textSecondary }}>Price Impact</span>
                 <span style={{ color: '#10b981' }}>&lt;0.01%</span>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '13px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px', fontSize: '13px' }}>
                 <span style={{ color: theme.textSecondary }}>Max Slippage</span>
                 <span style={{ color: theme.textPrimary }}>0.5%</span>
               </div>
@@ -1719,8 +1722,8 @@ const SwapInterface = ({ onClose, swapDetails, theme, isDark }) => {
           {/* Swap Execution Button */}
           <button style={{
             width: '100%',
-            padding: '18px',
-            marginTop: '24px',
+            padding: '16px',
+            marginTop: '12px',
             borderRadius: '16px',
             border: 'none',
             background: 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)',

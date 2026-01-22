@@ -1,0 +1,199 @@
+I see the issues now. Looking at all three images:
+
+1. **Token Selector** (Screenshot 1): Balances are prefilled with mock data (1,250.00 mUSDC, 4.52 mETH, etc.) — should show 0 or "--"
+2. **Reference Layout** (Screenshot 2): Chart LEFT, Form RIGHT, side-by-side, both vertically aligned
+3. **Current PDF**: Swap modal is stacked vertically below chart, not side-by-side
+
+---
+
+## Refined Prompt: Swap Interface Layout & Token Selector Fixes
+
+```markdown
+# Task: Fix Swap Interface Layout + Token Selector Balances
+
+## Overview
+Three related issues need fixing to match the reference design.
+
+---
+
+## Issue 1: Token Selector Shows Prefilled Balances
+
+### Current State (Incorrect)
+Token selector modal displays hardcoded/mock balances:
+- mUSDC: 1,250.00
+- mETH: 4.52
+- ETH: 0.85
+- mDAI: 400.00
+- mBTC: 0.15
+- mLINK: 150.00
+
+### Expected State
+Token selector should show:
+- "0.00" or "--" for all balances when wallet not connected
+- Actual on-chain balances ONLY after wallet connection + balance fetch
+
+### Fix Location
+Find the token selector/picker component and look for:
+- Hardcoded balance values in token list data
+- Mock data arrays with balance properties
+- Replace with: `balance: 0` or fetch from wallet state
+
+```jsx
+// BEFORE (mock data):
+const tokens = [
+  { symbol: 'mUSDC', name: 'Mock USDC', balance: 1250.00, ... },
+  { symbol: 'mETH', name: 'Mock ETH', balance: 4.52, ... },
+];
+
+// AFTER (no prefill):
+const tokens = [
+  { symbol: 'mUSDC', name: 'Mock USDC', balance: walletConnected ? fetchedBalance : 0, ... },
+  { symbol: 'mETH', name: 'Mock ETH', balance: walletConnected ? fetchedBalance : 0, ... },
+];
+```
+
+---
+
+## Issue 2: Layout Should Be Side-by-Side (Chart Left, Swap Right)
+
+### Current State (Incorrect - from PDF)
+```
+┌─────────────────────────────────────────┐
+│           [CHART + STATS]               │  ← Centered, full width
+├─────────────────────────────────────────┤
+│           [SWAP MODAL]                  │  ← Below chart, stacked
+├─────────────────────────────────────────┤
+│           [CHAT INPUT]                  │
+└─────────────────────────────────────────┘
+```
+
+### Expected State (Reference Screenshot 2)
+```
+┌───────────────────────────────────────────────────────────┐
+│                                                           │
+│    [CHART/POOL ACTIVITY]      │    [SWAP/ADD LIQUIDITY]   │
+│    (60-65% width)             │    (35-40% width)         │
+│    - Price chart              │    - Token inputs         │
+│    - Stats below chart        │    - Fee breakdown        │
+│                               │    - Action button        │
+│                                                           │
+└───────────────────────────────────────────────────────────┘
+                    ↑ Centered in viewport ↑
+```
+
+### Fix Implementation
+
+```jsx
+// Parent container - centers the entire layout
+<div style={{
+  width: '100%',
+  display: 'flex',
+  justifyContent: 'center',
+  padding: '24px',
+}}>
+  {/* Inner container - holds both panels side-by-side */}
+  <div style={{
+    display: 'flex',
+    gap: '24px',
+    maxWidth: '1400px',
+    width: '100%',
+    alignItems: 'flex-start',  // Top-align both panels
+  }}>
+    
+    {/* LEFT: Chart + Stats */}
+    <div style={{
+      flex: '1 1 60%',
+      minWidth: '500px',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '16px',
+    }}>
+      <ChartComponent />
+      <StatsRow />  {/* 24h Volume, Pool TVL, Current Fee */}
+    </div>
+    
+    {/* RIGHT: Swap Modal */}
+    <div style={{
+      width: '400px',
+      flexShrink: 0,
+    }}>
+      <SwapInterface />
+    </div>
+    
+  </div>
+</div>
+```
+
+---
+
+## Issue 3: Swap Modal Needs to Fit Alongside Chart
+
+### Problem
+Current swap modal may be too tall or have too much vertical spacing to sit comfortably beside the chart.
+
+### Solution
+Adjust internal spacing/padding of swap modal to be more compact WITHOUT removing features:
+
+```jsx
+// Reduce vertical gaps between sections
+gap: '12px'      // Instead of 16px or 20px
+
+// Tighter padding on sections
+padding: '12px 16px'   // Instead of 16px 20px
+
+// Smaller font for labels like "FEE ARCHITECTURE"
+fontSize: '11px'       // Instead of 12px or 13px
+
+// Reduce height of token input boxes slightly
+padding: '12px 16px'   // Instead of 16px 20px
+```
+
+### Features to KEEP (do not remove):
+- Token pair selector (Sell/Buy)
+- Balance display
+- Swap direction toggle button
+- SWAP HOOK section (MEV Protection)
+- Rate display
+- Network Fee
+- FEE ARCHITECTURE (LP Fee, Protocol Fee, Hook Fee)
+- Price Impact
+- Max Slippage
+- Hook Benefit
+- Action button ("Swap ETH → USDC with MEV Protection")
+
+### Compact Layout Adjustments:
+- Reduce section gaps from 16-20px to 12px
+- Use smaller text (11-12px) for secondary labels
+- Tighter padding on card sections
+- Consider collapsible "FEE ARCHITECTURE" section (click to expand)
+
+---
+
+## Success Criteria
+- [ ] Token selector shows 0.00 or "--" for all balances (no mock data)
+- [ ] Chart displays on the LEFT side
+- [ ] Swap modal displays on the RIGHT side
+- [ ] Both panels are horizontally centered in viewport together
+- [ ] Both panels are top-aligned (alignItems: flex-start)
+- [ ] All swap features are preserved (nothing removed)
+- [ ] Swap modal fits vertically alongside chart without overflow
+- [ ] Layout works in both light and dark modes
+- [ ] Responsive: stacks vertically on narrow screens (<900px)
+
+## Files Likely Affected
+1. Token selector component (balance mock data)
+2. Main layout container (flex direction, centering)
+3. SwapInterface component (internal spacing adjustments)
+4. Possibly ChartComponent wrapper (width constraints)
+
+## Do NOT Change
+- Token icons or colors
+- Chart functionality or TradingView embed
+- Swap business logic
+- Dark/light theme colors
+- Sidebar layout
+```
+
+---
+
+This prompt covers all three issues you identified. Should I adjust anything before you apply it in Replit?

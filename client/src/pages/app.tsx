@@ -767,17 +767,17 @@ const themes = {
     accentLight: '#f3e8ff',
   },
   dark: {
-    bgPrimary: '#0f0f14',
-    bgSecondary: '#08080c',
-    bgSidebar: '#0f0f14',
-    bgCard: '#1a1a24',
-    bgInput: '#1a1a24',
-    textPrimary: '#f0f0f5',
-    textSecondary: '#8b8b9e',
-    textMuted: '#5a5a6e',
-    border: 'rgba(255,255,255,0.08)',
-    accent: '#a855f7',
-    accentLight: 'rgba(168,85,247,0.15)',
+    bgPrimary: '#0B0E14', // Deep navy-black
+    bgSecondary: '#13161F', // Slightly lighter for cards
+    bgSidebar: '#0B0E14',
+    bgCard: '#13161F',
+    bgInput: '#0B0E14', // Darker for inputs
+    textPrimary: '#FFFFFF',
+    textSecondary: '#94A3B8', // Slate-400
+    textMuted: '#64748B', // Slate-500
+    border: 'rgba(255,255,255,0.06)',
+    accent: '#8b5cf6',
+    accentLight: 'rgba(139, 92, 246, 0.15)',
   }
 };
 
@@ -811,36 +811,26 @@ const MiniChart = ({ data, color = "#10b981" }) => {
 
 // Price Chart Component Placeholder
 const PriceChart = ({ pair, theme }) => {
-  // Simple candlestick visualization using SVG
   return (
-    <svg width="100%" height="100%" viewBox="0 0 400 200" preserveAspectRatio="none">
-      <defs>
-        <linearGradient id="chartFill" x1="0" x2="0" y1="0" y2="1">
-          <stop offset="0%" stopColor="#10b981" stopOpacity="0.1" />
-          <stop offset="100%" stopColor="#10b981" stopOpacity="0" />
-        </linearGradient>
-      </defs>
-      {/* Grid lines */}
-      <line x1="0" y1="50" x2="400" y2="50" stroke={theme.border} strokeDasharray="4 4" />
-      <line x1="0" y1="100" x2="400" y2="100" stroke={theme.border} strokeDasharray="4 4" />
-      <line x1="0" y1="150" x2="400" y2="150" stroke={theme.border} strokeDasharray="4 4" />
-      
-      {/* Candles (mock data) */}
-      {[...Array(20)].map((_, i) => {
-        const x = i * 20 + 10;
-        const height = Math.random() * 60 + 20;
-        const y = 100 - Math.random() * 40;
-        const isGreen = Math.random() > 0.4;
-        const color = isGreen ? '#10b981' : '#ef4444';
-        
-        return (
-          <g key={i}>
-            <line x1={x} y1={y - 10} x2={x} y2={y + height + 10} stroke={color} strokeWidth="1" />
-            <rect x={x - 6} y={isGreen ? y : y + height * 0.2} width="12" height={isGreen ? height : height * 0.8} fill={color} rx="2" />
-          </g>
-        );
-      })}
-    </svg>
+    <div style={{ 
+      width: '100%', 
+      height: '100%', 
+      display: 'flex', 
+      alignItems: 'center', 
+      justifyContent: 'center',
+      background: 'rgba(0,0,0,0.2)',
+      borderRadius: '16px',
+      position: 'relative'
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: theme.textSecondary, opacity: 0.6 }}>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <line x1="18" y1="20" x2="18" y2="10"></line>
+          <line x1="12" y1="20" x2="12" y2="4"></line>
+          <line x1="6" y1="20" x2="6" y2="14"></line>
+        </svg>
+        <span style={{ fontWeight: '500', letterSpacing: '0.5px' }}>TradingView Chart Here</span>
+      </div>
+    </div>
   );
 };
 
@@ -1025,40 +1015,44 @@ const TokenSelect = ({ token, balance, usdValue, side, amount, theme, onTokenCli
   }}>
     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
       <span style={{ color: theme ? theme.textSecondary : '#6b7280', fontSize: '14px', fontWeight: '500' }}>{side}</span>
-      {balance && <span style={{ color: theme ? theme.textMuted : '#9ca3af', fontSize: '13px' }}>Balance: {balance}</span>}
+      <span style={{ color: theme ? theme.textMuted : '#9ca3af', fontSize: '13px' }}>Balance: {balance || '0.00'}</span>
     </div>
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-      <input
-        type="text"
-        value={amount}
-        onChange={(e) => onAmountChange && onAmountChange(e.target.value)}
-        placeholder="0.00"
-        style={{
-          background: 'transparent',
-          border: 'none',
-          color: theme ? theme.textPrimary : '#111827',
-          fontSize: '32px',
-          fontWeight: '600',
-          width: '60%',
-          outline: 'none',
-          fontFamily: 'SF Mono, Monaco, monospace',
-        }}
-      />
+      <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+        <input
+          type="text"
+          value={amount}
+          onChange={(e) => onAmountChange && onAmountChange(e.target.value)}
+          placeholder="0.00"
+          style={{
+            background: 'transparent',
+            border: 'none',
+            color: theme ? theme.textPrimary : '#111827',
+            fontSize: '32px',
+            fontWeight: '600',
+            width: '100%',
+            outline: 'none',
+            fontFamily: 'SF Mono, Monaco, monospace',
+            marginBottom: '4px'
+          }}
+        />
+        <div style={{ color: theme ? theme.textMuted : '#9ca3af', fontSize: '13px' }}>≈ ${usdValue || '0.00'}</div>
+      </div>
       <button 
         onClick={onTokenClick}
         style={{
         display: 'flex',
         alignItems: 'center',
         gap: '8px',
-        padding: '8px 12px 8px 8px',
+        padding: '6px 12px 6px 6px',
         borderRadius: '24px',
-        border: theme ? `1px solid ${theme.border}` : '1px solid rgba(139, 92, 246, 0.2)',
-        background: theme ? theme.bgCard : 'white',
+        border: 'none',
+        background: theme ? (theme.mode === 'dark' ? '#1f2937' : '#e5e7eb') : '#f3f4f6', // More distinct pill bg
         color: theme ? theme.textPrimary : '#1f2937',
         cursor: 'pointer',
         fontSize: '16px',
         fontWeight: '600',
-        boxShadow: '0 2px 4px rgba(0,0,0,0.02)'
+        flexShrink: 0
       }}>
         <div style={{
           width: '28px',
@@ -1092,7 +1086,6 @@ const TokenSelect = ({ token, balance, usdValue, side, amount, theme, onTokenCli
         <ChevronDownIcon />
       </button>
     </div>
-    {usdValue && <div style={{ color: theme ? theme.textMuted : '#9ca3af', fontSize: '13px', marginTop: '4px' }}>≈ ${usdValue}</div>}
   </div>
 );
 
@@ -1564,11 +1557,11 @@ const SwapInterface = ({ onClose, swapDetails, theme, isDark }) => {
         <div style={{
           background: theme.bgCard,
           borderRadius: '24px',
-          padding: '12px 16px',
+          padding: '24px',
           border: `1px solid ${theme.border}`,
-          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.04)',
+          boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.05), 0 20px 40px -10px rgba(0,0,0,0.5)',
           position: 'relative',
-          width: '400px',
+          width: '420px',
           flexShrink: 0,
           order: 2,
           gap: '12px',
@@ -1796,16 +1789,43 @@ const SwapInterface = ({ onClose, swapDetails, theme, isDark }) => {
           
           {/* Market Stats */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
-            <div style={{ background: theme.bgCard, borderRadius: '20px', padding: '20px', border: `1px solid ${theme.border}` }}>
-              <div style={{ color: theme.textSecondary, fontSize: '13px', marginBottom: '8px', fontWeight: '500' }}>24h Volume</div>
+            <div style={{ 
+              background: theme.bgCard, 
+              borderRadius: '16px', 
+              padding: '16px', 
+              border: `1px solid ${theme.border}`,
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+            }}>
+              <div style={{ color: theme.textSecondary, fontSize: '13px', marginBottom: '4px', fontWeight: '500' }}>24h Volume</div>
               <div style={{ color: theme.textPrimary, fontSize: '20px', fontWeight: '700' }}>$2.4B</div>
             </div>
-            <div style={{ background: theme.bgCard, borderRadius: '20px', padding: '20px', border: `1px solid ${theme.border}` }}>
-              <div style={{ color: theme.textSecondary, fontSize: '13px', marginBottom: '8px', fontWeight: '500' }}>Pool TVL</div>
+            <div style={{ 
+              background: theme.bgCard, 
+              borderRadius: '16px', 
+              padding: '16px', 
+              border: `1px solid ${theme.border}`,
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+            }}>
+              <div style={{ color: theme.textSecondary, fontSize: '13px', marginBottom: '4px', fontWeight: '500' }}>Pool TVL</div>
               <div style={{ color: theme.textPrimary, fontSize: '20px', fontWeight: '700' }}>$847M</div>
             </div>
-            <div style={{ background: theme.bgCard, borderRadius: '20px', padding: '20px', border: `1px solid ${theme.border}` }}>
-              <div style={{ color: theme.textSecondary, fontSize: '13px', marginBottom: '8px', fontWeight: '500' }}>Current Fee</div>
+            <div style={{ 
+              background: theme.bgCard, 
+              borderRadius: '16px', 
+              padding: '16px', 
+              border: `1px solid ${theme.border}`,
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+            }}>
+              <div style={{ color: theme.textSecondary, fontSize: '13px', marginBottom: '4px', fontWeight: '500' }}>Current Fee</div>
               <div style={{ color: theme.textPrimary, fontSize: '20px', fontWeight: '700' }}>0.05%</div>
             </div>
           </div>

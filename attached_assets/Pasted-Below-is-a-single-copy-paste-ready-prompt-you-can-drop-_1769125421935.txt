@@ -1,0 +1,206 @@
+Below is a **single, copy-paste–ready prompt** you can drop directly into **Replit Design Mode**.
+It is written to force **pixel-accurate visual parity** with the attached screenshot and to prevent Replit from “interpreting” or redesigning anything.
+
+---
+
+## Replit Design Mode Prompt — Swap Modal (Exact Match)
+
+**Context**
+
+You are updating the **Swap modal** for a DeFi application called **Mantua.AI**.
+A **reference screenshot is attached**.
+Your job is to make the Swap modal look **exactly like the screenshot**, with no stylistic deviations.
+
+This is **not a redesign**.
+This is a **visual replication task**.
+
+---
+
+## Hard Requirements (Non-Negotiable)
+
+* Match the **layout, spacing, typography, colors, shadows, borders, and hierarchy** exactly
+* Dark theme only
+* No additional UI elements
+* No removed UI elements
+* No creative interpretation
+* No “improvements”
+* If something appears subtle (glow, divider, opacity), **replicate it**
+
+---
+
+## Overall Layout
+
+* Two-panel layout:
+
+  * **Left:** Chart + market stats
+  * **Right:** Swap modal card
+* Panels are visually separated but share the same background tone
+* Rounded corners throughout (large radius, soft)
+* Subtle inner glow and border on cards
+* Background is near-black with deep navy undertones
+
+---
+
+## Left Panel (Market View)
+
+### Header
+
+* Pair label: **ETH / USDC**
+* Price displayed prominently: **$3,245.50**
+* Percentage change in green: **+2.34%**
+* Timeframe selector aligned right:
+
+  * `1H`, `4H`, `1D` (active), `1W`
+  * Active state is a filled pill
+
+### Chart Area
+
+* Large empty chart container
+* Placeholder text centered: “TradingView Chart Here”
+* Dark gridless background
+* No axes or labels visible
+
+### Stats Row (Bottom)
+
+Three metric cards aligned horizontally:
+
+1. **24h Volume** — `$2.4B`
+2. **Pool TVL** — `$847M`
+3. **Current Fee** — `0.05%`
+
+Each stat card:
+
+* Rounded
+* Slightly raised
+* Soft border
+* Muted label text
+* Bright numeric value
+
+---
+
+## Right Panel (Swap Modal)
+
+### Card Container
+
+* Tall rounded card
+* Subtle gradient border
+* Inner shadow
+* Title at top left: **Swap**
+* Small settings gear icon at top right
+
+---
+
+### Sell Section
+
+* Label: **Sell**
+* Balance text on right: `Balance: 0.00`
+* Large numeric input: `0.00`
+* USD equivalent below: `≈ $0.00`
+* Token selector pill on right:
+
+  * Circular ETH icon
+  * Label: **ETH**
+  * Chevron dropdown indicator
+
+---
+
+### Direction Switch
+
+* Centered circular button between Sell and Buy
+* Down arrow icon
+* Slight glow / hover effect
+
+---
+
+### Buy Section
+
+* Label: **Buy**
+* Balance text on right: `Balance: 0.00`
+* Large numeric input: `0.00`
+* USD equivalent below: `≈ $0.00`
+* Token selector pill:
+
+  * USDC icon
+  * Label: **USDC**
+
+---
+
+### Swap Hook Section
+
+* Label: **SWAP HOOK**
+* Hook card with:
+
+  * Shield icon
+  * Title: **MEV Protection**
+  * Subtext: `+Save ~0.3% on trades >$1k`
+* “Change” link aligned right
+* Hook card has distinct background from inputs
+
+---
+
+### Rate & Fees Breakdown
+
+Stacked text rows with right-aligned values:
+
+* **Rate**
+
+  * `1 ETH = 3,245.50 USDC`
+* **Network Fee**
+
+  * `~$2.45`
+
+**Fee Architecture**
+
+* LP Fee: `0.05%`
+* Protocol Fee: `0.00%`
+* Hook Fee: `0.01%`
+
+**Execution Details**
+
+* Price Impact: `<0.01%` (green)
+* Max Slippage: `0.5%`
+* Hook Benefit: `+$14.60 saved` (green)
+
+Spacing is tight, clean, and aligned.
+
+---
+
+### Primary CTA Button
+
+* Full-width
+* Large rounded pill
+* Purple gradient
+* Text:
+  **“Swap ETH → USDC with MEV Protection”**
+* Button is visually dominant
+* No secondary CTA
+
+---
+
+## Styling Rules
+
+* Font: modern sans-serif (Inter-like)
+* Numbers are heavier than labels
+* Labels use muted gray
+* Positive values are green
+* Accent color is purple
+* Icons are soft, rounded, and minimal
+* No harsh borders — everything is subtle
+
+---
+
+## Final Instruction
+
+**Use the attached screenshot as the single source of truth.**
+If there is any ambiguity, **default to matching the screenshot exactly** rather than guessing.
+
+Do not explain your changes.
+Only update the UI to match the reference.
+
+---
+
+If you want, next I can:
+
+* Break this into **Replit-friendly component tasks**
+* Translate this into **exact Tailwind classes**
+* Or generate a **pixel-locked Figma spec** from the screenshot

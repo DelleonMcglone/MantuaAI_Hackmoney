@@ -105,11 +105,11 @@ const TokenIcon = ({ token, size = 32 }) => {
 };
 
 // Token pair icon
-const TokenPairIcon = ({ token1, token2 }) => (
+const TokenPairIcon = ({ token1, token2, size = 28 }) => (
   <div style={{ display: 'flex', alignItems: 'center' }}>
-    <TokenIcon token={token1} size={28} />
-    <div style={{ marginLeft: -8, zIndex: 1 }}>
-      <TokenIcon token={token2} size={28} />
+    <TokenIcon token={token1} size={size} />
+    <div style={{ marginLeft: -(size * 0.3), zIndex: 1 }}>
+      <TokenIcon token={token2} size={size} />
     </div>
   </div>
 );
@@ -1958,8 +1958,8 @@ const LiquidityInterface = ({ onClose, theme, isDark }) => {
     };
     const config = hookConfig[hook] || hookConfig['None'];
     return (
-      <div style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '4px 8px', borderRadius: '6px', background: config.bg, color: config.color, fontSize: '11px', fontWeight: '600' }}>
-        {config.icon}
+      <div style={{ display: 'inline-flex', alignItems: 'center', gap: '3px', padding: '2px 6px', borderRadius: '4px', background: config.bg, color: config.color, fontSize: '10px', fontWeight: '600', whiteSpace: 'nowrap' }}>
+        {config.icon && <span style={{ transform: 'scale(0.8)' }}>{config.icon}</span>}
         {hook}
       </div>
     );
@@ -1968,7 +1968,7 @@ const LiquidityInterface = ({ onClose, theme, isDark }) => {
   const PoolTypeBadge = ({ type }) => {
     const isStable = type === 'Stable';
     return (
-      <span style={{ padding: '3px 8px', borderRadius: '4px', background: isStable ? 'rgba(16, 185, 129, 0.1)' : theme.bgSecondary, color: isStable ? '#10b981' : theme.textSecondary, fontSize: '11px', fontWeight: '500' }}>
+      <span style={{ padding: '2px 6px', borderRadius: '4px', background: isStable ? 'rgba(16, 185, 129, 0.1)' : theme.bgSecondary, color: isStable ? '#10b981' : theme.textSecondary, fontSize: '10px', fontWeight: '600' }}>
         {type}
       </span>
     );
@@ -2070,39 +2070,39 @@ const LiquidityInterface = ({ onClose, theme, isDark }) => {
         </div>
 
         {/* Pools Table */}
-        <div style={{ border: `1px solid ${theme.border}`, borderRadius: '16px', overflow: 'hidden', overflowX: 'auto' }}>
-          <table style={{ width: '100%', minWidth: '700px', borderCollapse: 'collapse' }}>
+        <div style={{ border: `1px solid ${theme.border}`, borderRadius: '16px', overflow: 'hidden' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr style={{ borderBottom: `1px solid ${theme.border}`, background: theme.bgSecondary }}>
-                <th style={{ padding: '14px 16px', textAlign: 'left', color: theme.textSecondary, fontSize: '13px', fontWeight: '600' }}>Pool <span style={{ opacity: 0.4, fontSize: '11px', marginLeft: '4px' }}>↕</span></th>
-                <th style={{ padding: '14px 16px', textAlign: 'left' }}><SortableHeader label="Volume (24h)" sortKey="volume" currentSort={sort} onSort={handleSort} /></th>
-                <th style={{ padding: '14px 16px', textAlign: 'left' }}><SortableHeader label="Fees (24h)" sortKey="fees" currentSort={sort} onSort={handleSort} /></th>
-                <th style={{ padding: '14px 16px', textAlign: 'left' }}><SortableHeader label="Liquidity" sortKey="liquidity" currentSort={sort} onSort={handleSort} /></th>
-                <th style={{ padding: '14px 16px', textAlign: 'left' }}><SortableHeader label="Yield (7d)" sortKey="yield" currentSort={sort} onSort={handleSort} /></th>
-                <th style={{ padding: '14px 16px', textAlign: 'left' }}></th>
+                <th style={{ padding: '14px 12px', textAlign: 'left', color: theme.textSecondary, fontSize: '13px', fontWeight: '600', width: '280px' }}>Pool <span style={{ opacity: 0.4, fontSize: '11px', marginLeft: '4px' }}>↕</span></th>
+                <th style={{ padding: '14px 12px', textAlign: 'left', width: '100px' }}><SortableHeader label="Vol(24h)" sortKey="volume" currentSort={sort} onSort={handleSort} /></th>
+                <th style={{ padding: '14px 12px', textAlign: 'left', width: '80px' }}><SortableHeader label="Fees" sortKey="fees" currentSort={sort} onSort={handleSort} /></th>
+                <th style={{ padding: '14px 12px', textAlign: 'left', width: '120px' }}><SortableHeader label="Liquidity" sortKey="liquidity" currentSort={sort} onSort={handleSort} /></th>
+                <th style={{ padding: '14px 12px', textAlign: 'left', width: '80px' }}><SortableHeader label="Yield" sortKey="yield" currentSort={sort} onSort={handleSort} /></th>
+                <th style={{ padding: '14px 12px', textAlign: 'left', width: '130px' }}></th>
               </tr>
             </thead>
             <tbody>
               {filteredPools.map((pool, i) => (
                 <tr key={i} style={{ borderBottom: i === filteredPools.length - 1 ? 'none' : `1px solid ${theme.border}` }}>
-                  <td style={{ padding: '16px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                      <TokenPairIcon token1={pool.token1} token2={pool.token2} />
+                  <td style={{ padding: '12px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <TokenPairIcon token1={pool.token1} token2={pool.token2} size={24} />
                       <div>
-                        <div style={{ color: theme.textPrimary, fontWeight: '600', fontSize: '14px', marginBottom: '4px' }}>{pool.token1} / {pool.token2}</div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <div style={{ color: theme.textPrimary, fontWeight: '600', fontSize: '14px', marginBottom: '2px' }}>{pool.token1} / {pool.token2}</div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'wrap' }}>
                           <PoolTypeBadge type={pool.type} />
                           <HookBadge hook={pool.hook} />
                         </div>
                       </div>
                     </div>
                   </td>
-                  <td style={{ padding: '16px' }}><span style={{ color: theme.textPrimary, fontFamily: 'SF Mono, Monaco, monospace', fontSize: '14px' }}>${pool.volume.toLocaleString()}</span></td>
-                  <td style={{ padding: '16px' }}><span style={{ color: theme.textPrimary, fontFamily: 'SF Mono, Monaco, monospace', fontSize: '14px' }}>${pool.fees.toLocaleString()}</span></td>
-                  <td style={{ padding: '16px' }}><span style={{ color: theme.textPrimary, fontFamily: 'SF Mono, Monaco, monospace', fontSize: '14px' }}>${pool.liquidity.toLocaleString()}</span></td>
-                  <td style={{ padding: '16px' }}><YieldBadge value={pool.yield} /></td>
-                  <td style={{ padding: '16px', textAlign: 'right' }}>
-                     <button style={{ padding: '8px 14px', borderRadius: '8px', border: `1px solid ${theme.accent}40`, background: `${theme.accent}10`, color: theme.accent, fontSize: '13px', fontWeight: '600', cursor: 'pointer', whiteSpace: 'nowrap' }}>Add Liquidity</button>
+                  <td style={{ padding: '12px' }}><span style={{ color: theme.textPrimary, fontFamily: 'SF Mono, Monaco, monospace', fontSize: '13px' }}>${pool.volume.toLocaleString()}</span></td>
+                  <td style={{ padding: '12px' }}><span style={{ color: theme.textPrimary, fontFamily: 'SF Mono, Monaco, monospace', fontSize: '13px' }}>${pool.fees.toLocaleString()}</span></td>
+                  <td style={{ padding: '12px' }}><span style={{ color: theme.textPrimary, fontFamily: 'SF Mono, Monaco, monospace', fontSize: '13px' }}>${pool.liquidity.toLocaleString()}</span></td>
+                  <td style={{ padding: '12px' }}><YieldBadge value={pool.yield} /></td>
+                  <td style={{ padding: '12px', textAlign: 'right' }}>
+                     <button style={{ padding: '8px 12px', borderRadius: '8px', border: `1px solid ${theme.accent}40`, background: `${theme.accent}10`, color: theme.accent, fontSize: '12px', fontWeight: '600', cursor: 'pointer', whiteSpace: 'nowrap', width: '100%' }}>Add Liquidity</button>
                   </td>
                 </tr>
               ))}
@@ -2610,7 +2610,7 @@ export default function MantuaApp() {
                 overflowY: 'auto', 
                 padding: '40px 20px 140px' // Bottom padding for fixed input
               }}>
-                <div style={{ width: '100%', maxWidth: 700, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 32 }}>
+                <div style={{ width: '100%', maxWidth: showLiquidity ? '1200px' : 700, transition: 'max-width 0.3s ease', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 32 }}>
                   {!hasInteracted && !showSwap && !showLiquidity && !showAgentBuilder && (
                     <div style={{ textAlign: 'center' }}>
                       <h1 style={{ fontFamily: '"Outfit", sans-serif', fontSize: 'clamp(28px, 4vw, 40px)', fontWeight: 600, marginBottom: 12, letterSpacing: '-0.02em' }}>Hi, {walletAddress}</h1>

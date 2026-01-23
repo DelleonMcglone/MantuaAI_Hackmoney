@@ -2105,28 +2105,28 @@ const LiquidityInterface = ({ onClose, theme, isDark }) => {
 const AgentBuilderInterface = ({ onClose, theme, isDark }) => {
   const promptOptions = [
     {
+      title: 'Create a wallet agent',
+      subtitle: 'that creates and manages wallets automatically',
+    },
+    {
+      title: 'Build a balance tracker',
+      subtitle: 'to monitor token balances across accounts',
+    },
+    {
       title: 'Create a swap agent',
-      subtitle: 'that executes trades based on price targets',
+      subtitle: 'that executes test swaps on Base Sepolia',
     },
     {
-      title: 'Build an MEV protection agent',
-      subtitle: 'to monitor and protect my transactions',
+      title: 'Build a liquidity agent',
+      subtitle: 'to provision and manage LP positions',
     },
     {
-      title: 'Create a liquidity manager',
-      subtitle: 'that rebalances my LP positions automatically',
+      title: 'Create an NFT agent',
+      subtitle: 'to mint, transfer, and trade NFTs',
     },
     {
-      title: 'Build a price alert agent',
-      subtitle: 'for ETH, BTC, and USDC price movements',
-    },
-    {
-      title: 'Create a DCA agent',
-      subtitle: 'to dollar-cost average into ETH weekly',
-    },
-    {
-      title: 'Build a portfolio rebalancer',
-      subtitle: 'that maintains 60/40 ETH/USDC allocation',
+      title: 'Build a transfer agent',
+      subtitle: 'that automates token transfers with retry logic',
     },
   ];
 
@@ -2248,12 +2248,9 @@ const AgentBuilderInterface = ({ onClose, theme, isDark }) => {
           margin: 0,
           maxWidth: '600px'
         }}>
-          Create AI-powered agents that automate your DeFi strategies on Uniswap v4. 
-          Agents can execute swaps, manage liquidity, monitor prices, and leverage hooks 
-          like{' '}
-          <span style={{ color: theme.accent, fontWeight: '500' }}>MEV Protection</span>,{' '}
-          <span style={{ color: theme.accent, fontWeight: '500' }}>Directional Fee</span>, and{' '}
-          <span style={{ color: theme.accent, fontWeight: '500' }}>JiT Rebalancing</span>.
+          Create AI-powered agents that automate your Web3 operations on testnet. 
+          Agents can manage wallets, execute swaps, provide liquidity, and handle NFT 
+          operations with built-in error recovery and transaction monitoring.
         </p>
       </div>
 

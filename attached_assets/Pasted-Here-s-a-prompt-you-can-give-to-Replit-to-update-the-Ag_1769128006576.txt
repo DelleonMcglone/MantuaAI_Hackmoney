@@ -1,0 +1,41 @@
+Here's a prompt you can give to Replit to update the Agent Builder modal:
+
+---
+
+## Update Agent Builder Modal Content
+
+### Context
+The Agent Builder modal currently displays outdated quick action cards that reference Uniswap v4 hooks (MEV Protection, Directional Fee, JiT Rebalancing). We need to update the content to reflect the agent's actual capabilities.
+
+### Current Location
+Find the Agent Builder modal component - likely in `src/components/AgentBuilder.tsx`, `src/components/modals/AgentModal.tsx`, or similar. Look for the component that renders the "Welcome to Agent Builder" header with the Base Sepolia badge.
+
+### Agent's Actual Capabilities
+1. **Wallet Operations:** Create wallets, check balances, transfer tokens
+2. **DeFi Interactions:** Test swaps, liquidity provision
+3. **NFT Operations:** Mint, transfer, and trade NFTs
+4. **Error Handling:** Graceful handling of failed transactions with retry logic
+
+### Required Changes
+
+**Update the description text from:**
+> "Create AI-powered agents that automate your DeFi strategies on Uniswap v4. Agents can execute swaps, manage liquidity, monitor prices, and leverage hooks like MEV Protection, Directional Fee, and JiT Rebalancing."
+
+**To:**
+> "Create AI-powered agents that automate your Web3 operations on testnet. Agents can manage wallets, execute swaps, provide liquidity, and handle NFT operations with built-in error recovery and transaction monitoring."
+
+**Replace the 6 quick action cards with:**
+
+| Card Title | Card Description |
+|------------|------------------|
+| Create a wallet agent | that creates and manages wallets automatically |
+| Build a balance tracker | to monitor token balances across accounts |
+| Create a swap agent | that executes test swaps on Base Sepolia |
+| Build a liquidity agent | to provision and manage LP positions |
+| Create an NFT agent | to mint, transfer, and trade NFTs |
+| Build a transfer agent | that automates token transfers with retry logic |
+
+### Styling
+Keep the existing styling intact - purple/blue accent colors on card titles, dark card backgrounds, same grid layout (2 columns, 3 rows).
+
+---

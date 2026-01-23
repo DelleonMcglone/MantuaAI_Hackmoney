@@ -58,20 +58,32 @@ import {
 
 // Token icon component
 const TokenIcon = ({ token, size = 32 }) => {
-  const getTokenColor = (token) => {
+  const baseToken = token.startsWith('m') && token.length > 1 && /^[A-Z]/.test(token[1]) ? token.substring(1) : token;
+  
+  const getTokenColor = (t) => {
     const colors = {
       'ETH': 'linear-gradient(135deg, #627EEA 0%, #8B9FFF 100%)',
       'USDC': 'linear-gradient(135deg, #2775CA 0%, #4A9FE8 100%)',
+      'USDT': 'linear-gradient(135deg, #26A17B 0%, #4DB193 100%)',
+      'DAI': 'linear-gradient(135deg, #F5AC37 0%, #FFD166 100%)',
+      'BTC': 'linear-gradient(135deg, #F7931A 0%, #FFAB4A 100%)',
+      'WBTC': 'linear-gradient(135deg, #F7931A 0%, #FFAB4A 100%)',
+      'LINK': 'linear-gradient(135deg, #2A5ADA 0%, #5480F0 100%)',
+      'UNI': 'linear-gradient(135deg, #FF007A 0%, #FF4D9E 100%)',
+      'AAVE': 'linear-gradient(135deg, #B6509E 0%, #D485C2 100%)',
       'LP': 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)',
     };
-    return colors[token] || 'linear-gradient(135deg, #6b7280 0%, #9ca3af 100%)';
+    return colors[t] || 'linear-gradient(135deg, #6b7280 0%, #9ca3af 100%)';
   };
 
-  const getTokenSymbol = (token) => {
-    if (token === 'ETH') return 'Ξ';
-    if (token === 'USDC') return '$';
-    if (token === 'LP') return '◈';
-    return token.charAt(0);
+  const getTokenSymbol = (t) => {
+    if (t === 'ETH') return 'Ξ';
+    if (t === 'USDC' || t === 'USDT' || t === 'DAI') return '$';
+    if (t === 'BTC' || t === 'WBTC') return '₿';
+    if (t === 'LINK') return '⬡';
+    if (t === 'UNI') return '🦄';
+    if (t === 'LP') return '◈';
+    return t.charAt(0);
   };
 
   return (
@@ -79,7 +91,7 @@ const TokenIcon = ({ token, size = 32 }) => {
       width: size,
       height: size,
       borderRadius: '50%',
-      background: getTokenColor(token),
+      background: getTokenColor(baseToken),
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -87,7 +99,7 @@ const TokenIcon = ({ token, size = 32 }) => {
       fontWeight: '600',
       color: 'white',
     }}>
-      {getTokenSymbol(token)}
+      {getTokenSymbol(baseToken)}
     </div>
   );
 };
@@ -2058,14 +2070,15 @@ const LiquidityInterface = ({ onClose, theme, isDark }) => {
         </div>
 
         {/* Pools Table */}
-        <div style={{ border: `1px solid ${theme.border}`, borderRadius: '16px', overflow: 'hidden' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+        <div style={{ border: `1px solid ${theme.border}`, borderRadius: '16px', overflow: 'hidden', overflowX: 'auto' }}>
+          <table style={{ width: '100%', minWidth: '700px', borderCollapse: 'collapse' }}>
             <thead>
               <tr style={{ borderBottom: `1px solid ${theme.border}`, background: theme.bgSecondary }}>
-                <th style={{ padding: '14px 16px', textAlign: 'left', color: theme.textSecondary, fontSize: '12px', fontWeight: '600', textTransform: 'uppercase' }}>Pool</th>
-                <th style={{ padding: '14px 16px', textAlign: 'left' }}><SortableHeader label="Volume" sortKey="volume" currentSort={sort} onSort={handleSort} /></th>
-                <th style={{ padding: '14px 16px', textAlign: 'left' }}><SortableHeader label="TVL" sortKey="liquidity" currentSort={sort} onSort={handleSort} /></th>
-                <th style={{ padding: '14px 16px', textAlign: 'left' }}><SortableHeader label="Yield" sortKey="yield" currentSort={sort} onSort={handleSort} /></th>
+                <th style={{ padding: '14px 16px', textAlign: 'left', color: theme.textSecondary, fontSize: '13px', fontWeight: '600' }}>Pool <span style={{ opacity: 0.4, fontSize: '11px', marginLeft: '4px' }}>↕</span></th>
+                <th style={{ padding: '14px 16px', textAlign: 'left' }}><SortableHeader label="Volume (24h)" sortKey="volume" currentSort={sort} onSort={handleSort} /></th>
+                <th style={{ padding: '14px 16px', textAlign: 'left' }}><SortableHeader label="Fees (24h)" sortKey="fees" currentSort={sort} onSort={handleSort} /></th>
+                <th style={{ padding: '14px 16px', textAlign: 'left' }}><SortableHeader label="Liquidity" sortKey="liquidity" currentSort={sort} onSort={handleSort} /></th>
+                <th style={{ padding: '14px 16px', textAlign: 'left' }}><SortableHeader label="Yield (7d)" sortKey="yield" currentSort={sort} onSort={handleSort} /></th>
                 <th style={{ padding: '14px 16px', textAlign: 'left' }}></th>
               </tr>
             </thead>
@@ -2085,10 +2098,11 @@ const LiquidityInterface = ({ onClose, theme, isDark }) => {
                     </div>
                   </td>
                   <td style={{ padding: '16px' }}><span style={{ color: theme.textPrimary, fontFamily: 'SF Mono, Monaco, monospace', fontSize: '14px' }}>${pool.volume.toLocaleString()}</span></td>
+                  <td style={{ padding: '16px' }}><span style={{ color: theme.textPrimary, fontFamily: 'SF Mono, Monaco, monospace', fontSize: '14px' }}>${pool.fees.toLocaleString()}</span></td>
                   <td style={{ padding: '16px' }}><span style={{ color: theme.textPrimary, fontFamily: 'SF Mono, Monaco, monospace', fontSize: '14px' }}>${pool.liquidity.toLocaleString()}</span></td>
                   <td style={{ padding: '16px' }}><YieldBadge value={pool.yield} /></td>
                   <td style={{ padding: '16px', textAlign: 'right' }}>
-                     <button style={{ padding: '8px 14px', borderRadius: '8px', border: `1px solid ${theme.accent}40`, background: `${theme.accent}10`, color: theme.accent, fontSize: '13px', fontWeight: '600', cursor: 'pointer' }}>Add</button>
+                     <button style={{ padding: '8px 14px', borderRadius: '8px', border: `1px solid ${theme.accent}40`, background: `${theme.accent}10`, color: theme.accent, fontSize: '13px', fontWeight: '600', cursor: 'pointer', whiteSpace: 'nowrap' }}>Add Liquidity</button>
                   </td>
                 </tr>
               ))}

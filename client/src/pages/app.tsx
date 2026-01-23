@@ -2520,7 +2520,6 @@ export default function MantuaApp() {
             <button style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 12px', background: 'transparent', border: 'none', borderRadius: 8, color: theme.textSecondary, fontSize: 14, cursor: 'pointer' }}><ExternalLinkIcon /> About</button>
             <button style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 12px', background: 'transparent', border: 'none', borderRadius: 8, color: theme.textSecondary, fontSize: 14, cursor: 'pointer' }}><FileTextIcon /> Docs</button>
             <button style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 12px', background: 'transparent', border: 'none', borderRadius: 8, color: theme.textSecondary, fontSize: 14, cursor: 'pointer' }}><XIcon size={16} color={isDark ? '#ffffff' : '#000000'} /> X</button>
-            <button style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 12px', background: 'transparent', border: 'none', borderRadius: 8, color: theme.textSecondary, fontSize: 14, cursor: 'pointer' }}><FarcasterIcon size={16} /> Farcaster</button>
           </div>
         </div>
       </aside>

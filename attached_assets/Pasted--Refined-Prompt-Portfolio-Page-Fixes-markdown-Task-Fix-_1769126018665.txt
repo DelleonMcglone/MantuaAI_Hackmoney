@@ -1,0 +1,213 @@
+## Refined Prompt: Portfolio Page Fixes
+
+```markdown
+# Task: Fix Portfolio Page Issues (User & Agent Portfolio)
+
+## Overview
+Three issues need to be fixed on the User Portfolio and Agent Portfolio pages.
+
+---
+
+## Issue 1: Portfolio Does Not Respect Light/Dark Mode
+
+### Current State (Incorrect)
+Portfolio modal appears with fixed colors that don't change when toggling between light and dark themes.
+
+### Expected State
+Portfolio should use theme-aware colors:
+
+**Dark Mode:**
+- Background: #12121a or theme.bgCard
+- Text primary: #ffffff
+- Text secondary: #888 or #666
+- Borders: #1a1a2e
+- Cards: #0a0a0f
+
+**Light Mode:**
+- Background: #ffffff or theme.bgCard
+- Text primary: #1a1a2e or #111
+- Text secondary: #666 or #888
+- Borders: #e5e7eb
+- Cards: #f9fafb
+
+### Fix Approach
+Replace all hardcoded color values with theme variables:
+
+```jsx
+// BEFORE (hardcoded):
+style={{ background: '#12121a', color: '#fff' }}
+
+// AFTER (theme-aware):
+style={{ background: theme.bgCard, color: theme.textPrimary }}
+```
+
+Ensure all elements use theme object:
+- `theme.bgCard` for card backgrounds
+- `theme.bgPrimary` / `theme.bgSecondary` for containers
+- `theme.textPrimary` for main text
+- `theme.textSecondary` for labels
+- `theme.border` for all borders
+- `theme.accent` for highlights (purple)
+
+---
+
+## Issue 2: Portfolio Shows Prefilled/Mock Data
+
+### Current State (Incorrect)
+Portfolio displays hardcoded placeholder values even when wallet has no assets.
+
+### Expected State
+All balances should show actual values or zeros:
+
+```
+ETH Balance:    0.0000 ETH  ($0.00)
+USDC Balance:   0.00        ($0.00)
+LP Positions:   0           ($0.00 value)
+Net PnL:        +0.00%      (+$0.00)
+Total Value:    $0.00
+```
+
+### Fix Location
+Find portfolio data source and ensure:
+- Balances come from wallet state or show 0
+- No mock/demo data arrays
+- Empty states display properly ("No liquidity positions yet" is correct)
+
+```jsx
+// BEFORE (mock data):
+const portfolioData = {
+  ethBalance: 2.4521,
+  usdcBalance: 4500.00,
+  lpPositions: 2,
+  totalValue: 12450.85
+};
+
+// AFTER (real or zero):
+const portfolioData = {
+  ethBalance: walletConnected ? fetchedEthBalance : 0,
+  usdcBalance: walletConnected ? fetchedUsdcBalance : 0,
+  lpPositions: walletConnected ? fetchedPositions.length : 0,
+  totalValue: walletConnected ? calculatedTotal : 0
+};
+```
+
+---
+
+## Issue 3: Portfolio Overlay Persists When Navigating Away
+
+### Current State (Incorrect)
+1. User clicks "Portfolio" → Portfolio modal opens
+2. User clicks "Liquidity" → Portfolio modal STAYS OPEN (overlays Liquidity)
+3. Both views are visible, causing visual conflict
+
+### Expected State
+1. User clicks "Portfolio" → Portfolio modal opens
+2. User clicks "Liquidity" → Portfolio modal CLOSES, Liquidity opens
+3. Only ONE interface visible at a time
+
+### Root Cause
+State management likely has separate boolean flags that aren't mutually exclusive:
+
+```jsx
+// BROKEN PATTERN:
+const [showPortfolio, setShowPortfolio] = useState(false);
+const [showLiquidity, setShowLiquidity] = useState(false);
+const [showSwap, setShowSwap] = useState(false);
+
+// Clicking Liquidity only sets showLiquidity=true
+// But doesn't set showPortfolio=false
+```
+
+### Fix Approach
+
+**Option A: Single activeView state (RECOMMENDED)**
+```jsx
+const [activeView, setActiveView] = useState(null); 
+// Values: 'swap' | 'liquidity' | 'portfolio' | 'agent-portfolio' | null
+
+// Sidebar click handlers:
+const handleSwapClick = () => setActiveView('swap');
+const handleLiquidityClick = () => setActiveView('liquidity');
+const handlePortfolioClick = () => setActiveView('portfolio');
+const handleAgentPortfolioClick = () => setActiveView('agent-portfolio');
+
+// Render logic:
+{activeView === 'swap' && <SwapInterface />}
+{activeView === 'liquidity' && <LiquidityInterface />}
+{activeView === 'portfolio' && <PortfolioInterface type="user" />}
+{activeView === 'agent-portfolio' && <PortfolioInterface type="agent" />}
+```
+
+**Option B: Close others when opening new view**
+```jsx
+const handleLiquidityClick = () => {
+  setShowPortfolio(false);    // <-- ADD THIS
+  setShowAgentPortfolio(false); // <-- ADD THIS
+  setShowSwap(false);         // <-- ADD THIS
+  setShowLiquidity(true);
+};
+
+const handlePortfolioClick = () => {
+  setShowSwap(false);         // <-- ADD THIS
+  setShowLiquidity(false);    // <-- ADD THIS
+  setShowAgentPortfolio(false); // <-- ADD THIS
+  setShowPortfolio(true);
+};
+
+// Repeat for all handlers...
+```
+
+**Option C: useEffect to enforce single view**
+```jsx
+useEffect(() => {
+  // When portfolio opens, close others
+  if (showPortfolio) {
+    setShowSwap(false);
+    setShowLiquidity(false);
+  }
+}, [showPortfolio]);
+
+useEffect(() => {
+  if (showLiquidity) {
+    setShowPortfolio(false);
+    setShowSwap(false);
+  }
+}, [showLiquidity]);
+```
+
+---
+
+## Success Criteria
+
+- [ ] Portfolio background/text colors change correctly in light mode
+- [ ] Portfolio background/text colors change correctly in dark mode
+- [ ] ETH Balance shows 0.0000 ETH when empty (not mock data)
+- [ ] USDC Balance shows 0.00 when empty
+- [ ] LP Positions shows 0 when empty
+- [ ] Net PnL shows +0.00% / +$0.00 when empty
+- [ ] Total Value shows $0.00 when empty
+- [ ] Clicking Swap closes Portfolio overlay
+- [ ] Clicking Liquidity closes Portfolio overlay
+- [ ] Clicking Agent closes Portfolio overlay
+- [ ] Only ONE interface visible at any time
+- [ ] Close (X) button still works on Portfolio modal
+
+## Files Likely Affected
+
+1. `PortfolioInterface` component (theme colors, mock data)
+2. `MantuaApp.jsx` or main layout (state management, view switching)
+3. Sidebar click handlers (need to close other views)
+4. Possibly `AgentPortfolioInterface` if separate component
+
+## Do NOT Change
+
+- Portfolio layout/structure
+- Card arrangement (ETH, USDC, LP, PnL)
+- Assets table structure
+- Liquidity Positions section
+- "No liquidity positions yet" empty state message
+```
+
+---
+
+This prompt addresses all three issues. Want me to adjust anything before you apply it in Replit?

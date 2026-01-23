@@ -162,27 +162,27 @@ const ChainBadge = () => (
 );
 
 // Portfolio Summary Card
-const PortfolioSummary = ({ data }) => (
+const PortfolioSummary = ({ data, theme }) => (
   <div style={{
-    background: 'white',
+    background: theme.bgCard,
     borderRadius: '16px',
     padding: '24px',
-    border: '1px solid rgba(139, 92, 246, 0.1)',
+    border: `1px solid ${theme.border}`,
     marginBottom: '24px',
   }}>
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
       <div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-          <h2 style={{ color: '#111827', fontSize: '18px', fontWeight: '700', margin: 0 }}>
+          <h2 style={{ color: theme.textPrimary, fontSize: '18px', fontWeight: '700', margin: 0 }}>
             Portfolio Summary
           </h2>
         </div>
         <ChainBadge />
       </div>
       <div style={{ textAlign: 'right' }}>
-        <div style={{ color: '#6b7280', fontSize: '13px', marginBottom: '4px' }}>Total Value</div>
+        <div style={{ color: theme.textSecondary, fontSize: '13px', marginBottom: '4px' }}>Total Value</div>
         <div style={{ 
-          color: '#111827', 
+          color: theme.textPrimary, 
           fontSize: '32px', 
           fontWeight: '700',
           fontFamily: 'SF Mono, Monaco, monospace',
@@ -195,66 +195,69 @@ const PortfolioSummary = ({ data }) => (
     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
       <div style={{
         padding: '16px',
-        background: 'rgba(249, 250, 251, 0.8)',
+        background: theme.bgSecondary,
         borderRadius: '12px',
+        border: `1px solid ${theme.border}`
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
           <TokenIcon token="ETH" size={24} />
-          <span style={{ color: '#6b7280', fontSize: '13px', fontWeight: '500' }}>ETH Balance</span>
+          <span style={{ color: theme.textSecondary, fontSize: '13px', fontWeight: '500' }}>ETH Balance</span>
         </div>
         <div style={{ 
-          color: '#111827', 
+          color: theme.textPrimary, 
           fontSize: '20px', 
           fontWeight: '700',
           fontFamily: 'SF Mono, Monaco, monospace',
         }}>
           {data.ethBalance.toFixed(4)} ETH
         </div>
-        <div style={{ color: '#6b7280', fontSize: '12px', marginTop: '2px' }}>
+        <div style={{ color: theme.textMuted, fontSize: '12px', marginTop: '2px' }}>
           ${(data.ethBalance * data.ethPrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
         </div>
       </div>
 
       <div style={{
         padding: '16px',
-        background: 'rgba(249, 250, 251, 0.8)',
+        background: theme.bgSecondary,
         borderRadius: '12px',
+        border: `1px solid ${theme.border}`
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
           <TokenIcon token="USDC" size={24} />
-          <span style={{ color: '#6b7280', fontSize: '13px', fontWeight: '500' }}>USDC Balance</span>
+          <span style={{ color: theme.textSecondary, fontSize: '13px', fontWeight: '500' }}>USDC Balance</span>
         </div>
         <div style={{ 
-          color: '#111827', 
+          color: theme.textPrimary, 
           fontSize: '20px', 
           fontWeight: '700',
           fontFamily: 'SF Mono, Monaco, monospace',
         }}>
           {data.usdcBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
         </div>
-        <div style={{ color: '#6b7280', fontSize: '12px', marginTop: '2px' }}>
+        <div style={{ color: theme.textMuted, fontSize: '12px', marginTop: '2px' }}>
           ${data.usdcBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
         </div>
       </div>
 
       <div style={{
         padding: '16px',
-        background: 'rgba(249, 250, 251, 0.8)',
+        background: theme.bgSecondary,
         borderRadius: '12px',
+        border: `1px solid ${theme.border}`
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
           <TokenIcon token="LP" size={24} />
-          <span style={{ color: '#6b7280', fontSize: '13px', fontWeight: '500' }}>LP Positions</span>
+          <span style={{ color: theme.textSecondary, fontSize: '13px', fontWeight: '500' }}>LP Positions</span>
         </div>
         <div style={{ 
-          color: '#111827', 
+          color: theme.textPrimary, 
           fontSize: '20px', 
           fontWeight: '700',
           fontFamily: 'SF Mono, Monaco, monospace',
         }}>
           {data.lpPositions}
         </div>
-        <div style={{ color: '#6b7280', fontSize: '12px', marginTop: '2px' }}>
+        <div style={{ color: theme.textMuted, fontSize: '12px', marginTop: '2px' }}>
           ${data.lpValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} value
         </div>
       </div>
@@ -263,10 +266,11 @@ const PortfolioSummary = ({ data }) => (
         padding: '16px',
         background: data.netPnl >= 0 ? 'rgba(16, 185, 129, 0.08)' : 'rgba(239, 68, 68, 0.08)',
         borderRadius: '12px',
+        border: `1px solid ${data.netPnl >= 0 ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)'}`
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
           {data.netPnl >= 0 ? <TrendUpIcon /> : <TrendDownIcon />}
-          <span style={{ color: '#6b7280', fontSize: '13px', fontWeight: '500' }}>Net PnL</span>
+          <span style={{ color: theme.textSecondary, fontSize: '13px', fontWeight: '500' }}>Net PnL</span>
         </div>
         <div style={{ 
           color: data.netPnl >= 0 ? '#10b981' : '#ef4444', 
@@ -285,45 +289,45 @@ const PortfolioSummary = ({ data }) => (
 );
 
 // Assets Table
-const AssetsTable = ({ assets }) => (
+const AssetsTable = ({ assets, theme }) => (
   <div style={{
-    background: 'white',
+    background: theme.bgCard,
     borderRadius: '16px',
-    border: '1px solid rgba(139, 92, 246, 0.1)',
+    border: `1px solid ${theme.border}`,
     marginBottom: '24px',
     overflow: 'hidden',
   }}>
-    <div style={{ padding: '20px 24px', borderBottom: '1px solid rgba(139, 92, 246, 0.1)' }}>
-      <h3 style={{ color: '#111827', fontSize: '16px', fontWeight: '700', margin: 0 }}>Assets</h3>
+    <div style={{ padding: '20px 24px', borderBottom: `1px solid ${theme.border}` }}>
+      <h3 style={{ color: theme.textPrimary, fontSize: '16px', fontWeight: '700', margin: 0 }}>Assets</h3>
     </div>
     <table style={{ width: '100%', borderCollapse: 'collapse' }}>
       <thead>
-        <tr style={{ background: 'rgba(249, 250, 251, 0.5)' }}>
-          <th style={{ padding: '12px 24px', textAlign: 'left', color: '#6b7280', fontSize: '12px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Asset</th>
-          <th style={{ padding: '12px 24px', textAlign: 'right', color: '#6b7280', fontSize: '12px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Balance</th>
-          <th style={{ padding: '12px 24px', textAlign: 'right', color: '#6b7280', fontSize: '12px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>USD Value</th>
-          <th style={{ padding: '12px 24px', textAlign: 'right', color: '#6b7280', fontSize: '12px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>% of Portfolio</th>
+        <tr style={{ background: theme.bgSecondary }}>
+          <th style={{ padding: '12px 24px', textAlign: 'left', color: theme.textSecondary, fontSize: '12px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Asset</th>
+          <th style={{ padding: '12px 24px', textAlign: 'right', color: theme.textSecondary, fontSize: '12px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Balance</th>
+          <th style={{ padding: '12px 24px', textAlign: 'right', color: theme.textSecondary, fontSize: '12px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>USD Value</th>
+          <th style={{ padding: '12px 24px', textAlign: 'right', color: theme.textSecondary, fontSize: '12px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>% of Portfolio</th>
         </tr>
       </thead>
       <tbody>
         {assets.map((asset, index) => (
-          <tr key={index} style={{ borderBottom: '1px solid rgba(139, 92, 246, 0.08)' }}>
+          <tr key={index} style={{ borderBottom: `1px solid ${theme.border}` }}>
             <td style={{ padding: '16px 24px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                 <TokenIcon token={asset.symbol} size={36} />
                 <div>
-                  <div style={{ color: '#111827', fontWeight: '600', fontSize: '14px' }}>{asset.name}</div>
-                  <div style={{ color: '#6b7280', fontSize: '12px' }}>{asset.symbol}</div>
+                  <div style={{ color: theme.textPrimary, fontWeight: '600', fontSize: '14px' }}>{asset.name}</div>
+                  <div style={{ color: theme.textSecondary, fontSize: '12px' }}>{asset.symbol}</div>
                 </div>
               </div>
             </td>
             <td style={{ padding: '16px 24px', textAlign: 'right' }}>
-              <span style={{ color: '#111827', fontFamily: 'SF Mono, Monaco, monospace', fontSize: '14px', fontWeight: '500' }}>
+              <span style={{ color: theme.textPrimary, fontFamily: 'SF Mono, Monaco, monospace', fontSize: '14px', fontWeight: '500' }}>
                 {asset.balance.toLocaleString(undefined, { minimumFractionDigits: asset.symbol === 'ETH' ? 4 : 2, maximumFractionDigits: asset.symbol === 'ETH' ? 4 : 2 })}
               </span>
             </td>
             <td style={{ padding: '16px 24px', textAlign: 'right' }}>
-              <span style={{ color: '#111827', fontFamily: 'SF Mono, Monaco, monospace', fontSize: '14px', fontWeight: '500' }}>
+              <span style={{ color: theme.textPrimary, fontFamily: 'SF Mono, Monaco, monospace', fontSize: '14px', fontWeight: '500' }}>
                 ${asset.usdValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </span>
             </td>
@@ -336,7 +340,7 @@ const AssetsTable = ({ assets }) => (
                 <div style={{
                   width: '60px',
                   height: '6px',
-                  background: 'rgba(139, 92, 246, 0.1)',
+                  background: theme.bgSecondary,
                   borderRadius: '3px',
                   overflow: 'hidden',
                 }}>
@@ -347,7 +351,7 @@ const AssetsTable = ({ assets }) => (
                     borderRadius: '3px',
                   }} />
                 </div>
-                <span style={{ color: '#374151', fontSize: '13px', fontWeight: '600', minWidth: '45px' }}>
+                <span style={{ color: theme.textSecondary, fontSize: '13px', fontWeight: '600', minWidth: '45px' }}>
                   {asset.percentage.toFixed(1)}%
                 </span>
               </div>
@@ -360,20 +364,20 @@ const AssetsTable = ({ assets }) => (
 );
 
 // Liquidity Positions
-const LiquidityPositions = ({ positions }) => (
+const LiquidityPositions = ({ positions, theme }) => (
   <div style={{
-    background: 'white',
+    background: theme.bgCard,
     borderRadius: '16px',
-    border: '1px solid rgba(139, 92, 246, 0.1)',
+    border: `1px solid ${theme.border}`,
     marginBottom: '24px',
     overflow: 'hidden',
   }}>
-    <div style={{ padding: '20px 24px', borderBottom: '1px solid rgba(139, 92, 246, 0.1)' }}>
-      <h3 style={{ color: '#111827', fontSize: '16px', fontWeight: '700', margin: 0 }}>Liquidity Positions</h3>
+    <div style={{ padding: '20px 24px', borderBottom: `1px solid ${theme.border}` }}>
+      <h3 style={{ color: theme.textPrimary, fontSize: '16px', fontWeight: '700', margin: 0 }}>Liquidity Positions</h3>
     </div>
     
     {positions.length === 0 ? (
-      <div style={{ padding: '48px', textAlign: 'center', color: '#6b7280' }}>
+      <div style={{ padding: '48px', textAlign: 'center', color: theme.textSecondary }}>
         <p style={{ fontSize: '14px' }}>No liquidity positions yet</p>
       </div>
     ) : (
@@ -383,9 +387,10 @@ const LiquidityPositions = ({ positions }) => (
             key={index}
             style={{
               padding: '16px',
-              background: 'rgba(249, 250, 251, 0.5)',
+              background: theme.bgSecondary,
               borderRadius: '12px',
               marginBottom: index < positions.length - 1 ? '12px' : 0,
+              border: `1px solid ${theme.border}`
             }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -393,7 +398,7 @@ const LiquidityPositions = ({ positions }) => (
                 <TokenPairIcon token1={position.token1} token2={position.token2} />
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                    <span style={{ color: '#111827', fontWeight: '600', fontSize: '15px' }}>
+                    <span style={{ color: theme.textPrimary, fontWeight: '600', fontSize: '15px' }}>
                       {position.token1} / {position.token2}
                     </span>
                     <StatusBadge status={position.status} />
@@ -405,9 +410,9 @@ const LiquidityPositions = ({ positions }) => (
               </div>
               
               <div style={{ textAlign: 'right' }}>
-                <div style={{ color: '#6b7280', fontSize: '12px', marginBottom: '2px' }}>TVL in Position</div>
+                <div style={{ color: theme.textSecondary, fontSize: '12px', marginBottom: '2px' }}>TVL in Position</div>
                 <div style={{ 
-                  color: '#111827', 
+                  color: theme.textPrimary, 
                   fontSize: '18px', 
                   fontWeight: '700',
                   fontFamily: 'SF Mono, Monaco, monospace',
@@ -422,23 +427,23 @@ const LiquidityPositions = ({ positions }) => (
               gap: '24px', 
               marginTop: '12px', 
               paddingTop: '12px',
-              borderTop: '1px solid rgba(139, 92, 246, 0.1)',
+              borderTop: `1px solid ${theme.border}`,
             }}>
               <div>
-                <span style={{ color: '#6b7280', fontSize: '12px' }}>Fees Earned</span>
+                <span style={{ color: theme.textSecondary, fontSize: '12px' }}>Fees Earned</span>
                 <div style={{ color: '#10b981', fontSize: '14px', fontWeight: '600', fontFamily: 'SF Mono, Monaco, monospace' }}>
                   +${position.feesEarned.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </div>
               </div>
               <div>
-                <span style={{ color: '#6b7280', fontSize: '12px' }}>Fee Tier</span>
-                <div style={{ color: '#374151', fontSize: '14px', fontWeight: '600' }}>
+                <span style={{ color: theme.textSecondary, fontSize: '12px' }}>Fee Tier</span>
+                <div style={{ color: theme.textPrimary, fontSize: '14px', fontWeight: '600' }}>
                   {position.feeTier}%
                 </div>
               </div>
               <div>
-                <span style={{ color: '#6b7280', fontSize: '12px' }}>Range</span>
-                <div style={{ color: '#374151', fontSize: '14px', fontWeight: '600', fontFamily: 'SF Mono, Monaco, monospace' }}>
+                <span style={{ color: theme.textSecondary, fontSize: '12px' }}>Range</span>
+                <div style={{ color: theme.textPrimary, fontSize: '14px', fontWeight: '600', fontFamily: 'SF Mono, Monaco, monospace' }}>
                   {position.rangeLow} - {position.rangeHigh}
                 </div>
               </div>
@@ -451,7 +456,7 @@ const LiquidityPositions = ({ positions }) => (
 );
 
 // Activity Item
-const ActivityItem = ({ activity }) => {
+const ActivityItem = ({ activity, theme }) => {
   const getActionIcon = (type) => {
     switch (type) {
       case 'Swap': return <SwapIcon />;
@@ -566,7 +571,7 @@ const ActivityItem = ({ activity }) => {
 };
 
 // Activity Feed
-const ActivityFeed = ({ activities, filter, setFilter }) => {
+const ActivityFeed = ({ activities, filter, setFilter, theme }) => {
   const filters = ['All', 'Swaps', 'Liquidity'];
   
   const filteredActivities = activities.filter(a => {
@@ -578,21 +583,21 @@ const ActivityFeed = ({ activities, filter, setFilter }) => {
 
   return (
     <div style={{
-      background: 'white',
+      background: theme.bgCard,
       borderRadius: '16px',
-      border: '1px solid rgba(139, 92, 246, 0.1)',
+      border: `1px solid ${theme.border}`,
       overflow: 'hidden',
     }}>
       <div style={{
         padding: '20px 24px',
-        borderBottom: '1px solid rgba(139, 92, 246, 0.1)',
+        borderBottom: `1px solid ${theme.border}`,
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
       }}>
-        <h3 style={{ color: '#111827', fontSize: '16px', fontWeight: '700', margin: 0 }}>Activity</h3>
+        <h3 style={{ color: theme.textPrimary, fontSize: '16px', fontWeight: '700', margin: 0 }}>Activity</h3>
         
-        <div style={{ display: 'flex', gap: '8px', background: '#f3f4f6', padding: '4px', borderRadius: '8px' }}>
+        <div style={{ display: 'flex', gap: '8px', background: theme.bgSecondary, padding: '4px', borderRadius: '8px' }}>
           {filters.map(f => (
             <button
               key={f}
@@ -601,8 +606,8 @@ const ActivityFeed = ({ activities, filter, setFilter }) => {
                 padding: '6px 12px',
                 borderRadius: '6px',
                 border: 'none',
-                background: filter === f ? 'white' : 'transparent',
-                color: filter === f ? '#111827' : '#6b7280',
+                background: filter === f ? theme.bgCard : 'transparent',
+                color: filter === f ? theme.textPrimary : theme.textSecondary,
                 fontSize: '12px',
                 fontWeight: '600',
                 cursor: 'pointer',
@@ -616,13 +621,13 @@ const ActivityFeed = ({ activities, filter, setFilter }) => {
       </div>
       
       {filteredActivities.length === 0 ? (
-        <div style={{ padding: '48px', textAlign: 'center', color: '#6b7280' }}>
+        <div style={{ padding: '48px', textAlign: 'center', color: theme.textSecondary }}>
           <p style={{ fontSize: '14px' }}>No recent activity</p>
         </div>
       ) : (
         <div>
           {filteredActivities.map((activity, index) => (
-            <ActivityItem key={index} activity={activity} />
+            <ActivityItem key={index} activity={activity} theme={theme} />
           ))}
         </div>
       )}
@@ -631,15 +636,12 @@ const ActivityFeed = ({ activities, filter, setFilter }) => {
 };
 
 // ============ PORTFOLIO INTERFACE ============
-const PortfolioInterface = ({ onClose, type, theme, isDark }) => {
+const PortfolioInterface = ({ onClose, type, theme, isDark, isConnected }) => {
   const [activityFilter, setActivityFilter] = useState('All');
 
   // Mock data tailored for empty/filled states based on requirements
-  // For now, we will render empty states if type is 'Agent' to match prompt requirements of "not prefilled"
-  // User portfolio can show some dummy data for visualization
-  
   const isAgent = type === 'Agent';
-  const hasData = !isAgent; // Only user portfolio has data for now
+  const hasData = !isAgent && isConnected;
 
   const portfolioData = hasData ? {
     totalValue: 12450.25,
@@ -678,7 +680,7 @@ const PortfolioInterface = ({ onClose, type, theme, isDark }) => {
   return (
     <div style={{ width: '100%', fontFamily: '"DM Sans", sans-serif' }}>
       <div style={{
-        background: '#f3f4f6', // Light gray background for contrast within modal
+        background: theme.bgSecondary,
         borderRadius: '16px',
         border: `1px solid ${theme.border}`,
         padding: '24px',
@@ -686,16 +688,16 @@ const PortfolioInterface = ({ onClose, type, theme, isDark }) => {
         overflowY: 'auto'
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-           <h1 style={{ margin: 0, fontSize: '24px', color: '#111827' }}>{type} Portfolio</h1>
-           <button onClick={onClose} style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '8px' }}>
+           <h1 style={{ margin: 0, fontSize: '24px', color: theme.textPrimary }}>{type} Portfolio</h1>
+           <button onClick={onClose} style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '8px', color: theme.textSecondary }}>
              <CloseIcon />
            </button>
         </div>
 
-        <PortfolioSummary data={portfolioData} />
-        <AssetsTable assets={assets} />
-        <LiquidityPositions positions={liquidityPositions} />
-        <ActivityFeed activities={activities} filter={activityFilter} setFilter={setActivityFilter} />
+        <PortfolioSummary data={portfolioData} theme={theme} />
+        <AssetsTable assets={assets} theme={theme} />
+        <LiquidityPositions positions={liquidityPositions} theme={theme} />
+        <ActivityFeed activities={activities} filter={activityFilter} setFilter={setActivityFilter} theme={theme} />
       </div>
     </div>
   );
@@ -2426,6 +2428,7 @@ export default function MantuaApp() {
              setShowSwap(false); 
              setShowLiquidity(false); 
              setShowAgentBuilder(false); 
+             setShowPortfolioModal(false);
              setMessages([]); 
              setHasInteracted(false); // Reset interaction state on New Chat
           }} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 12px', background: 'transparent', border: 'none', borderRadius: 8, color: theme.accent, fontSize: 14, fontWeight: 500, cursor: 'pointer', marginBottom: 8 }}>
@@ -2457,17 +2460,17 @@ export default function MantuaApp() {
           </div>
 
           {/* Swap */}
-          <button onClick={() => { setShowSwap(true); setShowLiquidity(false); setShowAgentBuilder(false); setSwapDetails(null); setHasInteracted(true); }} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 12px', background: 'transparent', border: 'none', borderRadius: 8, color: theme.textPrimary, fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
+          <button onClick={() => { setShowSwap(true); setShowLiquidity(false); setShowAgentBuilder(false); setShowPortfolioModal(false); setSwapDetails(null); setHasInteracted(true); }} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 12px', background: 'transparent', border: 'none', borderRadius: 8, color: theme.textPrimary, fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
             <ArrowLeftRightIcon /> Swap
           </button>
 
           {/* Liquidity */}
-          <button onClick={() => { setShowLiquidity(true); setShowSwap(false); setShowAgentBuilder(false); setHasInteracted(true); }} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 12px', background: 'transparent', border: 'none', borderRadius: 8, color: theme.textPrimary, fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
+          <button onClick={() => { setShowLiquidity(true); setShowSwap(false); setShowAgentBuilder(false); setShowPortfolioModal(false); setHasInteracted(true); }} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 12px', background: 'transparent', border: 'none', borderRadius: 8, color: theme.textPrimary, fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
             <DropletsIcon /> Liquidity
           </button>
 
           {/* Agent */}
-          <button onClick={() => { setShowAgentBuilder(true); setShowSwap(false); setShowLiquidity(false); setHasInteracted(true); }} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 12px', background: 'transparent', border: 'none', borderRadius: 8, color: theme.textPrimary, fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
+          <button onClick={() => { setShowAgentBuilder(true); setShowSwap(false); setShowLiquidity(false); setShowPortfolioModal(false); setHasInteracted(true); }} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 12px', background: 'transparent', border: 'none', borderRadius: 8, color: theme.textPrimary, fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
             <BotIcon /> Agent
           </button>
 

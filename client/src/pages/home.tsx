@@ -200,7 +200,7 @@ export default function MantuaLanding() {
           </div>
           <div>
             <h4 style={{ fontFamily: '"Outfit", sans-serif', fontSize: 14, fontWeight: 600, color: theme.textPrimary, marginBottom: 16, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Community</h4>
-            {['Discord', 'Telegram', 'X', 'Farcaster'].map(l => <a key={l} href="#" style={{ display: 'block', color: theme.textSecondary, textDecoration: 'none', fontSize: 14, marginBottom: 12 }}>{l}</a>)}
+            {['Discord', 'Telegram', 'X'].map(l => <a key={l} href="#" style={{ display: 'block', color: theme.textSecondary, textDecoration: 'none', fontSize: 14, marginBottom: 12 }}>{l}</a>)}
           </div>
         </div>
         <div style={{ maxWidth: 1200, margin: '48px auto 0', paddingTop: 24, borderTop: `1px solid ${theme.border}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>

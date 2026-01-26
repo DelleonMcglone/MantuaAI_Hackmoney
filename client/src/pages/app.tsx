@@ -2355,68 +2355,74 @@ export default function MantuaApp() {
     
     setHasInteracted(true);
 
-    // Check for Liquidity Intent
-    if (inputValue.toLowerCase().includes('add liquidity') || inputValue.toLowerCase().includes('liquidity')) {
-       setShowAddLiquidityModal(true);
-       setShowLiquidity(false);
+    const command = classifyQuery(inputValue);
+
+    // Reset modals helper
+    const resetModals = () => {
        setShowSwap(false);
+       setShowLiquidity(false);
        setShowAgentBuilder(false);
+       setShowAddLiquidityModal(false);
+       setShowPortfolioModal(false);
+    };
+
+    if (command.type === 'newChat') {
+       resetModals();
+       setMessages([]);
+       setHasInteracted(false);
+       setInputValue('');
+       return;
+    }
+
+    if (command.type === 'addLiquidity') {
+       resetModals();
+       setShowAddLiquidityModal(true);
        setMessages([...messages, { role: 'user', content: inputValue }]);
        setInputValue('');
        return;
     }
 
-    // Check for Agent Builder Intent
-    const agentKeywords = ['create an agent', 'build an agent', 'create a swap agent', 'build a liquidity agent', 'i want an ai agent', 'set up an agent', 'create a trading bot', 'build a defi agent'];
-    if (agentKeywords.some(keyword => inputValue.toLowerCase().includes(keyword))) {
-        setShowAgentBuilder(true);
-        setShowSwap(false);
-        setShowLiquidity(false);
-        setMessages([...messages, { role: 'user', content: inputValue }]);
-        setInputValue('');
-        return;
+    if (command.type === 'liquidityList') {
+       resetModals();
+       setShowLiquidity(true);
+       setMessages([...messages, { role: 'user', content: inputValue }]);
+       setInputValue('');
+       return;
     }
 
-    // Check for Portfolio Intent
-    const portfolioKeywords = ['portfolio', 'open portfolio', 'show my portfolio', 'user portfolio', 'agent portfolio', 'show agent portfolio'];
-    if (portfolioKeywords.some(keyword => inputValue.toLowerCase().includes(keyword))) {
-        setHasInteracted(true);
+    if (command.type === 'agent') {
+       resetModals();
+       setShowAgentBuilder(true);
+       setMessages([...messages, { role: 'user', content: inputValue }]);
+       setInputValue('');
+       return;
+    }
+
+    if (command.type === 'portfolio') {
+        resetModals();
         if (inputValue.toLowerCase().includes('agent')) {
             setPortfolioType('Agent');
             setShowPortfolioModal(true);
-        } else if (inputValue.toLowerCase().includes('user') || inputValue.toLowerCase().includes('my')) {
+        } else {
             setPortfolioType('User');
             setShowPortfolioModal(true);
-        } else {
-           // Ambiguous - open sidebar dropdown
-           setPortfolioOpen(true);
-           setSidebarOpen(true);
-           // Maybe focus on sidebar? For now just opening is enough indication
         }
         setMessages([...messages, { role: 'user', content: inputValue }]);
         setInputValue('');
-        
-        // Hide other modals if opening portfolio
-        if (inputValue.toLowerCase().includes('agent') || inputValue.toLowerCase().includes('user') || inputValue.toLowerCase().includes('my')) {
-           setShowSwap(false);
-           setShowLiquidity(false);
-           setShowAgentBuilder(false);
-        }
         return;
     }
 
-    const swapCmd = parseSwapCommand(inputValue);
-    if (swapCmd) {
-      setSwapDetails(swapCmd);
+    if (command.type === 'swap') {
+      resetModals();
+      setSwapDetails(command.params);
       setShowSwap(true);
-      setShowLiquidity(false);
-      setShowAgentBuilder(false);
       setMessages([...messages, { role: 'user', content: inputValue }]);
-    } else {
-      // Check for Analytical Queries
-      const query = classifyQuery(inputValue);
-      
-      if (query.type !== 'general' && query.type !== 'action') {
+      setInputValue('');
+      return;
+    }
+
+    // Check for Analytical Queries or General Chat
+    if (command.type !== 'general' && command.type !== 'action') {
          let data = [];
          let title = '';
          let summary = '';
@@ -2424,13 +2430,13 @@ export default function MantuaApp() {
          let chartType: 'area' | 'bar' | 'pie' | 'line' = 'area';
          let icon = <TrendingUp size={20} />;
          
-         const asset = query.assets[0] || 'ETH';
+         const asset = command.assets[0] || 'ETH';
          
-         switch(query.type) {
+         switch(command.type) {
            case 'price':
-             data = getPriceData(asset, query.timeRange);
+             data = getPriceData(asset, command.timeRange);
              title = `${asset} Price Analysis`;
-             summary = `${asset} has shown moderate volatility over the last ${query.timeRange}, with a net positive trend driven by market sentiment.`;
+             summary = `${asset} has shown moderate volatility over the last ${command.timeRange}, with a net positive trend driven by market sentiment.`;
              const prices = data.map(d => d.value);
              const currentPrice = prices[prices.length - 1];
              const maxPrice = Math.max(...prices);
@@ -2447,7 +2453,7 @@ export default function MantuaApp() {
              break;
              
            case 'volume':
-             data = getVolumeData(asset, query.timeRange);
+             data = getVolumeData(asset, command.timeRange);
              title = `${asset} Volume Analysis`;
              summary = `Trading volume for ${asset} has been consistent, with a significant spike observed mid-period indicating increased market interest.`;
              chartType = 'bar';
@@ -2474,7 +2480,7 @@ export default function MantuaApp() {
              ];
              break;
              
-           case 'portfolio':
+           case 'portfolio': // Fallback if classify returns 'portfolio' here for some reason, though handled above
              data = getPortfolioData();
              title = 'Portfolio Allocation';
              summary = 'Your portfolio is heavily weighted towards ETH and Stablecoins, maintaining a balanced risk profile.';
@@ -2489,7 +2495,7 @@ export default function MantuaApp() {
              break;
              
            case 'performance':
-             data = getPerformanceData(query.timeRange);
+             data = getPerformanceData(command.timeRange);
              title = 'LP Performance';
              summary = 'Your liquidity positions have outperformed holding by 4.2% due to high trading fees captured in the ETH/mUSDC pool.';
              chartType = 'area';
@@ -2526,7 +2532,7 @@ export default function MantuaApp() {
                <AnalysisCard 
                  title={title}
                  icon={icon}
-                 timeRange={`Last ${query.timeRange}`}
+                 timeRange={`Last ${command.timeRange}`}
                  chartType={chartType}
                  chartData={data}
                  summary={summary}
@@ -2538,10 +2544,9 @@ export default function MantuaApp() {
              )
            }
          ]);
-      } else {
-        // Regular message
-        setMessages([...messages, { role: 'user', content: inputValue }]);
-      }
+    } else {
+      // Regular message
+      setMessages([...messages, { role: 'user', content: inputValue }]);
     }
     setInputValue('');
   };
@@ -2567,6 +2572,7 @@ export default function MantuaApp() {
              setShowLiquidity(false); 
              setShowAgentBuilder(false); 
              setShowPortfolioModal(false);
+             setShowAddLiquidityModal(false);
              setMessages([]); 
              setHasInteracted(false); // Reset interaction state on New Chat
           }} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 12px', background: 'transparent', border: 'none', borderRadius: 8, color: theme.accent, fontSize: 14, fontWeight: 500, cursor: 'pointer', marginBottom: 8 }}>
@@ -2598,17 +2604,17 @@ export default function MantuaApp() {
           </div>
 
           {/* Swap */}
-          <button onClick={() => { setShowSwap(true); setShowLiquidity(false); setShowAgentBuilder(false); setShowPortfolioModal(false); setSwapDetails(null); setHasInteracted(true); }} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 12px', background: 'transparent', border: 'none', borderRadius: 8, color: theme.textPrimary, fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
+          <button onClick={() => { setShowSwap(true); setShowLiquidity(false); setShowAgentBuilder(false); setShowPortfolioModal(false); setShowAddLiquidityModal(false); setSwapDetails(null); setHasInteracted(true); }} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 12px', background: 'transparent', border: 'none', borderRadius: 8, color: theme.textPrimary, fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
             <ArrowLeftRightIcon /> Swap
           </button>
 
           {/* Liquidity */}
-          <button onClick={() => { setShowLiquidity(true); setShowSwap(false); setShowAgentBuilder(false); setShowPortfolioModal(false); setHasInteracted(true); }} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 12px', background: 'transparent', border: 'none', borderRadius: 8, color: theme.textPrimary, fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
+          <button onClick={() => { setShowLiquidity(true); setShowSwap(false); setShowAgentBuilder(false); setShowPortfolioModal(false); setShowAddLiquidityModal(false); setHasInteracted(true); }} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 12px', background: 'transparent', border: 'none', borderRadius: 8, color: theme.textPrimary, fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
             <DropletsIcon /> Liquidity
           </button>
 
           {/* Agent */}
-          <button onClick={() => { setShowAgentBuilder(true); setShowSwap(false); setShowLiquidity(false); setShowPortfolioModal(false); setHasInteracted(true); }} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 12px', background: 'transparent', border: 'none', borderRadius: 8, color: theme.textPrimary, fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
+          <button onClick={() => { setShowAgentBuilder(true); setShowSwap(false); setShowLiquidity(false); setShowPortfolioModal(false); setShowAddLiquidityModal(false); setHasInteracted(true); }} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 12px', background: 'transparent', border: 'none', borderRadius: 8, color: theme.textPrimary, fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
             <BotIcon /> Agent
           </button>
 
@@ -2628,6 +2634,7 @@ export default function MantuaApp() {
                     setShowSwap(false);
                     setShowLiquidity(false);
                     setShowAgentBuilder(false);
+                    setShowAddLiquidityModal(false);
                   }}
                   style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', padding: '8px 12px', background: 'transparent', border: 'none', borderRadius: 6, color: theme.textSecondary, fontSize: 13, cursor: 'pointer', textAlign: 'left' }}
                 >
@@ -2641,6 +2648,7 @@ export default function MantuaApp() {
                     setShowSwap(false);
                     setShowLiquidity(false);
                     setShowAgentBuilder(false);
+                    setShowAddLiquidityModal(false);
                   }}
                   style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', padding: '8px 12px', background: 'transparent', border: 'none', borderRadius: 6, color: theme.textSecondary, fontSize: 13, cursor: 'pointer', textAlign: 'left' }}
                 >

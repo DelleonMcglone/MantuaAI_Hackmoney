@@ -1,0 +1,354 @@
+Here's an updated prompt that addresses both sidebar navigation AND chat command issues:
+
+---
+
+**Prompt for Replit AI:**
+
+```
+Fix critical bug: Navigation is broken via BOTH sidebar clicks AND chat commands. After adding the Add Liquidity modal, multiple views fail to render correctly.
+
+**SYMPTOMS:**
+
+Via Sidebar:
+1. ❌ "New Chat" → Shows Add Liquidity (should show empty chat)
+2. ❌ "Liquidity" → Pools don't display (should show pool list)
+3. ❌ "Agent" → Agent doesn't display (should show agent interface)
+
+Via Chat Commands:
+1. ❌ Typing "new chat" or starting fresh → Shows Add Liquidity
+2. ❌ Typing "show liquidity" or "liquidity pools" → Wrong component or nothing
+3. ❌ Typing "agent" or "open agent" → Wrong component or nothing
+4. ✅ "swap" command seems to work
+
+**ROOT CAUSE:**
+
+The command classifier/parser is likely matching too broadly for "liquidity" commands:
+
+```tsx
+// WRONG - This catches ALL liquidity-related commands
+if (message.toLowerCase().includes('liquidity')) {
+  setShowAddLiquidity(true);  // Always opens Add Liquidity modal
+  return;
+}
+
+// WRONG - "add" keyword too broad
+if (message.toLowerCase().includes('add')) {
+  setShowAddLiquidity(true);
+  return;
+}
+```
+
+**FIX THE COMMAND CLASSIFIER:**
+
+Location: Likely in `src/utils/queryClassifier.ts` or within the chat handler in `app.tsx`
+
+```tsx
+// Command classification with SPECIFIC patterns
+const classifyCommand = (message: string): CommandType => {
+  const msg = message.toLowerCase().trim();
+  
+  // ADD LIQUIDITY - Must be specific
+  // Matches: "add liquidity", "add liquidity to ETH/USDC", "add lp"
+  if (
+    msg.match(/^add\s+(liquidity|lp)/) ||
+    msg.match(/add\s+(liquidity|lp)\s+to/) ||
+    msg.includes('add liquidity')
+  ) {
+    return { type: 'addLiquidity', params: extractPoolFromMessage(msg) };
+  }
+  
+  // LIQUIDITY POOLS LIST - Show pool list, NOT add modal
+  // Matches: "liquidity", "show liquidity", "liquidity pools", "view pools", "pool list"
+  if (
+    msg === 'liquidity' ||
+    msg.match(/^(show|view|open|display)\s*(liquidity|pools)/) ||
+    msg.match(/liquidity\s*pools?$/) ||
+    msg.match(/^pools?$/) ||
+    msg === 'show pools' ||
+    msg === 'view pools'
+  ) {
+    return { type: 'liquidityList' };
+  }
+  
+  // SWAP
+  if (
+    msg.startsWith('swap') ||
+    msg.match(/^(swap|exchange|trade)\s+\d*\.?\d*\s*\w+/)
+  ) {
+    return { type: 'swap', params: extractSwapParams(msg) };
+  }
+  
+  // AGENT
+  if (
+    msg === 'agent' ||
+    msg.match(/^(show|open|view)\s*agent/) ||
+    msg.includes('agent builder')
+  ) {
+    return { type: 'agent' };
+  }
+  
+  // NEW CHAT
+  if (
+    msg === 'new chat' ||
+    msg === 'clear' ||
+    msg === 'reset' ||
+    msg.match(/^(start|begin)\s*(new|fresh)?\s*chat/)
+  ) {
+    return { type: 'newChat' };
+  }
+  
+  // PORTFOLIO
+  if (
+    msg === 'portfolio' ||
+    msg.match(/^(show|view|my)\s*portfolio/)
+  ) {
+    return { type: 'portfolio' };
+  }
+  
+  // FAUCET
+  if (
+    msg === 'faucet' ||
+    msg.match(/^(get|request)\s*(test)?\s*tokens?/) ||
+    msg.includes('testnet tokens')
+  ) {
+    return { type: 'faucet' };
+  }
+  
+  // ANALYSIS/RESEARCH - Keep existing
+  if (
+    msg.match(/(price|volume|tvl|apy)\s*(of|for)?/) ||
+    msg.match(/^(what|how|show|compare)/)
+  ) {
+    return { type: 'analysis', params: extractAnalysisParams(msg) };
+  }
+  
+  // DEFAULT - General chat/question
+  return { type: 'chat' };
+};
+```
+
+**FIX THE COMMAND HANDLER:**
+
+```tsx
+const handleCommand = (command: CommandType) => {
+  // Reset ALL modal states first
+  const resetModals = () => {
+    setShowAddLiquidity(false);
+    setShowSwap(false);
+    setSelectedPool(null);
+  };
+  
+  switch (command.type) {
+    case 'newChat':
+      resetModals();
+      setActiveView('chat');
+      setChatMessages([]);
+      break;
+      
+    case 'swap':
+      resetModals();
+      setActiveView('swap');
+      // If params exist, pre-fill swap form
+      if (command.params) {
+        setSwapParams(command.params);
+      }
+      break;
+      
+    case 'liquidityList':  // IMPORTANT: Separate from addLiquidity
+      resetModals();
+      setActiveView('liquidity');
+      // Shows pool list, NOT add liquidity modal
+      break;
+      
+    case 'addLiquidity':
+      // ONLY this case opens the Add Liquidity modal
+      setActiveView('liquidity');
+      if (command.params?.pool) {
+        setSelectedPool(command.params.pool);
+      }
+      setShowAddLiquidity(true);
+      break;
+      
+    case 'agent':
+      resetModals();
+      setActiveView('agent');
+      break;
+      
+    case 'portfolio':
+      resetModals();
+      setActiveView('portfolio');
+      break;
+      
+    case 'faucet':
+      resetModals();
+      setActiveView('faucet');
+      break;
+      
+    case 'analysis':
+      // Keep in chat view, show analysis card
+      setActiveView('chat');
+      generateAnalysisResponse(command.params);
+      break;
+      
+    default:
+      // Stay in chat for general messages
+      if (activeView !== 'chat') {
+        // Optionally keep current view or switch to chat
+      }
+      break;
+  }
+};
+```
+
+**FIX THE MESSAGE SEND HANDLER:**
+
+```tsx
+const handleSend = async (message: string) => {
+  // Add user message to chat
+  addMessage({ role: 'user', content: message });
+  
+  // Classify the command
+  const command = classifyCommand(message);
+  
+  // Handle based on command type
+  if (command.type !== 'chat' && command.type !== 'analysis') {
+    // It's a navigation/action command
+    handleCommand(command);
+    
+    // Add assistant acknowledgment
+    addMessage({ 
+      role: 'assistant', 
+      content: getAcknowledgment(command.type),
+      component: command.type  // For rendering inline components
+    });
+  } else if (command.type === 'analysis') {
+    // Research query - generate analysis card
+    const analysisData = await generateAnalysis(command.params);
+    addMessage({
+      role: 'assistant',
+      content: '',
+      component: 'analysis',
+      data: analysisData
+    });
+  } else {
+    // General chat - respond conversationally
+    const response = await generateChatResponse(message);
+    addMessage({ role: 'assistant', content: response });
+  }
+};
+```
+
+**ALSO FIX SIDEBAR CLICK HANDLERS:**
+
+Ensure sidebar uses the same reset logic:
+
+```tsx
+// Sidebar.tsx or wherever sidebar is defined
+const sidebarItems = [
+  {
+    id: 'newChat',
+    label: 'New Chat',
+    icon: <MessageSquarePlus />,
+    onClick: () => {
+      resetAllModals();
+      setActiveView('chat');
+      clearChatMessages();
+    }
+  },
+  {
+    id: 'swap',
+    label: 'Swap',
+    icon: <ArrowUpDown />,
+    onClick: () => {
+      resetAllModals();
+      setActiveView('swap');
+    }
+  },
+  {
+    id: 'liquidity',
+    label: 'Liquidity',
+    icon: <Droplets />,
+    onClick: () => {
+      resetAllModals();  // This ensures Add Liquidity modal is closed
+      setActiveView('liquidity');
+      // Do NOT set showAddLiquidity here!
+    }
+  },
+  {
+    id: 'agent',
+    label: 'Agent',
+    icon: <Bot />,
+    onClick: () => {
+      resetAllModals();
+      setActiveView('agent');
+    }
+  },
+  // ... etc
+];
+
+// Shared reset function
+const resetAllModals = () => {
+  setShowAddLiquidity(false);
+  setShowSwap(false);
+  setShowHookSelector(false);
+  setSelectedPool(null);
+};
+```
+
+**COMMAND EXAMPLES THAT SHOULD WORK:**
+
+| User Input | Expected Result |
+|------------|-----------------|
+| "new chat" | Empty chat interface |
+| "swap" | Swap interface |
+| "swap 1 ETH for USDC" | Swap interface with pre-filled values |
+| "liquidity" | Liquidity pool LIST |
+| "show pools" | Liquidity pool LIST |
+| "add liquidity" | Add Liquidity modal (generic) |
+| "add liquidity to ETH/mUSDC" | Add Liquidity modal for ETH/mUSDC |
+| "agent" | Agent interface |
+| "portfolio" | Portfolio interface |
+| "faucet" | Faucet interface |
+| "price of ETH" | Analysis card in chat |
+
+**KEY DISTINCTION:**
+
+```
+"liquidity" → Show pool list (setActiveView('liquidity'), showAddLiquidity = false)
+"add liquidity" → Show add modal (setActiveView('liquidity'), showAddLiquidity = true)
+```
+
+**FILES TO MODIFY:**
+
+1. `src/pages/app.tsx` - Command handler and state management
+2. `src/utils/queryClassifier.ts` - Command classification logic
+3. `src/components/Sidebar.tsx` - Click handlers
+4. `src/components/chat/ChatInput.tsx` - If command parsing happens here
+
+**TESTING CHECKLIST:**
+
+After fix, test ALL of these:
+
+Sidebar:
+- [ ] New Chat → Empty chat
+- [ ] Swap → Swap interface
+- [ ] Liquidity → Pool list (NOT add modal)
+- [ ] Agent → Agent interface
+- [ ] Portfolio → Portfolio view
+- [ ] Faucet → Faucet view
+
+Chat Commands:
+- [ ] "new chat" → Clears chat
+- [ ] "swap" → Opens swap
+- [ ] "liquidity" → Shows pool list
+- [ ] "show pools" → Shows pool list
+- [ ] "add liquidity" → Opens add liquidity modal
+- [ ] "add liquidity to ETH/USDC" → Opens modal for specific pool
+- [ ] "agent" → Opens agent
+- [ ] "portfolio" → Opens portfolio
+- [ ] "price of ETH" → Shows analysis card
+```
+
+---
+
+This prompt addresses both the sidebar navigation AND the chat command parsing issues with specific regex patterns to properly distinguish between "liquidity" (show pools) and "add liquidity" (open modal) commands.

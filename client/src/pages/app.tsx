@@ -10,6 +10,16 @@ import React, { useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
 import logoWhite from '@assets/Mantua_logo_white_1768946648374.png';
 import logoBlack from '@assets/Mantua_logo_black_1768946648374.png';
+import AnalysisCard from '../components/chat/AnalysisCard';
+import { classifyQuery } from '../utils/queryClassifier';
+import { 
+  getPriceData, 
+  getVolumeData, 
+  getComparisonData, 
+  getPortfolioData, 
+  getPerformanceData, 
+  getTVLData 
+} from '../utils/mockAnalyticsData';
 import {
   WalletIcon,
   TrendUpIcon,
@@ -2413,8 +2423,92 @@ export default function MantuaApp() {
       setShowAgentBuilder(false);
       setMessages([...messages, { role: 'user', content: inputValue }]);
     } else {
-      // Regular message
-      setMessages([...messages, { role: 'user', content: inputValue }]);
+      // Check for Analytical Queries
+      const query = classifyQuery(inputValue);
+      
+      if (query.type !== 'general' && query.type !== 'action') {
+         let data = [];
+         let title = '';
+         let summary = '';
+         let insights = [];
+         
+         const asset = query.assets[0] || 'ETH';
+         
+         switch(query.type) {
+           case 'price':
+             data = getPriceData(asset, query.timeRange);
+             title = `${asset} Price History`;
+             summary = `${asset} has shown moderate volatility over the last ${query.timeRange}, with a net positive trend driven by market sentiment.`;
+             const prices = data.map(d => d.value);
+             const currentPrice = prices[prices.length - 1];
+             const startPrice = prices[0];
+             const change = ((currentPrice - startPrice) / startPrice) * 100;
+             insights = [
+               `↑ Highest: $${Math.max(...prices).toLocaleString()}`, 
+               `↓ Lowest: $${Math.min(...prices).toLocaleString()}`, 
+               `📈 Period change: ${change > 0 ? '+' : ''}${change.toFixed(2)}%`
+             ];
+             break;
+             
+           case 'volume':
+             data = getVolumeData(asset, query.timeRange);
+             title = `${asset} Volume Analysis`;
+             summary = `Trading volume for ${asset} has been consistent, with a significant spike observed mid-period indicating increased market interest.`;
+             insights = [`📊 Avg Daily Volume: $2.4M`, `💰 Peak Volume: $5.1M`, `📈 Activity Trend: High`];
+             break;
+             
+           case 'comparison':
+             data = getComparisonData(['Nezlobin', 'JIT']);
+             title = 'Fee Comparison: Nezlobin vs JIT';
+             summary = 'Nezlobin hooks demonstrated superior fee capture efficiency during high-volatility periods compared to JIT Rebalancing.';
+             insights = [`💰 Nezlobin Avg Fee: $142/day`, `⚡ JIT Avg Fee: $118/day`, `💡 Insight: Nezlobin +20% efficiency`];
+             break;
+             
+           case 'portfolio':
+             data = getPortfolioData();
+             title = 'Portfolio Allocation';
+             summary = 'Your portfolio is heavily weighted towards ETH and Stablecoins, maintaining a balanced risk profile.';
+             insights = [`💰 Total Value: $3,245.50`, `📊 Top Asset: ETH (45%)`, `🛡️ Stablecoins: 30%`];
+             break;
+             
+           case 'performance':
+             data = getPerformanceData(query.timeRange);
+             title = 'LP Performance Analysis';
+             summary = 'Your liquidity positions have outperformed holding by 4.2% due to high trading fees captured in the ETH/mUSDC pool.';
+             insights = [`📈 Net Profit: +$420.50`, `💰 Fees Earned: $125.00`, `⚡ Impermanent Loss: -$45.20`];
+             break;
+
+           case 'tvl':
+             const pool = 'ETH/mUSDC';
+             data = getTVLData(pool);
+             title = `${pool} TVL Trends`;
+             summary = `Total Value Locked in the ${pool} pool has grown steadily, indicating strong liquidity provider confidence.`;
+             insights = [`💰 Current TVL: $5.2M`, `📈 30d Growth: +12%`, `👥 Active LPs: 1,240`];
+             break;
+         }
+
+         setMessages([...messages, 
+           { role: 'user', content: inputValue },
+           { 
+             role: 'assistant', 
+             content: (
+               <AnalysisCard 
+                 type={query.type}
+                 title={title}
+                 subtitle={`Last ${query.timeRange}`}
+                 data={data}
+                 summary={summary}
+                 insights={insights}
+                 theme={theme}
+                 isDark={isDark}
+               />
+             )
+           }
+         ]);
+      } else {
+        // Regular message
+        setMessages([...messages, { role: 'user', content: inputValue }]);
+      }
     }
     setInputValue('');
   };

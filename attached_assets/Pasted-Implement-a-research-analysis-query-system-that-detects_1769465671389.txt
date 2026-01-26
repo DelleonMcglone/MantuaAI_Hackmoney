@@ -1,0 +1,102 @@
+Implement a research/analysis query system that detects analytical questions from users and outputs interactive charts with summaries and bullet points directly in the chat.
+
+**Feature Overview:**
+When a user asks a research question (price history, volume, pool analytics), display a rich response card containing:
+- A relevant chart visualization
+- A text summary of findings
+- Bullet points with key insights
+
+**Query Types & Corresponding Chart Types:**
+
+| Query Type | Example | Chart Type |
+|------------|---------|------------|
+| Price history | "ETH price last 7 days" | Line chart |
+| Volume analysis | "ETH/mUSDC volume this week" | Bar chart |
+| Pool comparison | "Compare Nezlobin vs JIT fees" | Grouped bar chart |
+| Distribution | "My portfolio breakdown" | Pie/Donut chart |
+| Performance | "How did my LP position perform?" | Area chart |
+| TVL trends | "Show TVL for ETH/mUSDC pool" | Line chart with fill |
+
+**Create Component: `src/components/chat/AnalysisCard.tsx`**
+
+Structure:
+```tsx
+<AnalysisCard>
+  <Header>
+    <Icon /> {/* 📊 or chart-line icon */}
+    <Title>Price Analysis: ETH/USD</Title>
+    <TimeRange>Jan 19 - Jan 26, 2026</TimeRange>
+  </Header>
+  
+  <ChartContainer>
+    {/* Recharts visualization - responsive */}
+    <LineChart | BarChart | PieChart />
+  </ChartContainer>
+  
+  <Summary>
+    <SummaryText>
+      ETH showed moderate volatility over the past 7 days, 
+      with a net increase of 4.2% from $3,120 to $3,251.
+    </SummaryText>
+  </Summary>
+  
+  <KeyInsights>
+    <BulletPoint>↑ Highest: $3,412 on Jan 23</BulletPoint>
+    <BulletPoint>↓ Lowest: $3,089 on Jan 20</BulletPoint>
+    <BulletPoint>📈 7-day change: +4.2%</BulletPoint>
+    <BulletPoint>📊 Avg daily volume: $2.4B</BulletPoint>
+  </KeyInsights>
+  
+  <Footer>
+    <Source>Data: CoinGecko API (Testnet Simulated)</Source>
+    <Timestamp>Updated: Just now</Timestamp>
+  </Footer>
+</AnalysisCard>
+```
+
+**Query Detection Function:**
+
+Create `src/utils/queryClassifier.ts`:
+```ts
+type QueryType = 'price' | 'volume' | 'comparison' | 'portfolio' | 'performance' | 'tvl' | 'action' | 'general';
+
+interface ClassifiedQuery {
+  type: QueryType;
+  assets: string[];      // ["ETH", "mUSDC"]
+  timeRange: string;     // "7d", "24h", "30d"
+  chartType: 'line' | 'bar' | 'pie' | 'area';
+  hook?: string;         // "nezlobin", "jit", "mev"
+}
+
+// Detection patterns:
+// - Price: "price", "cost", "trading at", "worth"
+// - Volume: "volume", "traded", "transactions", "activity"
+// - Time: "yesterday", "last week", "days ago", "this month"
+// - Comparison: "compare", "vs", "versus", "difference"
+// - Hooks: "nezlobin", "jit", "mev protection", "directional fee"
+```
+
+**Mock Data Generator:**
+
+Create `src/utils/mockAnalyticsData.ts`:
+- Generate realistic price arrays for charts
+- Create volume distribution data
+- Build comparison datasets
+- Include slight randomization for realism
+- Label clearly as "Testnet Simulated Data"
+
+**Styling Requirements:**
+
+- Chart container: 100% width, 200-250px height
+- Background: Subtle gradient matching app theme
+- Border: 1px solid with low opacity
+- Border radius: 12px
+- Dark/light mode support
+- Bullet points: Use emoji indicators (↑ ↓ 📈 📊 💰)
+- Summary text: 14px, muted color, 2-3 sentences max
+- Responsive: Stack vertically on mobile
+
+**Example Outputs:**
+
+**User:** "What was the price of ETH over the last week?"
+**Response:**

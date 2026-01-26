@@ -11,6 +11,7 @@ import { useLocation } from 'wouter';
 import logoWhite from '@assets/Mantua_logo_white_1768946648374.png';
 import logoBlack from '@assets/Mantua_logo_black_1768946648374.png';
 import AnalysisCard from '../components/chat/AnalysisCard';
+import AddLiquidityModal from '../components/liquidity/AddLiquidityModal';
 import { classifyQuery } from '../utils/queryClassifier';
 import { TrendingUp, BarChart2, PieChart as PieIcon, Activity } from 'lucide-react';
 import { 
@@ -2309,6 +2310,7 @@ export default function MantuaApp() {
   const [showLiquidity, setShowLiquidity] = useState(false);
   const [showAgentBuilder, setShowAgentBuilder] = useState(false);
   const [showPortfolioModal, setShowPortfolioModal] = useState(false);
+  const [showAddLiquidityModal, setShowAddLiquidityModal] = useState(false);
   const [portfolioType, setPortfolioType] = useState('User');
   const [swapDetails, setSwapDetails] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -2355,7 +2357,8 @@ export default function MantuaApp() {
 
     // Check for Liquidity Intent
     if (inputValue.toLowerCase().includes('add liquidity') || inputValue.toLowerCase().includes('liquidity')) {
-       setShowLiquidity(true);
+       setShowAddLiquidityModal(true);
+       setShowLiquidity(false);
        setShowSwap(false);
        setShowAgentBuilder(false);
        setMessages([...messages, { role: 'user', content: inputValue }]);
@@ -2769,7 +2772,7 @@ export default function MantuaApp() {
                   )}
 
                   {/* Liquidity Overlay */}
-                  {showLiquidity && !showSwap && !showAgentBuilder && (
+                  {showLiquidity && !showSwap && !showAgentBuilder && !showAddLiquidityModal && (
                     <div style={{ width: '100%', marginTop: 20, marginBottom: 20 }}>
                       <LiquidityInterface 
                         onClose={() => setShowLiquidity(false)} 
@@ -2779,8 +2782,19 @@ export default function MantuaApp() {
                     </div>
                   )}
 
+                  {/* Add Liquidity Modal Overlay */}
+                  {showAddLiquidityModal && !showSwap && !showAgentBuilder && !showLiquidity && (
+                    <div style={{ width: '100%', marginTop: 20, marginBottom: 20 }}>
+                      <AddLiquidityModal 
+                        onClose={() => setShowAddLiquidityModal(false)} 
+                        theme={theme} 
+                        isDark={isDark} 
+                      />
+                    </div>
+                  )}
+
                   {/* Agent Builder Overlay */}
-                  {showAgentBuilder && !showSwap && !showLiquidity && (
+                  {showAgentBuilder && !showSwap && !showLiquidity && !showAddLiquidityModal && (
                     <div style={{ width: '100%', marginTop: 20, marginBottom: 20 }}>
                       <AgentBuilderInterface 
                         onClose={() => setShowAgentBuilder(false)} 

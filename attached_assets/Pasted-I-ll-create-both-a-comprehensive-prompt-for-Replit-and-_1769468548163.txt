@@ -1,0 +1,204 @@
+I'll create both a comprehensive prompt for Replit and a visual example of the Add Liquidity modal with hook features.I've created a visual example. Now here's the comprehensive prompt for Replit:
+
+---
+
+**Prompt for Replit AI:**
+
+```
+Implement an Add Liquidity modal with hook selection feature, matching the Swap modal's horizontal layout and hook functionality. The modal appears when a user selects a liquidity pool, clicks "Add Liquidity" button, or types "add liquidity" in chat.
+
+**LAYOUT STRUCTURE:**
+
+```
+┌─────────────────────────────────────────┬──────────────────────────────┐
+│                                         │                              │
+│   LEFT PANEL - Pool Info & Chart        │   RIGHT PANEL - Add Form     │
+│   ┌─────────────────────────────────┐   │   ┌────────────────────────┐ │
+│   │ [←] [ETH][mBTC] ETH/mBTC        │   │   │ ADD LIQUIDITY      ⚙️  │ │
+│   │     JIT Rebalancing  ↗ 0.029%  │   │   ├────────────────────────┤ │
+│   │                    TVL  APY     │   │   │ LIQUIDITY HOOK         │ │
+│   │               $315K  1.45%      │   │   │ ┌──────────────────┐   │ │
+│   ├─────────────────────────────────┤   │   │ │⚡ JIT Rebalancing │   │ │
+│   │ POOL ACTIVITY                   │   │   │ │ +Optimize fee... │   │ │
+│   │ [Dynamic Fee] [Volume] [TVL]    │   │   │ │          Change  │   │ │
+│   │                                 │   │   │ └──────────────────┘   │ │
+│   │   ████                          │   │   ├────────────────────────┤ │
+│   │  █    █    ████                 │   │   │ Range                  │ │
+│   │ █      ████    ███              │   │   │ [Full][Wide][Narrow]   │ │
+│   │                    ██           │   │   ├────────────────────────┤ │
+│   │ -------- fee line --------      │   │   │ Single Token Mode  [ ] │ │
+│   │                                 │   │   ├────────────────────────┤ │
+│   │ Dec 12  Dec 20  Jan 1  Jan 14   │   │   │ Amount         0.0 ETH │ │
+│   └─────────────────────────────────┘   │   │ [ETH icon] ETH   $0.00 │ │
+│                                         │   │         [ + ]          │ │
+│                                         │   │ Amount        0.0 mBTC │ │
+│                                         │   │ [BTC icon] mBTC  $0.00 │ │
+│                                         │   ├────────────────────────┤ │
+│                                         │   │ Hook Benefit   +12.4%  │ │
+│                                         │   │ APY Boost      +0.23%  │ │
+│                                         │   ├────────────────────────┤ │
+│                                         │   │ [Add Liquidity with    │ │
+│                                         │   │  JIT Rebalancing    ]  │ │
+│                                         │   └────────────────────────┘ │
+└─────────────────────────────────────────┴──────────────────────────────┘
+```
+
+**LEFT PANEL - Pool Info & Chart (flex: 1.5, min-width: 500px)**
+
+1. **Header Row:**
+   - Back button (←) - returns to pool list
+   - Token pair icons (overlapping circles)
+   - Pool name: "ETH / mBTC"
+   - Hook badge: Shows current hook (e.g., "JIT Rebalancing") with colored background
+   - Fee indicator: "↗ 0.029%" in green
+   - TVL stat: "$315,790.15"
+   - APY stat: "1.45%" in green
+
+2. **Chart Section:**
+   - Tab selector: [Dynamic Fee] [Volume] [TVL]
+   - ComposedChart with:
+     - Orange/accent colored bars for volume
+     - Dashed gray line for fee percentage
+     - Dual Y-axis (left: volume, right: fee %)
+   - X-axis: Date labels (Dec 12, Dec 16, etc.)
+
+**RIGHT PANEL - Add Liquidity Form (width: 400-420px)**
+
+1. **Header:**
+   - Title: "ADD LIQUIDITY" (uppercase, tracking-wider)
+   - Settings gear icon
+
+2. **LIQUIDITY HOOK SELECTOR (NEW - matches Swap modal):**
+   ```tsx
+   <div>
+     <label>LIQUIDITY HOOK</label>
+     <button onClick={openHookSelector}>
+       <HookIcon />
+       <div>
+         <span className="font-semibold">{selectedHook.name}</span>
+         <span className="text-sm" style={{ color: hookColor }}>
+           {selectedHook.description}
+         </span>
+       </div>
+       <span className="text-purple-500">Change</span>
+     </button>
+   </div>
+   ```
+   
+   **Hook Options:**
+   - ⚡ JIT Rebalancing: "+Optimize fee capture on volatile pairs" (orange)
+   - 📈 Nezlobin Directional: "+Reduce IL by ~15% on trending markets" (green)
+   - 🛡️ MEV Protection: "+Save ~0.3% on trades >$1k" (purple)
+
+3. **Range Selector:**
+   - 4 buttons in grid: [Full Range] [Wide] [Narrow] [⟲ Custom]
+   - Selected state: white/light bg with dark text
+   - Unselected: dark bg with light text
+
+4. **Single Token Mode Toggle:**
+   - Label with info icon
+   - Toggle switch on right
+
+5. **Token Amount Inputs:**
+   - Token 0 input card:
+     - "Amount" label + balance display
+     - Token icon + symbol on left
+     - Number input + USD value on right
+   - Plus (+) icon divider
+   - Token 1 input card (same structure)
+
+6. **Hook Benefits Section (dynamic based on selected hook):**
+   - Background: hook color at 10% opacity
+   - Border: hook color at 30% opacity
+   - Shows:
+     - "Hook Benefit: +12.4% fee capture" (for JIT)
+     - "Estimated APY Boost: +0.23%"
+
+7. **Submit Button:**
+   - Full width, gradient background (hook color → purple)
+   - Text: "Add Liquidity with {hookName}"
+
+**HOOK SELECTOR MODAL:**
+
+When user clicks "Change" on the hook selector:
+
+```tsx
+<Modal>
+  <Header>Select Liquidity Hook</Header>
+  <HookList>
+    {hooks.map(hook => (
+      <HookOption 
+        selected={hook.id === selectedHook.id}
+        onClick={() => selectHook(hook)}
+      >
+        <IconBadge color={hook.color}>{hook.icon}</IconBadge>
+        <div>
+          <Name>{hook.name}</Name>
+          <Description color={hook.color}>{hook.description}</Description>
+        </div>
+        {selected && <Checkmark />}
+      </HookOption>
+    ))}
+  </HookList>
+</Modal>
+```
+
+**DARK MODE COLORS:**
+```typescript
+const darkTheme = {
+  bg: '#0a0a12',
+  cardBg: '#12121c',
+  cardBorder: '#1e1e2e',
+  inputBg: '#1a1a28',
+  text: '#ffffff',
+  textMuted: '#64748b',
+  accent: '#f97316', // Orange for chart bars
+  purple: '#8b5cf6',
+  green: '#10b981',
+};
+```
+
+**LIGHT MODE COLORS:**
+```typescript
+const lightTheme = {
+  bg: '#f8fafc',
+  cardBg: '#ffffff',
+  cardBorder: '#e2e8f0',
+  inputBg: '#f1f5f9',
+  text: '#0f172a',
+  textMuted: '#64748b',
+  accent: '#f97316',
+  purple: '#8b5cf6',
+  green: '#10b981',
+};
+```
+
+**FILES TO CREATE/MODIFY:**
+
+1. CREATE: `src/components/liquidity/AddLiquidityModal.tsx`
+2. CREATE: `src/components/liquidity/HookSelector.tsx`
+3. CREATE: `src/components/liquidity/PoolActivityChart.tsx`
+4. MODIFY: Liquidity page/component to render horizontal layout
+5. MODIFY: Chat handler to trigger AddLiquidityModal on "add liquidity" command
+
+**BEHAVIOR:**
+
+- When user selects a pool with a specific hook (e.g., "JIT Rebalancing ETH/mBTC"), pre-select that hook
+- Hook selection affects:
+  - Badge displayed in pool header
+  - Hook benefits section values
+  - Submit button text and gradient color
+- Pool data (TVL, APY, chart) should update based on selected pool
+- Maintain all existing liquidity functionality (range selection, token amounts, etc.)
+
+**CRITICAL:**
+- Match the Swap modal's hook selector exactly (same styling, same "Change" button)
+- Horizontal layout (chart left, form right) - NOT vertical stacking
+- Support both dark and light mode
+- Hook badge in pool header should match selected hook color
+- Dynamic submit button: "Add Liquidity with {Selected Hook Name}"
+```
+
+---
+
+The visual example shows the complete implementation with dark mode, hook selector modal, and all the features. Click the theme toggle to see light mode. Click "Change" on the Liquidity Hook to see the hook selection modal.

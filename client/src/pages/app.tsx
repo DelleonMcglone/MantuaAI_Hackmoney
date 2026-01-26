@@ -2431,22 +2431,28 @@ export default function MantuaApp() {
          let title = '';
          let summary = '';
          let insights = [];
+         let chartType: 'area' | 'bar' | 'pie' | 'line' = 'area';
+         let icon = <TrendingUp size={20} />;
          
          const asset = query.assets[0] || 'ETH';
          
          switch(query.type) {
            case 'price':
              data = getPriceData(asset, query.timeRange);
-             title = `${asset} Price History`;
+             title = `${asset} Price Analysis`;
              summary = `${asset} has shown moderate volatility over the last ${query.timeRange}, with a net positive trend driven by market sentiment.`;
              const prices = data.map(d => d.value);
              const currentPrice = prices[prices.length - 1];
-             const startPrice = prices[0];
-             const change = ((currentPrice - startPrice) / startPrice) * 100;
+             const maxPrice = Math.max(...prices);
+             const minPrice = Math.min(...prices);
+             const change = ((currentPrice - prices[0]) / prices[0]) * 100;
+             chartType = 'area';
+             icon = <TrendingUp size={20} />;
              insights = [
-               `↑ Highest: $${Math.max(...prices).toLocaleString()}`, 
-               `↓ Lowest: $${Math.min(...prices).toLocaleString()}`, 
-               `📈 Period change: ${change > 0 ? '+' : ''}${change.toFixed(2)}%`
+               { icon: '📈', label: 'Highest', value: `$${maxPrice.toLocaleString()}` },
+               { icon: '📉', label: 'Lowest', value: `$${minPrice.toLocaleString()}` },
+               { icon: '🪙', label: 'Change', value: `${change > 0 ? '+' : ''}${change.toFixed(2)}%` },
+               { icon: '📊', label: 'Current', value: `$${currentPrice.toLocaleString()}` }
              ];
              break;
              
@@ -2454,28 +2460,56 @@ export default function MantuaApp() {
              data = getVolumeData(asset, query.timeRange);
              title = `${asset} Volume Analysis`;
              summary = `Trading volume for ${asset} has been consistent, with a significant spike observed mid-period indicating increased market interest.`;
-             insights = [`📊 Avg Daily Volume: $2.4M`, `💰 Peak Volume: $5.1M`, `📈 Activity Trend: High`];
+             chartType = 'bar';
+             icon = <BarChart2 size={20} />;
+             insights = [
+               { icon: '📊', label: 'Avg Vol', value: '$2.4M' },
+               { icon: '💰', label: 'Peak Vol', value: '$5.1M' },
+               { icon: '📈', label: 'Trend', value: 'High' },
+               { icon: '⚡', label: 'Activity', value: 'Active' }
+             ];
              break;
              
            case 'comparison':
              data = getComparisonData(['Nezlobin', 'JIT']);
-             title = 'Fee Comparison: Nezlobin vs JIT';
+             title = 'Fee Comparison';
              summary = 'Nezlobin hooks demonstrated superior fee capture efficiency during high-volatility periods compared to JIT Rebalancing.';
-             insights = [`💰 Nezlobin Avg Fee: $142/day`, `⚡ JIT Avg Fee: $118/day`, `💡 Insight: Nezlobin +20% efficiency`];
+             chartType = 'bar';
+             icon = <Activity size={20} />;
+             insights = [
+               { icon: '💰', label: 'Nezlobin', value: '$142/day' },
+               { icon: '⚡', label: 'JIT', value: '$118/day' },
+               { icon: '💡', label: 'Insight', value: '+20% Eff' },
+               { icon: '🏆', label: 'Winner', value: 'Nezlobin' }
+             ];
              break;
              
            case 'portfolio':
              data = getPortfolioData();
              title = 'Portfolio Allocation';
              summary = 'Your portfolio is heavily weighted towards ETH and Stablecoins, maintaining a balanced risk profile.';
-             insights = [`💰 Total Value: $3,245.50`, `📊 Top Asset: ETH (45%)`, `🛡️ Stablecoins: 30%`];
+             chartType = 'pie';
+             icon = <PieIcon size={20} />;
+             insights = [
+               { icon: '💰', label: 'Total', value: '$3,245' },
+               { icon: '📊', label: 'Top Asset', value: 'ETH' },
+               { icon: '🛡️', label: 'Stables', value: '30%' },
+               { icon: '⚡', label: 'Risk', value: 'Moderate' }
+             ];
              break;
              
            case 'performance':
              data = getPerformanceData(query.timeRange);
-             title = 'LP Performance Analysis';
+             title = 'LP Performance';
              summary = 'Your liquidity positions have outperformed holding by 4.2% due to high trading fees captured in the ETH/mUSDC pool.';
-             insights = [`📈 Net Profit: +$420.50`, `💰 Fees Earned: $125.00`, `⚡ Impermanent Loss: -$45.20`];
+             chartType = 'area';
+             icon = <Activity size={20} />;
+             insights = [
+               { icon: '📈', label: 'Net Profit', value: '+$420' },
+               { icon: '💰', label: 'Fees', value: '$125' },
+               { icon: '⚡', label: 'IL', value: '-$45' },
+               { icon: '🔥', label: 'APR', value: '18.5%' }
+             ];
              break;
 
            case 'tvl':
@@ -2483,7 +2517,14 @@ export default function MantuaApp() {
              data = getTVLData(pool);
              title = `${pool} TVL Trends`;
              summary = `Total Value Locked in the ${pool} pool has grown steadily, indicating strong liquidity provider confidence.`;
-             insights = [`💰 Current TVL: $5.2M`, `📈 30d Growth: +12%`, `👥 Active LPs: 1,240`];
+             chartType = 'area';
+             icon = <TrendingUp size={20} />;
+             insights = [
+               { icon: '💰', label: 'TVL', value: '$5.2M' },
+               { icon: '📈', label: 'Growth', value: '+12%' },
+               { icon: '👥', label: 'LPs', value: '1,240' },
+               { icon: '💧', label: 'Util', value: '85%' }
+             ];
              break;
          }
 
@@ -2493,12 +2534,14 @@ export default function MantuaApp() {
              role: 'assistant', 
              content: (
                <AnalysisCard 
-                 type={query.type}
                  title={title}
-                 subtitle={`Last ${query.timeRange}`}
-                 data={data}
+                 icon={icon}
+                 timeRange={`Last ${query.timeRange}`}
+                 chartType={chartType}
+                 chartData={data}
                  summary={summary}
                  insights={insights}
+                 source="Testnet Simulated Data"
                  theme={theme}
                  isDark={isDark}
                />

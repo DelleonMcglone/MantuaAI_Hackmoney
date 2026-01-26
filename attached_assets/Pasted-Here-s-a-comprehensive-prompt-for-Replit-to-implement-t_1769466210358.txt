@@ -1,0 +1,169 @@
+Here's a comprehensive prompt for Replit to implement the Analysis Card with your exact design:
+
+---
+
+**Prompt for Replit AI:**
+
+```
+Implement an AnalysisCard component for research query responses that displays charts with summaries and insights. The component must support both light and dark mode themes.
+
+**Component Location:** Create `src/components/chat/AnalysisCard.tsx`
+
+**Reference Design (Dark Mode):**
+- Background: #1e1e32 (dark navy)
+- Border: 1px solid #2a2a45
+- Border radius: 16px
+- Full width within chat container
+
+**Component Structure:**
+
+1. **HEADER SECTION**
+   - Height: ~60px with horizontal padding 24px
+   - Left side: Icon badge (40x40px, purple gradient bg) + Title text
+   - Right side: Date range pill/badge
+   - Border-bottom separating from chart
+   
+   ```
+   [📊 icon]  Price Analysis: ETH/USD          [Jan 19 - Jan 26, 2026]
+   ```
+   
+   - Icon badge: `background: linear-gradient(135deg, #8b5cf6, #6366f1)`, rounded-lg
+   - Title: 18px font-semibold, white (dark) / slate-900 (light)
+   - Date pill: Purple tinted background, rounded-full, text-sm
+
+2. **CHART SECTION**
+   - Height: 240-260px
+   - Padding: 24px
+   - Use Recharts AreaChart with:
+     - Purple stroke (#8b5cf6), strokeWidth: 3
+     - Gradient fill from purple 50% opacity to 5% opacity
+     - Smooth monotone curve type
+     - X-axis: Day labels (Mon, Tue, Wed...) - no axis line, light gray text
+     - Y-axis: Price labels ($3000, $3150, $3300, $3500) - no axis line
+     - Dotted horizontal grid lines (optional)
+
+3. **SUMMARY SECTION**
+   - Padding: 20px 24px
+   - Border-top separating from chart
+   - Text: 15-16px, line-height 1.6, slate-300 (dark) / slate-600 (light)
+   - Example: "ETH demonstrated moderate volatility over the past 7 days, recovering from a Monday low to close the week with a net gain of 5.2%. The mid-week rally on Thursday hit the weekly high before a slight correction."
+
+4. **INSIGHTS GRID**
+   - 2 columns x 2 rows grid layout
+   - Gap: 12px between items
+   - Padding: 0 24px 20px 24px
+   
+   Each insight card:
+   - Background: slate-700/50 (dark) / slate-100 (light)
+   - Padding: 14px 16px
+   - Border-radius: 12px
+   - Layout: [emoji icon] + [label: value]
+   - Text: 15px font-medium
+   
+   ```
+   [📈 High: $3,412]     [📉 Low: $3,089]
+   [🪙 Change: +5.2%]    [📊 Current: $3,251]
+   ```
+
+5. **FOOTER SECTION**
+   - Padding: 16px 24px
+   - Border-top
+   - Flex row with space-between
+   - Left: "Testnet Simulated Data" - text-sm, muted color
+   - Right: "Updated just now" - text-sm, muted color
+
+**Theme Configurations:**
+
+```typescript
+// Dark Mode
+const darkTheme = {
+  cardBg: '#1e1e32',
+  cardBorder: '#2a2a45',
+  textPrimary: '#ffffff',
+  textSecondary: '#cbd5e1', // slate-300
+  textMuted: '#64748b',     // slate-500
+  insightBg: 'rgba(71, 85, 105, 0.5)', // slate-700/50
+  badgeBg: 'rgba(139, 92, 246, 0.2)',  // purple-500/20
+  badgeText: '#c4b5fd',     // purple-300
+};
+
+// Light Mode  
+const lightTheme = {
+  cardBg: '#ffffff',
+  cardBorder: '#e2e8f0',    // slate-200
+  textPrimary: '#0f172a',   // slate-900
+  textSecondary: '#475569', // slate-600
+  textMuted: '#64748b',     // slate-500
+  insightBg: '#f1f5f9',     // slate-100
+  badgeBg: '#f3e8ff',       // purple-100
+  badgeText: '#7c3aed',     // purple-600
+};
+```
+
+**Props Interface:**
+
+```typescript
+interface AnalysisCardProps {
+  title: string;           // "Price Analysis: ETH/USD"
+  icon: string;            // "📊" or icon component
+  timeRange: string;       // "Jan 19 - Jan 26, 2026"
+  chartType: 'area' | 'bar' | 'pie';
+  chartData: Array<{ [key: string]: string | number }>;
+  summary: string;
+  insights: Array<{ icon: string; label: string; value: string }>;
+  source: string;          // "Testnet Simulated Data"
+}
+```
+
+**Chart Configurations:**
+
+Area Chart (Price):
+```typescript
+<AreaChart data={data}>
+  <defs>
+    <linearGradient id="priceGradient" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stopColor="#8b5cf6" stopOpacity={0.5} />
+      <stop offset="100%" stopColor="#8b5cf6" stopOpacity={0.05} />
+    </linearGradient>
+  </defs>
+  <XAxis dataKey="day" axisLine={false} tickLine={false} />
+  <YAxis domain={[3000, 3500]} axisLine={false} tickLine={false} tickFormatter={(v) => `$${v}`} />
+  <Area type="monotone" dataKey="price" stroke="#8b5cf6" strokeWidth={3} fill="url(#priceGradient)" />
+</AreaChart>
+```
+
+Bar Chart (Volume comparison):
+- Horizontal layout
+- Purple fill (#8b5cf6)
+- Rounded right corners (radius: [0, 8, 8, 0])
+
+Pie Chart (Portfolio):
+- Donut style (innerRadius: 50, outerRadius: 80)
+- Include legend on the right side
+
+**Integration with Chat:**
+
+When the query classifier detects a research query:
+1. Parse query to determine chart type and data needed
+2. Generate mock data (testnet) or fetch real data (mainnet)
+3. Render AnalysisCard as a chat message with type: 'analysis'
+
+**File Structure:**
+- `src/components/chat/AnalysisCard.tsx` - Main component
+- `src/components/chat/charts/PriceChart.tsx` - Area chart
+- `src/components/chat/charts/VolumeChart.tsx` - Bar chart  
+- `src/components/chat/charts/PortfolioChart.tsx` - Pie chart
+- `src/utils/queryClassifier.ts` - Detect research queries
+- `src/utils/mockAnalyticsData.ts` - Generate mock data
+
+**Critical Requirements:**
+- Must use existing theme context/hook for light/dark mode detection
+- Charts must be responsive (use ResponsiveContainer from Recharts)
+- Smooth transitions when switching themes (transition-colors duration-300)
+- Match the exact spacing and proportions from the reference design
+- Preserve all existing chat functionality
+```
+
+---
+
+This prompt gives Replit everything needed to implement the exact design from your screenshots with full light/dark mode support. Want me to add any additional specifications?

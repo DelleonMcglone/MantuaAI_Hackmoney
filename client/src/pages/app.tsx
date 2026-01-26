@@ -1414,6 +1414,14 @@ const HookSelectorModal = ({ isOpen, onClose, hooks, selectedHook, onSelect, the
 const SwapInterface = ({ onClose, swapDetails, theme, isDark }) => {
   const [selectedHook, setSelectedHook] = useState(swapDetails?.hook || 'mev');
   const [isHookModalOpen, setIsHookModalOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 900);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
   
   // State for token selector
   const [isTokenSelectorOpen, setIsTokenSelectorOpen] = useState(false);
@@ -1439,12 +1447,10 @@ const SwapInterface = ({ onClose, swapDetails, theme, isDark }) => {
   const handleTokenSelect = (tokenSymbol) => {
     if (selectingSide === 'from') {
         setFromToken(tokenSymbol);
-        // Clear inputs on selection as per requirements
         setFromAmount('');
         setToAmount('');
     } else {
         setToToken(tokenSymbol);
-        // Clear inputs on selection as per requirements
         setFromAmount('');
         setToAmount('');
     }
@@ -1480,18 +1486,14 @@ const SwapInterface = ({ onClose, swapDetails, theme, isDark }) => {
 
   return (
     <div style={{ 
-      width: '95%', 
-      maxWidth: '1400px',
-      margin: '0 auto 20px',
-      zIndex: 50,
-      background: 'transparent',
-      padding: '0',
-      fontFamily: '"DM Sans", sans-serif',
+      width: '100%', 
+      maxWidth: '1200px',
+      margin: '0 auto',
       position: 'relative',
-      marginLeft: 'auto', 
-      marginRight: 'auto'
+      fontFamily: '"DM Sans", sans-serif',
     }}>
-      <div style={{ position: 'absolute', top: 0, right: 0, zIndex: 100 }}>
+      {/* Close Button positioned absolutely relative to container */}
+      <div style={{ position: 'absolute', top: -40, right: 0, zIndex: 100 }}>
         <button onClick={onClose} style={{ 
           background: theme.bgCard, 
           border: `1px solid ${theme.border}`, 
@@ -1568,32 +1570,115 @@ const SwapInterface = ({ onClose, swapDetails, theme, isDark }) => {
         </div>
       )}
 
-      {/* Main Content */}
+      {/* Main Flex Container */}
       <div style={{ 
         display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'flex-start', 
-        width: '100%', 
-        gap: '24px', 
-        flexWrap: 'wrap'
+        flexDirection: isMobile ? 'column' : 'row',
+        gap: '20px',
+        width: '100%',
       }}>
         
-        {/* LEFT COLUMN: Swap Panel */}
-        <div style={{
+        {/* LEFT COLUMN: Chart Panel */}
+        <div style={{ 
+          flex: '1.5',
+          minWidth: isMobile ? '100%' : '500px',
           background: theme.bgCard,
-          borderRadius: '24px',
+          borderRadius: '16px',
+          border: `1px solid ${theme.border}`,
+          overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '20px',
+          padding: '24px'
+        }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'linear-gradient(135deg, #627EEA 0%, #8B9FFF 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', fontWeight: '600', color: 'white', marginRight: '-10px', zIndex: 2, border: `3px solid ${theme.bgCard}` }}>Ξ</div>
+                    <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'linear-gradient(135deg, #2775CA 0%, #4A9FE8 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', fontWeight: '700', color: 'white', border: `3px solid ${theme.bgCard}` }}>$</div>
+                  </div>
+                  <span style={{ color: theme.textPrimary, fontWeight: '700', fontSize: '18px' }}>ETH / USDC</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px' }}>
+                  <span style={{ color: theme.textPrimary, fontSize: '32px', fontWeight: '700', fontFamily: 'SF Mono, Monaco, monospace', letterSpacing: '-0.03em' }}>$3,245.50</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', background: 'rgba(16, 185, 129, 0.1)', padding: '4px 8px', borderRadius: '6px' }}>
+                    <span style={{ color: '#10b981', fontSize: '13px', fontWeight: '700' }}>+2.34%</span>
+                  </div>
+                </div>
+              </div>
+              <div style={{ display: 'flex', gap: '4px', background: theme.bgSecondary, padding: '4px', borderRadius: '10px' }}>
+                {['1H', '4H', '1D', '1W'].map((tf, i) => (
+                  <button key={tf} style={{ 
+                    padding: '6px 12px', 
+                    borderRadius: '8px', 
+                    border: 'none', 
+                    background: i === 2 ? theme.bgCard : 'transparent', 
+                    color: i === 2 ? theme.textPrimary : theme.textSecondary, 
+                    fontSize: '13px', 
+                    fontWeight: '600', 
+                    cursor: 'pointer',
+                    boxShadow: i === 2 ? '0 2px 4px rgba(0,0,0,0.05)' : 'none'
+                  }}>{tf}</button>
+                ))}
+              </div>
+            </div>
+            
+            <div style={{ height: '240px', width: '100%', flex: 1 }}>
+               <PriceChart pair="ETH/USDC" theme={theme} />
+            </div>
+
+            {/* Market Stats */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginTop: 'auto' }}>
+                <div style={{ 
+                  background: theme.bgSecondary, 
+                  borderRadius: '12px', 
+                  padding: '16px', 
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                }}>
+                  <div style={{ color: theme.textSecondary, fontSize: '12px', marginBottom: '4px', fontWeight: '600', textTransform: 'uppercase' }}>24h Volume</div>
+                  <div style={{ color: theme.textPrimary, fontSize: '18px', fontWeight: '700' }}>$2.4B</div>
+                </div>
+                <div style={{ 
+                  background: theme.bgSecondary, 
+                  borderRadius: '12px', 
+                  padding: '16px', 
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                }}>
+                  <div style={{ color: theme.textSecondary, fontSize: '12px', marginBottom: '4px', fontWeight: '600', textTransform: 'uppercase' }}>Pool TVL</div>
+                  <div style={{ color: theme.textPrimary, fontSize: '18px', fontWeight: '700' }}>$847M</div>
+                </div>
+                <div style={{ 
+                  background: theme.bgSecondary, 
+                  borderRadius: '12px', 
+                  padding: '16px', 
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                }}>
+                  <div style={{ color: theme.textSecondary, fontSize: '12px', marginBottom: '4px', fontWeight: '600', textTransform: 'uppercase' }}>Current Fee</div>
+                  <div style={{ color: theme.textPrimary, fontSize: '18px', fontWeight: '700' }}>0.05%</div>
+                </div>
+              </div>
+        </div>
+
+        {/* RIGHT COLUMN: Swap Form */}
+        <div style={{
+          width: isMobile ? '100%' : '400px',
+          flexShrink: 0,
+          background: theme.bgCard,
+          borderRadius: '16px',
           padding: '24px',
           border: `1px solid ${theme.border}`,
-          boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.05), 0 20px 40px -10px rgba(0,0,0,0.5)',
-          position: 'relative',
-          width: '420px',
-          flexShrink: 0,
-          order: 2,
-          gap: '12px',
+          boxShadow: isDark ? 'none' : '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)',
           display: 'flex',
           flexDirection: 'column'
         }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
             <h2 style={{ color: theme.textPrimary, fontSize: '20px', fontWeight: '700', margin: 0, letterSpacing: '-0.02em' }}>Swap</h2>
             <button style={{ background: 'transparent', border: 'none', color: theme.textMuted, cursor: 'pointer', padding: '8px', borderRadius: '50%', '&:hover': { background: theme.bgSecondary } }}>
               <SettingsIcon />
@@ -1620,9 +1705,9 @@ const SwapInterface = ({ onClose, swapDetails, theme, isDark }) => {
               zIndex: 10 
             }}>
               <button style={{
-                width: '40px',
-                height: '40px',
-                borderRadius: '12px',
+                width: '36px',
+                height: '36px',
+                borderRadius: '10px',
                 border: `4px solid ${theme.bgCard}`,
                 background: theme.bgSecondary,
                 color: theme.accent,
@@ -1630,7 +1715,7 @@ const SwapInterface = ({ onClose, swapDetails, theme, isDark }) => {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
+                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
               }}>
                 <ArrowLeftRightIcon />
               </button>
@@ -1754,106 +1839,6 @@ const SwapInterface = ({ onClose, swapDetails, theme, isDark }) => {
           }}>
             Swap ETH → USDC with {selectedHookObj.name.replace(' (Smart Routing)', '')}
           </button>
-        </div>
-
-        {/* RIGHT COLUMN: Chart & Stats */}
-        <div style={{ 
-          display: 'flex', 
-          flexDirection: 'column', 
-          gap: '20px', 
-          flex: '1 1 auto',
-          maxWidth: '900px',
-          minWidth: '500px',
-          order: 1
-        }}>
-          <div style={{
-            background: theme.bgCard,
-            borderRadius: '24px',
-            padding: '24px',
-            border: `1px solid ${theme.border}`,
-            flex: 1,
-            minHeight: '300px'
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'linear-gradient(135deg, #627EEA 0%, #8B9FFF 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', fontWeight: '600', color: 'white', marginRight: '-10px', zIndex: 2, border: `3px solid ${theme.bgCard}` }}>Ξ</div>
-                    <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'linear-gradient(135deg, #2775CA 0%, #4A9FE8 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', fontWeight: '700', color: 'white', border: `3px solid ${theme.bgCard}` }}>$</div>
-                  </div>
-                  <span style={{ color: theme.textPrimary, fontWeight: '700', fontSize: '18px' }}>ETH / USDC</span>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px' }}>
-                  <span style={{ color: theme.textPrimary, fontSize: '32px', fontWeight: '700', fontFamily: 'SF Mono, Monaco, monospace', letterSpacing: '-0.03em' }}>$3,245.50</span>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', background: 'rgba(16, 185, 129, 0.1)', padding: '4px 8px', borderRadius: '6px' }}>
-                    <span style={{ color: '#10b981', fontSize: '13px', fontWeight: '700' }}>+2.34%</span>
-                  </div>
-                </div>
-              </div>
-              <div style={{ display: 'flex', gap: '4px', background: theme.bgSecondary, padding: '4px', borderRadius: '10px' }}>
-                {['1H', '4H', '1D', '1W'].map((tf, i) => (
-                  <button key={tf} style={{ 
-                    padding: '6px 12px', 
-                    borderRadius: '8px', 
-                    border: 'none', 
-                    background: i === 2 ? theme.bgCard : 'transparent', 
-                    color: i === 2 ? theme.textPrimary : theme.textSecondary, 
-                    fontSize: '13px', 
-                    fontWeight: '600', 
-                    cursor: 'pointer',
-                    boxShadow: i === 2 ? '0 2px 4px rgba(0,0,0,0.05)' : 'none'
-                  }}>{tf}</button>
-                ))}
-              </div>
-            </div>
-            
-            <div style={{ height: '240px', width: '100%' }}>
-               <PriceChart pair="ETH/USDC" theme={theme} />
-            </div>
-          </div>
-          
-          {/* Market Stats */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
-            <div style={{ 
-              background: theme.bgCard, 
-              borderRadius: '16px', 
-              padding: '16px', 
-              border: `1px solid ${theme.border}`,
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
-              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-            }}>
-              <div style={{ color: theme.textSecondary, fontSize: '13px', marginBottom: '4px', fontWeight: '500' }}>24h Volume</div>
-              <div style={{ color: theme.textPrimary, fontSize: '20px', fontWeight: '700' }}>$2.4B</div>
-            </div>
-            <div style={{ 
-              background: theme.bgCard, 
-              borderRadius: '16px', 
-              padding: '16px', 
-              border: `1px solid ${theme.border}`,
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
-              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-            }}>
-              <div style={{ color: theme.textSecondary, fontSize: '13px', marginBottom: '4px', fontWeight: '500' }}>Pool TVL</div>
-              <div style={{ color: theme.textPrimary, fontSize: '20px', fontWeight: '700' }}>$847M</div>
-            </div>
-            <div style={{ 
-              background: theme.bgCard, 
-              borderRadius: '16px', 
-              padding: '16px', 
-              border: `1px solid ${theme.border}`,
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
-              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-            }}>
-              <div style={{ color: theme.textSecondary, fontSize: '13px', marginBottom: '4px', fontWeight: '500' }}>Current Fee</div>
-              <div style={{ color: theme.textPrimary, fontSize: '20px', fontWeight: '700' }}>0.05%</div>
-            </div>
-          </div>
         </div>
       </div>
     </div>

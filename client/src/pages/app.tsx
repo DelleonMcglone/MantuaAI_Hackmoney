@@ -1848,7 +1848,7 @@ const SwapInterface = ({ onClose, swapDetails, theme, isDark }) => {
 };
 
 // ============ LIQUIDITY INTERFACE ============
-const LiquidityInterface = ({ onClose, theme, isDark }) => {
+const LiquidityInterface = ({ onClose, theme, isDark, onAddLiquidity, onCreatePool }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedHookFilter, setSelectedHookFilter] = useState('All');
   const [selectedTypeFilter, setSelectedTypeFilter] = useState('All');
@@ -2062,7 +2062,7 @@ const LiquidityInterface = ({ onClose, theme, isDark }) => {
               {hookOptions.map(o => <option key={o} value={o}>{o}</option>)}
           </select>
 
-          <button style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 18px', borderRadius: '12px', border: 'none', background: 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)', color: 'white', fontSize: '14px', fontWeight: '600', cursor: 'pointer', boxShadow: '0 4px 12px rgba(139, 92, 246, 0.3)' }}>
+          <button onClick={onCreatePool} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 18px', borderRadius: '12px', border: 'none', background: 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)', color: 'white', fontSize: '14px', fontWeight: '600', cursor: 'pointer', boxShadow: '0 4px 12px rgba(139, 92, 246, 0.3)' }}>
             <PlusIcon /> Create Pool
           </button>
         </div>
@@ -2100,7 +2100,7 @@ const LiquidityInterface = ({ onClose, theme, isDark }) => {
                   <td style={{ padding: '12px' }}><span style={{ color: theme.textPrimary, fontFamily: 'SF Mono, Monaco, monospace', fontSize: '13px' }}>${pool.liquidity.toLocaleString()}</span></td>
                   <td style={{ padding: '12px' }}><YieldBadge value={pool.yield} /></td>
                   <td style={{ padding: '12px', textAlign: 'right' }}>
-                     <button style={{ padding: '8px 12px', borderRadius: '8px', border: `1px solid ${theme.accent}40`, background: `${theme.accent}10`, color: theme.accent, fontSize: '12px', fontWeight: '600', cursor: 'pointer', whiteSpace: 'nowrap', width: '100%' }}>Add Liquidity</button>
+                     <button onClick={() => onAddLiquidity(pool)} style={{ padding: '8px 12px', borderRadius: '8px', border: `1px solid ${theme.accent}40`, background: `${theme.accent}10`, color: theme.accent, fontSize: '12px', fontWeight: '600', cursor: 'pointer', whiteSpace: 'nowrap', width: '100%' }}>Add Liquidity</button>
                   </td>
                 </tr>
               ))}
@@ -2786,6 +2786,16 @@ export default function MantuaApp() {
                         onClose={() => setShowLiquidity(false)} 
                         theme={theme} 
                         isDark={isDark} 
+                        onAddLiquidity={(pool) => {
+                           setShowLiquidity(false);
+                           setShowAddLiquidityModal(true);
+                           // In a real app we'd pass the pool data too
+                           console.log('Adding liquidity to:', pool);
+                        }}
+                        onCreatePool={() => {
+                           setShowLiquidity(false);
+                           setShowAddLiquidityModal(true);
+                        }}
                       />
                     </div>
                   )}

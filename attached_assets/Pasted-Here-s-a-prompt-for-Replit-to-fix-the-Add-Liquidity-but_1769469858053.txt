@@ -1,0 +1,275 @@
+Here's a prompt for Replit to fix the Add Liquidity button click handlers:
+
+---
+
+**Prompt for Replit AI:**
+
+```
+Fix bug: The "Add Liquidity" button on pool cards and "Create Pool" button do NOT open the Add Liquidity modal, but typing "add liquidity" in chat DOES work.
+
+**SYMPTOMS:**
+
+✅ Sidebar navigation works
+✅ Chat commands work (typing "add liquidity" opens modal)
+❌ Clicking "Add Liquidity" button on a pool card → Nothing happens
+❌ Clicking "Create Pool" button → Nothing happens
+
+**ROOT CAUSE:**
+
+The button click handlers in the Liquidity Pool List component are either:
+1. Not calling the state setter function correctly
+2. Missing the onClick handler entirely
+3. Calling a different/old function that doesn't exist
+4. The state setter isn't being passed down as a prop
+
+**FIND THE LIQUIDITY POOL LIST COMPONENT:**
+
+Look in:
+- `src/components/liquidity/LiquidityPoolList.tsx`
+- `src/components/liquidity/PoolCard.tsx`
+- `src/pages/app.tsx` (if pools are rendered inline)
+
+**CHECK THE BUTTON CLICK HANDLERS:**
+
+```tsx
+// WRONG - Handler might be missing or calling wrong function
+<button onClick={onAddLiquidity}>Add Liquidity</button>  // onAddLiquidity undefined?
+<button onClick={() => handleAddLiquidity}>Add Liquidity</button>  // Missing () to call
+<button onClick={handleAdd}>Add Liquidity</button>  // Wrong function name?
+
+// CORRECT - Properly calling the handler with pool data
+<button onClick={() => onAddLiquidity(pool)}>Add Liquidity</button>
+```
+
+**FIX #1: Ensure props are passed to LiquidityPoolList:**
+
+In `app.tsx` or parent component:
+
+```tsx
+// Where LiquidityPoolList is rendered
+{activeView === 'liquidity' && !showAddLiquidity && (
+  <LiquidityPoolList
+    pools={liquidityPools}
+    onAddLiquidity={(pool) => {
+      console.log('Add liquidity clicked for pool:', pool);  // Debug
+      setSelectedPool(pool);
+      setShowAddLiquidity(true);
+    }}
+    onCreatePool={() => {
+      console.log('Create pool clicked');  // Debug
+      setSelectedPool(null);  // No existing pool
+      setShowAddLiquidity(true);
+    }}
+  />
+)}
+```
+
+**FIX #2: Ensure LiquidityPoolList uses the props:**
+
+```tsx
+// LiquidityPoolList.tsx
+interface LiquidityPoolListProps {
+  pools: Pool[];
+  onAddLiquidity: (pool: Pool) => void;
+  onCreatePool: () => void;
+}
+
+const LiquidityPoolList: React.FC<LiquidityPoolListProps> = ({
+  pools,
+  onAddLiquidity,
+  onCreatePool,
+}) => {
+  return (
+    <div>
+      {/* Create Pool Button */}
+      <button
+        onClick={onCreatePool}  // Make sure this calls the prop
+        className="..."
+      >
+        + Create Pool
+      </button>
+
+      {/* Pool Cards */}
+      {pools.map((pool) => (
+        <PoolCard
+          key={pool.id}
+          pool={pool}
+          onAddLiquidity={() => onAddLiquidity(pool)}  // Pass pool data
+        />
+      ))}
+    </div>
+  );
+};
+```
+
+**FIX #3: Ensure PoolCard button calls the handler:**
+
+```tsx
+// PoolCard.tsx
+interface PoolCardProps {
+  pool: Pool;
+  onAddLiquidity: () => void;
+}
+
+const PoolCard: React.FC<PoolCardProps> = ({ pool, onAddLiquidity }) => {
+  return (
+    <div className="pool-card">
+      {/* Pool info */}
+      <div>{pool.token0}/{pool.token1}</div>
+      <div>TVL: {pool.tvl}</div>
+      
+      {/* THIS BUTTON MUST CALL onAddLiquidity */}
+      <button
+        onClick={(e) => {
+          e.stopPropagation();  // Prevent event bubbling if card is clickable
+          onAddLiquidity();      // Call the handler!
+        }}
+        className="add-liquidity-btn"
+      >
+        Add Liquidity
+      </button>
+    </div>
+  );
+};
+```
+
+**FIX #4: Check if there's an event propagation issue:**
+
+If the pool card itself is clickable, the button click might be intercepted:
+
+```tsx
+// WRONG - Card onClick might swallow button click
+<div onClick={() => navigateToPool(pool)}>
+  <button onClick={onAddLiquidity}>Add Liquidity</button>  // Never fires
+</div>
+
+// CORRECT - Stop propagation on button
+<div onClick={() => navigateToPool(pool)}>
+  <button 
+    onClick={(e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      onAddLiquidity();
+    }}
+  >
+    Add Liquidity
+  </button>
+</div>
+```
+
+**FIX #5: Check for conditional rendering issues:**
+
+```tsx
+// WRONG - Button might not be rendered or clickable
+{isConnected && <button onClick={onAddLiquidity}>Add Liquidity</button>}
+
+// Make sure the condition is met
+// Or button isn't disabled/hidden by CSS
+<button
+  onClick={onAddLiquidity}
+  disabled={false}  // Not disabled
+  style={{ pointerEvents: 'auto' }}  // Clickable
+>
+  Add Liquidity
+</button>
+```
+
+**ADD CONSOLE LOGS FOR DEBUGGING:**
+
+Temporarily add these to trace the issue:
+
+```tsx
+// In app.tsx where you pass the handler
+onAddLiquidity={(pool) => {
+  console.log('=== ADD LIQUIDITY HANDLER CALLED ===');
+  console.log('Pool:', pool);
+  console.log('Current showAddLiquidity:', showAddLiquidity);
+  setSelectedPool(pool);
+  setShowAddLiquidity(true);
+  console.log('Set showAddLiquidity to true');
+}}
+
+// In LiquidityPoolList
+<button
+  onClick={() => {
+    console.log('=== BUTTON CLICKED ===');
+    console.log('onAddLiquidity prop exists:', typeof onAddLiquidity);
+    onAddLiquidity(pool);
+  }}
+>
+  Add Liquidity
+</button>
+```
+
+**FULL WORKING EXAMPLE:**
+
+```tsx
+// app.tsx
+const [activeView, setActiveView] = useState('chat');
+const [showAddLiquidity, setShowAddLiquidity] = useState(false);
+const [selectedPool, setSelectedPool] = useState<Pool | null>(null);
+
+const handleAddLiquidity = (pool: Pool) => {
+  setSelectedPool(pool);
+  setShowAddLiquidity(true);
+};
+
+const handleCreatePool = () => {
+  setSelectedPool(null);
+  setShowAddLiquidity(true);
+};
+
+const handleCloseAddLiquidity = () => {
+  setShowAddLiquidity(false);
+  setSelectedPool(null);
+};
+
+// Render logic
+return (
+  <div>
+    {/* Show Add Liquidity Modal when triggered */}
+    {showAddLiquidity && (
+      <AddLiquidityModal
+        pool={selectedPool}
+        onClose={handleCloseAddLiquidity}
+      />
+    )}
+
+    {/* Show Pool List when on liquidity view but NOT adding */}
+    {activeView === 'liquidity' && !showAddLiquidity && (
+      <LiquidityPoolList
+        pools={pools}
+        onAddLiquidity={handleAddLiquidity}
+        onCreatePool={handleCreatePool}
+      />
+    )}
+
+    {/* Other views */}
+    {activeView === 'chat' && <ChatInterface />}
+    {activeView === 'swap' && <SwapInterface />}
+    {/* etc... */}
+  </div>
+);
+```
+
+**TESTING CHECKLIST:**
+
+After fix, verify:
+- [ ] Click "Add Liquidity" on ETH/USDC pool → Modal opens with ETH/USDC pre-selected
+- [ ] Click "Add Liquidity" on different pool → Modal opens with that pool
+- [ ] Click "Create Pool" → Modal opens (no pool pre-selected)
+- [ ] Type "add liquidity" → Modal opens (still works)
+- [ ] Close modal → Returns to pool list
+- [ ] Click "Add Liquidity" again → Modal opens again
+
+**FILES TO CHECK:**
+
+1. `src/pages/app.tsx` - Where handlers are defined and passed
+2. `src/components/liquidity/LiquidityPoolList.tsx` - Where buttons are rendered
+3. `src/components/liquidity/PoolCard.tsx` - Individual pool card buttons
+4. Any parent wrapper components that might intercept clicks
+```
+
+---
+
+This prompt focuses specifically on fixing the button click handlers while keeping the working chat command functionality intact.

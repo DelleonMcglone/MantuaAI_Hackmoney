@@ -2433,7 +2433,7 @@ export default function MantuaApp() {
 
       {/* Sidebar */}
       <aside style={{ width: sidebarOpen ? 260 : 0, minHeight: '100vh', background: theme.bgSidebar, borderRight: `1px solid ${theme.border}`, display: 'flex', flexDirection: 'column', overflow: 'hidden', transition: 'width 0.3s ease' }}>
-        <div style={{ padding: '16px', flex: 1, overflowY: 'auto' }}>
+        <div style={{ padding: '16px', flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
           {/* New Chat */}
           <button onClick={() => { 
              setShowSwap(false); 
@@ -2529,7 +2529,7 @@ export default function MantuaApp() {
           </button>
 
           {/* Links Section */}
-          <div style={{ marginTop: 24 }}>
+          <div style={{ marginTop: 'auto', paddingTop: 24 }}>
             <div style={{ padding: '8px 12px', fontSize: 12, fontWeight: 600, color: theme.accent, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Links</div>
             <button style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 12px', background: 'transparent', border: 'none', borderRadius: 8, color: theme.textSecondary, fontSize: 14, cursor: 'pointer' }}><ExternalLinkIcon /> About</button>
             <button style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 12px', background: 'transparent', border: 'none', borderRadius: 8, color: theme.textSecondary, fontSize: 14, cursor: 'pointer' }}><FileTextIcon /> Docs</button>

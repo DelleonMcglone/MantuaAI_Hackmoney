@@ -12,6 +12,7 @@ import logoWhite from '@assets/Mantua_logo_white_1768946648374.png';
 import logoBlack from '@assets/Mantua_logo_black_1768946648374.png';
 import AnalysisCard from '../components/chat/AnalysisCard';
 import { classifyQuery } from '../utils/queryClassifier';
+import { TrendingUp, BarChart2, PieChart as PieIcon, Activity } from 'lucide-react';
 import { 
   getPriceData, 
   getVolumeData, 

@@ -1069,15 +1069,16 @@ const TokenSelect = ({ token, balance, usdValue, side, amount, theme, onTokenCli
         display: 'flex',
         alignItems: 'center',
         gap: '8px',
-        padding: '6px 12px 6px 6px',
-        borderRadius: '24px',
-        border: 'none',
-        background: theme ? (theme.mode === 'dark' ? '#1f2937' : '#e5e7eb') : '#f3f4f6', // More distinct pill bg
-        color: theme ? theme.textPrimary : '#1f2937',
+        padding: '8px 16px',
+        borderRadius: '9999px',
+        border: theme?.mode === 'dark' ? '1px solid #4b5563' : '1px solid #e5e7eb',
+        background: theme?.mode === 'dark' ? 'rgba(55, 65, 81, 0.8)' : '#f3f4f6',
+        color: theme?.mode === 'dark' ? '#ffffff' : '#1f2937',
         cursor: 'pointer',
         fontSize: '16px',
         fontWeight: '600',
-        flexShrink: 0
+        flexShrink: 0,
+        transition: 'background 0.2s ease',
       }}>
         <div style={{
           width: '28px',

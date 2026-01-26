@@ -1,0 +1,238 @@
+Here's a prompt for Replit to fix the dark mode issues for both the token selector and the analysis chart:
+
+---
+
+**Prompt for Replit AI:**
+
+```
+Fix dark mode styling issues in two components: the Swap token selector and the Analysis Card chart.
+
+**ISSUE 1: Token Selector in Swap Modal**
+
+Current Problem (Dark Mode):
+- Token selector buttons (mUSDC, USDC) have light/white backgrounds
+- They appear as bright white pills against the dark swap form
+- Creates harsh contrast and breaks dark mode consistency
+
+Location: Swap form token dropdown/selector component
+
+**Before (Wrong):**
+- Token button background: white or light gray
+- Token text: dark text on light background
+
+**After (Correct - Dark Mode):**
+- Token button background: #374151 (gray-700) or rgba(55, 65, 81, 0.8)
+- Token text: white
+- Border: 1px solid #4b5563 (gray-600)
+- Hover: slightly lighter background
+
+**After (Correct - Light Mode):**
+- Token button background: #f3f4f6 (gray-100)
+- Token text: #1f2937 (gray-800)
+- Border: 1px solid #e5e7eb (gray-200)
+- Hover: #e5e7eb (gray-200)
+
+**Fix the token selector styling:**
+
+```tsx
+// Token selector button styles
+const tokenButtonStyle = {
+  background: isDark ? 'rgba(55, 65, 81, 0.8)' : '#f3f4f6',
+  color: isDark ? '#ffffff' : '#1f2937',
+  border: `1px solid ${isDark ? '#4b5563' : '#e5e7eb'}`,
+  borderRadius: '9999px', // fully rounded
+  padding: '8px 16px',
+  display: 'flex',
+  alignItems: 'center',
+  gap: '8px',
+  cursor: 'pointer',
+  transition: 'background 0.2s ease',
+};
+
+// Hover state
+const tokenButtonHover = {
+  background: isDark ? 'rgba(75, 85, 99, 0.9)' : '#e5e7eb',
+};
+```
+
+**Or with Tailwind classes:**
+```tsx
+<button className={`
+  flex items-center gap-2 px-4 py-2 rounded-full transition-colors
+  ${isDark 
+    ? 'bg-gray-700/80 text-white border border-gray-600 hover:bg-gray-600' 
+    : 'bg-gray-100 text-gray-800 border border-gray-200 hover:bg-gray-200'
+  }
+`}>
+  <TokenIcon />
+  <span>{tokenSymbol}</span>
+  <ChevronDown size={16} />
+</button>
+```
+
+---
+
+**ISSUE 2: Analysis Card / Price Chart**
+
+Current Problem (Dark Mode):
+- Analysis card has white/light background
+- Chart area is light colored
+- Insight boxes have light backgrounds
+- Entire card looks like light mode while app is in dark mode
+
+Location: AnalysisCard component (likely `src/components/chat/AnalysisCard.tsx`)
+
+**Before (Wrong - in Dark Mode):**
+- Card background: white
+- Chart background: light gray
+- Insight cards: light gray/white
+- Text: dark colors
+
+**After (Correct - Dark Mode):**
+- Card background: #1e1e32 or #1a1a2e
+- Chart background: transparent (inherits card bg)
+- Chart line: #8b5cf6 (purple)
+- Chart fill: purple gradient with low opacity
+- Insight cards: rgba(71, 85, 105, 0.5) or #374151
+- Text primary: #ffffff
+- Text secondary: #cbd5e1 (slate-300)
+- Text muted: #64748b (slate-500)
+- Border: #2a2a45
+
+**After (Correct - Light Mode):**
+- Card background: #ffffff
+- Chart line: #8b5cf6 (purple)
+- Insight cards: #f1f5f9 (slate-100)
+- Text primary: #0f172a (slate-900)
+- Text secondary: #475569 (slate-600)
+- Border: #e2e8f0 (slate-200)
+
+**Fix the Analysis Card styling:**
+
+```tsx
+// Theme-aware styles for AnalysisCard
+const cardStyle = {
+  background: isDark ? '#1e1e32' : '#ffffff',
+  border: `1px solid ${isDark ? '#2a2a45' : '#e2e8f0'}`,
+  borderRadius: '16px',
+  overflow: 'hidden',
+};
+
+const headerStyle = {
+  background: isDark ? '#1e1e32' : '#ffffff',
+  borderBottom: `1px solid ${isDark ? '#2a2a45' : '#e2e8f0'}`,
+  padding: '16px 24px',
+};
+
+const titleStyle = {
+  color: isDark ? '#ffffff' : '#0f172a',
+};
+
+const badgeStyle = {
+  background: isDark ? 'rgba(139, 92, 246, 0.2)' : '#f3e8ff',
+  color: isDark ? '#c4b5fd' : '#7c3aed',
+  padding: '6px 12px',
+  borderRadius: '9999px',
+  fontSize: '14px',
+};
+
+const summaryStyle = {
+  color: isDark ? '#cbd5e1' : '#475569',
+  padding: '20px 24px',
+  borderTop: `1px solid ${isDark ? '#2a2a45' : '#e2e8f0'}`,
+};
+
+const insightCardStyle = {
+  background: isDark ? 'rgba(71, 85, 105, 0.5)' : '#f1f5f9',
+  color: isDark ? '#ffffff' : '#1e293b',
+  padding: '14px 16px',
+  borderRadius: '12px',
+};
+
+const footerStyle = {
+  color: isDark ? '#64748b' : '#64748b',
+  padding: '12px 24px',
+  borderTop: `1px solid ${isDark ? '#2a2a45' : '#e2e8f0'}`,
+  fontSize: '12px',
+};
+```
+
+**Chart theming (Recharts):**
+
+```tsx
+// Area chart with theme support
+<AreaChart data={data}>
+  <defs>
+    <linearGradient id="priceGradient" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stopColor="#8b5cf6" stopOpacity={isDark ? 0.4 : 0.3} />
+      <stop offset="100%" stopColor="#8b5cf6" stopOpacity={0.05} />
+    </linearGradient>
+  </defs>
+  <XAxis 
+    dataKey="day" 
+    axisLine={false} 
+    tickLine={false}
+    tick={{ fill: isDark ? '#64748b' : '#64748b', fontSize: 12 }}
+  />
+  <YAxis 
+    axisLine={false} 
+    tickLine={false}
+    tick={{ fill: isDark ? '#64748b' : '#64748b', fontSize: 12 }}
+  />
+  <Tooltip 
+    contentStyle={{ 
+      background: isDark ? '#1e1e32' : '#ffffff',
+      border: `1px solid ${isDark ? '#8b5cf6' : '#e2e8f0'}`,
+      borderRadius: '8px',
+      color: isDark ? '#ffffff' : '#0f172a',
+    }}
+  />
+  <Area 
+    type="monotone" 
+    dataKey="price" 
+    stroke="#8b5cf6" 
+    strokeWidth={2}
+    fill="url(#priceGradient)"
+  />
+</AreaChart>
+```
+
+---
+
+**HOW TO DETECT DARK MODE:**
+
+Ensure the components are reading from the app's theme context:
+
+```tsx
+// Option 1: Use existing theme context
+const { isDark } = useTheme();
+
+// Option 2: Check document/body class
+const isDark = document.documentElement.classList.contains('dark');
+
+// Option 3: Use CSS variables and pass them
+const isDark = getComputedStyle(document.documentElement)
+  .getPropertyValue('--color-mode').trim() === 'dark';
+```
+
+---
+
+**FILES TO MODIFY:**
+
+1. Token selector component in swap form:
+   - `src/components/swap/TokenSelector.tsx` or
+   - `src/components/swap/SwapForm.tsx` (wherever token buttons are rendered)
+
+2. Analysis card component:
+   - `src/components/chat/AnalysisCard.tsx`
+
+**CRITICAL:**
+- Both components MUST read from the same theme state/context as the rest of the app
+- Test by toggling the theme switch in the header
+- Ensure smooth transitions with `transition-colors duration-200`
+- Do NOT hardcode light or dark - always use conditional styling based on theme
+```
+
+---
+
+This prompt addresses both dark mode issues you identified with specific color values and implementation details.

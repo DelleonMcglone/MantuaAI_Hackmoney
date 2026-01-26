@@ -65,7 +65,7 @@ const AnalysisCard: React.FC<AnalysisCardProps> = ({
             <AreaChart data={chartData}>
               <defs>
                 <linearGradient id="priceGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#8b5cf6" stopOpacity={0.5} />
+                  <stop offset="0%" stopColor="#8b5cf6" stopOpacity={isDark ? 0.4 : 0.3} />
                   <stop offset="100%" stopColor="#8b5cf6" stopOpacity={0.05} />
                 </linearGradient>
               </defs>

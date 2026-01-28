@@ -192,11 +192,11 @@ export default function MantuaLanding() {
           </div>
           <div>
             <h4 style={{ fontFamily: '"Outfit", sans-serif', fontSize: 14, fontWeight: 600, color: theme.textPrimary, marginBottom: 16, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Protocol</h4>
-            {['Documentation', 'Smart Contracts', 'Roadmap', 'Security'].map(l => <a key={l} href="#" style={{ display: 'block', color: theme.textSecondary, textDecoration: 'none', fontSize: 14, marginBottom: 12 }}>{l}</a>)}
+            {['Documentation', 'Github', 'Roadmap', 'Security'].map(l => <a key={l} href="#" style={{ display: 'block', color: theme.textSecondary, textDecoration: 'none', fontSize: 14, marginBottom: 12 }}>{l}</a>)}
           </div>
           <div>
             <h4 style={{ fontFamily: '"Outfit", sans-serif', fontSize: 14, fontWeight: 600, color: theme.textPrimary, marginBottom: 16, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Resources</h4>
-            {['FAQ', 'Brand Kit', 'Blog', 'Changelog'].map(l => <a key={l} href="#" style={{ display: 'block', color: theme.textSecondary, textDecoration: 'none', fontSize: 14, marginBottom: 12 }}>{l}</a>)}
+            {['FAQ', 'Brand Kit', 'Blog', 'Analytics'].map(l => <a key={l} href="#" style={{ display: 'block', color: theme.textSecondary, textDecoration: 'none', fontSize: 14, marginBottom: 12 }}>{l}</a>)}
           </div>
           <div>
             <h4 style={{ fontFamily: '"Outfit", sans-serif', fontSize: 14, fontWeight: 600, color: theme.textPrimary, marginBottom: 16, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Community</h4>

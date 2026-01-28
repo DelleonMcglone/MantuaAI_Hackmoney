@@ -1073,8 +1073,8 @@ const TokenSelect = ({ token, balance, usdValue, side, amount, theme, onTokenCli
         padding: '8px 16px',
         borderRadius: '9999px',
         border: theme?.mode === 'dark' ? '1px solid #4b5563' : '1px solid #e5e7eb',
-        background: theme?.mode === 'dark' ? 'rgba(55, 65, 81, 0.8)' : '#f3f4f6',
-        color: theme?.mode === 'dark' ? '#ffffff' : '#1f2937',
+        background: theme?.mode === 'dark' ? '#1a1a1a' : '#f3f4f6',
+        color: theme?.mode === 'dark' ? '#f3f4f6' : '#1f2937',
         cursor: 'pointer',
         fontSize: '16px',
         fontWeight: '600',
@@ -1493,25 +1493,9 @@ const SwapInterface = ({ onClose, swapDetails, theme, isDark }) => {
       margin: '0 auto',
       position: 'relative',
       fontFamily: '"DM Sans", sans-serif',
+      display: 'flex',
+      justifyContent: 'center',
     }}>
-      {/* Close Button positioned absolutely relative to container */}
-      <div style={{ position: 'absolute', top: -40, right: 0, zIndex: 100 }}>
-        <button onClick={onClose} style={{ 
-          background: theme.bgCard, 
-          border: `1px solid ${theme.border}`, 
-          borderRadius: '50%',
-          width: '36px',
-          height: '36px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          cursor: 'pointer', 
-          color: theme.textSecondary,
-          boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-        }}>
-          <CloseIcon />
-        </button>
-      </div>
 
       {/* Hook Selector Modal */}
       <HookSelectorModal 
@@ -1682,9 +1666,14 @@ const SwapInterface = ({ onClose, swapDetails, theme, isDark }) => {
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
             <h2 style={{ color: theme.textPrimary, fontSize: '20px', fontWeight: '700', margin: 0, letterSpacing: '-0.02em' }}>Swap</h2>
-            <button style={{ background: 'transparent', border: 'none', color: theme.textMuted, cursor: 'pointer', padding: '8px', borderRadius: '50%', '&:hover': { background: theme.bgSecondary } }}>
-              <SettingsIcon />
-            </button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <button style={{ background: 'transparent', border: 'none', color: theme.textMuted, cursor: 'pointer', padding: '8px', borderRadius: '50%' }}>
+                <SettingsIcon />
+              </button>
+              <button onClick={onClose} style={{ background: 'transparent', border: 'none', color: theme.textMuted, cursor: 'pointer', padding: '8px', borderRadius: '50%' }}>
+                <CloseIcon />
+              </button>
+            </div>
           </div>
 
           <div style={{ position: 'relative' }}>
@@ -2813,9 +2802,15 @@ export default function MantuaApp() {
                     </div>
                   ))}
 
-                  {/* Swap Overlay - Stacked within scrolling container but sticky if needed, or just inline */}
+                  {/* Swap Overlay - centered within content area */}
                   {showSwap && !showLiquidity && !showAgentBuilder && (
-                    <div style={{ width: '100%', marginTop: 20, marginBottom: 20 }}>
+                    <div style={{
+                      width: '100%',
+                      marginTop: 20,
+                      marginBottom: 20,
+                      display: 'flex',
+                      justifyContent: 'center',
+                    }}>
                       <SwapInterface 
                         onClose={() => setShowSwap(false)} 
                         swapDetails={swapDetails} 

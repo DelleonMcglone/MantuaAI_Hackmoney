@@ -2565,68 +2565,95 @@ export default function MantuaApp() {
 
       {/* Sidebar */}
       <aside style={{ width: sidebarOpen ? 260 : 0, minHeight: '100vh', background: theme.bgSidebar, borderRight: `1px solid ${theme.border}`, display: 'flex', flexDirection: 'column', overflow: 'hidden', transition: 'width 0.3s ease' }}>
-        <div style={{ padding: '16px', flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ padding: '16px', flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
           {/* New Chat */}
-          <button onClick={() => { 
-             setShowSwap(false); 
-             setShowLiquidity(false); 
-             setShowAgentBuilder(false); 
-             setShowPortfolioModal(false);
-             setShowAddLiquidityModal(false);
-             setMessages([]); 
-             setHasInteracted(false); // Reset interaction state on New Chat
-          }} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 12px', background: 'transparent', border: 'none', borderRadius: 8, color: theme.accent, fontSize: 14, fontWeight: 500, cursor: 'pointer', marginBottom: 8 }}>
+          <button
+            onClick={() => {
+              setShowSwap(false);
+              setShowLiquidity(false);
+              setShowAgentBuilder(false);
+              setShowPortfolioModal(false);
+              setShowAddLiquidityModal(false);
+              setMessages([]);
+              setHasInteracted(false);
+            }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 10,
+              width: '100%',
+              padding: '10px 12px',
+              background: 'transparent',
+              border: 'none',
+              borderRadius: 8,
+              color: theme.accent,
+              fontSize: 14,
+              fontWeight: 600,
+              cursor: 'pointer',
+              marginBottom: 8,
+            }}
+          >
             <MessageSquarePlusIcon /> New Chat
           </button>
 
-          {/* Recent Chats */}
-          <div style={{ marginBottom: 8 }}>
-            <button onClick={() => setRecentChatsOpen(!recentChatsOpen)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', padding: '10px 12px', background: 'transparent', border: 'none', borderRadius: 8, color: theme.textPrimary, fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
-              <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}><MessageSquareIcon /> Recent Chats</span>
-              {recentChatsOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
-            </button>
-            {recentChatsOpen && isConnected && (
-              <div style={{ paddingLeft: 20, marginTop: 4 }}>
-                {recentChats.map((chat, i) => (
-                  <RecentChatItem 
-                    key={i} 
-                    chat={chat} 
-                    theme={theme} 
-                    onDelete={() => {
-                      const newChats = [...recentChats];
-                      newChats.splice(i, 1);
-                      setRecentChats(newChats);
-                    }} 
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-
           {/* Swap */}
-          <button onClick={() => { setShowSwap(true); setShowLiquidity(false); setShowAgentBuilder(false); setShowPortfolioModal(false); setShowAddLiquidityModal(false); setSwapDetails(null); setHasInteracted(true); }} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 12px', background: 'transparent', border: 'none', borderRadius: 8, color: theme.textPrimary, fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
+          <button
+            onClick={() => {
+              setShowSwap(true);
+              setShowLiquidity(false);
+              setShowAgentBuilder(false);
+              setShowPortfolioModal(false);
+              setShowAddLiquidityModal(false);
+              setSwapDetails(null);
+              setHasInteracted(true);
+            }}
+            style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 12px', background: 'transparent', border: 'none', borderRadius: 8, color: theme.textPrimary, fontSize: 14, fontWeight: 500, cursor: 'pointer' }}
+          >
             <ArrowLeftRightIcon /> Swap
           </button>
 
           {/* Liquidity */}
-          <button onClick={() => { setShowLiquidity(true); setShowSwap(false); setShowAgentBuilder(false); setShowPortfolioModal(false); setShowAddLiquidityModal(false); setHasInteracted(true); }} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 12px', background: 'transparent', border: 'none', borderRadius: 8, color: theme.textPrimary, fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
+          <button
+            onClick={() => {
+              setShowLiquidity(true);
+              setShowSwap(false);
+              setShowAgentBuilder(false);
+              setShowPortfolioModal(false);
+              setShowAddLiquidityModal(false);
+              setHasInteracted(true);
+            }}
+            style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 12px', background: 'transparent', border: 'none', borderRadius: 8, color: theme.textPrimary, fontSize: 14, fontWeight: 500, cursor: 'pointer' }}
+          >
             <DropletsIcon /> Liquidity
           </button>
 
           {/* Agent */}
-          <button onClick={() => { setShowAgentBuilder(true); setShowSwap(false); setShowLiquidity(false); setShowPortfolioModal(false); setShowAddLiquidityModal(false); setHasInteracted(true); }} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 12px', background: 'transparent', border: 'none', borderRadius: 8, color: theme.textPrimary, fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
+          <button
+            onClick={() => {
+              setShowAgentBuilder(true);
+              setShowSwap(false);
+              setShowLiquidity(false);
+              setShowPortfolioModal(false);
+              setShowAddLiquidityModal(false);
+              setHasInteracted(true);
+            }}
+            style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 12px', background: 'transparent', border: 'none', borderRadius: 8, color: theme.textPrimary, fontSize: 14, fontWeight: 500, cursor: 'pointer' }}
+          >
             <BotIcon /> Agent
           </button>
 
           {/* Portfolio */}
           <div style={{ marginBottom: 8 }}>
-            <button onClick={() => setPortfolioOpen(!portfolioOpen)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', padding: '10px 12px', background: 'transparent', border: 'none', borderRadius: 8, color: theme.textPrimary, fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
+            <button
+              onClick={() => setPortfolioOpen(!portfolioOpen)}
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', padding: '10px 12px', background: 'transparent', border: 'none', borderRadius: 8, color: theme.textPrimary, fontSize: 14, fontWeight: 500, cursor: 'pointer' }}
+            >
               <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}><WalletIcon /> Portfolio</span>
               {portfolioOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
             </button>
             {portfolioOpen && (
               <div style={{ paddingLeft: 20, marginTop: 4 }}>
-                <button 
+                <button
                   onClick={() => {
                     setPortfolioType('User');
                     setShowPortfolioModal(true);
@@ -2640,8 +2667,8 @@ export default function MantuaApp() {
                 >
                   User Portfolio
                 </button>
-                <button 
-                   onClick={() => {
+                <button
+                  onClick={() => {
                     setPortfolioType('Agent');
                     setShowPortfolioModal(true);
                     setHasInteracted(true);
@@ -2659,16 +2686,35 @@ export default function MantuaApp() {
           </div>
 
           {/* Faucet */}
-          <button style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 12px', background: 'transparent', border: 'none', borderRadius: 8, color: theme.textPrimary, fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
+          <button
+            style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 12px', background: 'transparent', border: 'none', borderRadius: 8, color: theme.textPrimary, fontSize: 14, fontWeight: 500, cursor: 'pointer' }}
+          >
             <DropletIcon /> Faucet
           </button>
 
-          {/* Links Section */}
-          <div style={{ marginTop: 'auto', paddingTop: 24 }}>
-            <div style={{ padding: '8px 12px', fontSize: 12, fontWeight: 600, color: theme.accent, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Links</div>
-            <button style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 12px', background: 'transparent', border: 'none', borderRadius: 8, color: theme.textSecondary, fontSize: 14, cursor: 'pointer' }}><ExternalLinkIcon /> About</button>
-            <button style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 12px', background: 'transparent', border: 'none', borderRadius: 8, color: theme.textSecondary, fontSize: 14, cursor: 'pointer' }}><FileTextIcon /> Docs</button>
-            <button style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 12px', background: 'transparent', border: 'none', borderRadius: 8, color: theme.textSecondary, fontSize: 14, cursor: 'pointer' }}><XIcon size={16} color={isDark ? '#ffffff' : '#000000'} /> X</button>
+          {/* Recent Chats */}
+          <div style={{ marginTop: 16, paddingTop: 14, borderTop: `1px solid ${theme.border}`, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', color: theme.textMuted, fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+              <MessageSquareIcon /> Recent Chats
+            </div>
+            <div style={{ flex: 1, overflowY: 'auto', padding: '0 4px 8px 4px' }}>
+              {isConnected && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 2, padding: '0 4px' }}>
+                  {recentChats.map((chat, i) => (
+                    <RecentChatItem
+                      key={i}
+                      chat={chat}
+                      theme={theme}
+                      onDelete={() => {
+                        const newChats = [...recentChats];
+                        newChats.splice(i, 1);
+                        setRecentChats(newChats);
+                      }}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </aside>

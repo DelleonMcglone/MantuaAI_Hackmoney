@@ -1,0 +1,55 @@
+---
+
+## Refined Prompt for Replit Design Mode
+
+**Task**: Restructure the sidebar navigation layout
+
+### Changes Required:
+
+**1. Remove the following elements entirely:**
+- The "LINKS" section header
+- "About" link with external link icon
+- "Docs" link with document icon
+- "X" link with X/Twitter icon
+
+**2. Reorder the sidebar navigation:**
+
+The new order from top to bottom should be:
+1. New Chat (keep at top with purple/accent color)
+2. Swap
+3. Liquidity
+4. Agent
+5. Portfolio (with expandable dropdown)
+6. Faucet
+7. **Recent Chats section** (moved here, below Faucet)
+
+**3. Recent Chats section styling:**
+- Add a subtle divider or spacing above "Recent Chats" to visually separate it from the main navigation items
+- Remove the collapse/expand chevron - this section should always be expanded
+- Display all recent chat entries as a scrollable list directly in the sidebar
+- Each chat entry should show a truncated chat title/preview
+- Style similar to Claude.ai's sidebar: recent chats appear as a dedicated scrollable section at the bottom of the sidebar with each chat as a clickable row
+
+**4. Recent Chat item hover behavior:**
+- On hover, the chat row should have a subtle background highlight
+- On hover, display a trash/delete icon on the right side of the chat row
+- The delete icon should only be visible when hovering over that specific chat item
+- The delete icon should have its own hover state (e.g., turn red or show tooltip "Delete chat")
+
+**5. Delete confirmation and undo flow:**
+- When the delete icon is clicked, show a small confirmation popover/tooltip near the delete icon with two options: "Delete" (destructive/red) and "Cancel"
+- If "Cancel" is clicked, close the popover and do nothing
+- If "Delete" is clicked, remove the chat from the list with a smooth fade-out animation
+- After deletion, show a toast notification at the bottom of the screen: "Chat deleted" with an "Undo" button
+- The toast should auto-dismiss after 5 seconds
+- If "Undo" is clicked before the toast dismisses, restore the chat to its original position in the list with a fade-in animation
+- After the toast dismisses (or if undo is not clicked), permanently delete the chat
+
+**6. Visual hierarchy:**
+- Main navigation items (New Chat through Faucet): Primary navigation styling
+- Recent Chats section: Secondary styling with slightly muted text, smaller font size, and individual chat entries as list items
+- Toast notification: Subtle dark background with white text, positioned bottom-center or bottom-right of the viewport
+
+---
+
+This now includes a two-step safety net: confirmation before delete and undo after delete. Want me to add anything else, like bulk delete functionality or keyboard shortcuts?

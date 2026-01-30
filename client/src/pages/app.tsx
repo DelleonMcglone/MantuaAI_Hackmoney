@@ -730,6 +730,8 @@ const PortfolioInterface = ({ onClose, type, theme, isDark, isConnected }) => {
 const RecentChatItem = ({ chat, theme, onDelete }) => {
   const [hovered, setHovered] = useState(false);
   
+  const displayTitle = typeof chat === 'string' ? chat : chat.title;
+  
   return (
     <button 
       onMouseEnter={() => setHovered(true)}
@@ -751,7 +753,7 @@ const RecentChatItem = ({ chat, theme, onDelete }) => {
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, overflow: 'hidden', flex: 1, minWidth: 0 }}>
         <MessageSquareIcon />
-        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{chat}</span>
+        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{displayTitle}</span>
       </div>
       {hovered && (
         <div 
@@ -2303,21 +2305,24 @@ export default function MantuaApp() {
   const [portfolioType, setPortfolioType] = useState('User');
   const [swapDetails, setSwapDetails] = useState(null);
   const [messages, setMessages] = useState([]);
+  const [currentSessionId, setCurrentSessionId] = useState(null);
   
   const walletAddress = '0xbaac...DC87';
   const walletBalance = '0.0021 ETH';
   
-  const [recentChats, setRecentChats] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('mantua-recent-chats');
-      if (saved) return JSON.parse(saved);
-    }
-    return ['swap', 'swap', 'pools', 'Swap ETH for USDC wi...', 'Swap ETH for USDC wi...', 'What is the price of ETh?', 'Analyze'];
-  });
+  const [recentChats, setRecentChats] = useState([]);
 
   useEffect(() => {
-    localStorage.setItem('mantua-recent-chats', JSON.stringify(recentChats));
-  }, [recentChats]);
+    async function loadRecentChats() {
+      try {
+        const sessions = await fetch('/api/chat/sessions').then(res => res.json());
+        setRecentChats(sessions);
+      } catch (error) {
+        console.error('Failed to load recent chats:', error);
+      }
+    }
+    loadRecentChats();
+  }, []);
 
   const [hasInteracted, setHasInteracted] = useState(false);
 
@@ -2339,7 +2344,7 @@ export default function MantuaApp() {
     return null;
   };
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (!inputValue.trim()) return;
     
     setHasInteracted(true);
@@ -2358,15 +2363,48 @@ export default function MantuaApp() {
     if (command.type === 'newChat') {
        resetModals();
        setMessages([]);
+       setCurrentSessionId(null);
        setHasInteracted(false);
        setInputValue('');
        return;
     }
 
+    if (!currentSessionId) {
+      try {
+        const title = inputValue.slice(0, 50);
+        const session = await fetch('/api/chat/sessions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title }),
+        }).then(res => res.json());
+        setCurrentSessionId(session.id);
+        
+        const sessions = await fetch('/api/chat/sessions').then(res => res.json());
+        setRecentChats(sessions);
+      } catch (error) {
+        console.error('Failed to create session:', error);
+      }
+    }
+
+    const saveMessage = async (content, role = 'user', metadata = null) => {
+      if (currentSessionId) {
+        try {
+          await fetch('/api/chat/messages', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sessionId: currentSessionId, role, content, metadata }),
+          });
+        } catch (error) {
+          console.error('Failed to save message:', error);
+        }
+      }
+    };
+
     if (command.type === 'addLiquidity') {
        resetModals();
        setShowAddLiquidityModal(true);
        setMessages([...messages, { role: 'user', content: inputValue }]);
+       await saveMessage(inputValue);
        setInputValue('');
        return;
     }
@@ -2375,6 +2413,7 @@ export default function MantuaApp() {
        resetModals();
        setShowLiquidity(true);
        setMessages([...messages, { role: 'user', content: inputValue }]);
+       await saveMessage(inputValue);
        setInputValue('');
        return;
     }
@@ -2383,6 +2422,7 @@ export default function MantuaApp() {
        resetModals();
        setShowAgentBuilder(true);
        setMessages([...messages, { role: 'user', content: inputValue }]);
+       await saveMessage(inputValue);
        setInputValue('');
        return;
     }
@@ -2397,6 +2437,7 @@ export default function MantuaApp() {
             setShowPortfolioModal(true);
         }
         setMessages([...messages, { role: 'user', content: inputValue }]);
+        await saveMessage(inputValue);
         setInputValue('');
         return;
     }
@@ -2406,6 +2447,7 @@ export default function MantuaApp() {
       setSwapDetails(command.params);
       setShowSwap(true);
       setMessages([...messages, { role: 'user', content: inputValue }]);
+      await saveMessage(inputValue);
       setInputValue('');
       return;
     }
@@ -2533,9 +2575,11 @@ export default function MantuaApp() {
              )
            }
          ]);
+         await saveMessage(inputValue);
     } else {
       // Regular message
       setMessages([...messages, { role: 'user', content: inputValue }]);
+      await saveMessage(inputValue);
     }
     setInputValue('');
   };
@@ -2691,13 +2735,17 @@ export default function MantuaApp() {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 2, padding: '0 4px' }}>
                   {recentChats.map((chat, i) => (
                     <RecentChatItem
-                      key={i}
+                      key={chat.id || i}
                       chat={chat}
                       theme={theme}
-                      onDelete={() => {
-                        const newChats = [...recentChats];
-                        newChats.splice(i, 1);
-                        setRecentChats(newChats);
+                      onDelete={async () => {
+                        try {
+                          await fetch(`/api/chat/sessions/${chat.id}`, { method: 'DELETE' });
+                          const sessions = await fetch('/api/chat/sessions').then(res => res.json());
+                          setRecentChats(sessions);
+                        } catch (error) {
+                          console.error('Failed to delete chat:', error);
+                        }
                       }}
                     />
                   ))}

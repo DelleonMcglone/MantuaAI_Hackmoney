@@ -2369,7 +2369,8 @@ export default function MantuaApp() {
        return;
     }
 
-    if (!currentSessionId) {
+    let sessionId = currentSessionId;
+    if (!sessionId) {
       try {
         const title = inputValue.slice(0, 50);
         const session = await fetch('/api/chat/sessions', {
@@ -2377,6 +2378,7 @@ export default function MantuaApp() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ title }),
         }).then(res => res.json());
+        sessionId = session.id;
         setCurrentSessionId(session.id);
         
         const sessions = await fetch('/api/chat/sessions').then(res => res.json());
@@ -2387,12 +2389,12 @@ export default function MantuaApp() {
     }
 
     const saveMessage = async (content, role = 'user', metadata = null) => {
-      if (currentSessionId) {
+      if (sessionId) {
         try {
           await fetch('/api/chat/messages', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ sessionId: currentSessionId, role, content, metadata }),
+            body: JSON.stringify({ sessionId: sessionId, role, content, metadata }),
           });
         } catch (error) {
           console.error('Failed to save message:', error);

@@ -1,0 +1,841 @@
+import React, { useState } from 'react';
+
+// Icons
+const WalletIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/>
+    <path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/>
+    <path d="M18 12a2 2 0 0 0 0 4h4v-4h-4z"/>
+  </svg>
+);
+
+const TrendUpIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+    <polyline points="17 6 23 6 23 12"/>
+  </svg>
+);
+
+const TrendDownIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/>
+    <polyline points="17 18 23 18 23 12"/>
+  </svg>
+);
+
+const SwapIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M7 16V4M7 4L3 8M7 4L11 8"/>
+    <path d="M17 8v12m0 0l4-4m-4 4l-4-4"/>
+  </svg>
+);
+
+const PlusCircleIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <circle cx="12" cy="12" r="10"/>
+    <line x1="12" y1="8" x2="12" y2="16"/>
+    <line x1="8" y1="12" x2="16" y2="12"/>
+  </svg>
+);
+
+const MinusCircleIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <circle cx="12" cy="12" r="10"/>
+    <line x1="8" y1="12" x2="16" y2="12"/>
+  </svg>
+);
+
+const BoltIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+  </svg>
+);
+
+const BotIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <rect x="3" y="11" width="18" height="10" rx="2"/>
+    <circle cx="12" cy="5" r="2"/>
+    <path d="M12 7v4"/>
+  </svg>
+);
+
+const ExternalLinkIcon = () => (
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+    <polyline points="15 3 21 3 21 9"/>
+    <line x1="10" y1="14" x2="21" y2="3"/>
+  </svg>
+);
+
+const CheckCircleIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+    <polyline points="22 4 12 14.01 9 11.01"/>
+  </svg>
+);
+
+const ClockIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <circle cx="12" cy="12" r="10"/>
+    <polyline points="12 6 12 12 16 14"/>
+  </svg>
+);
+
+const XCircleIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <circle cx="12" cy="12" r="10"/>
+    <line x1="15" y1="9" x2="9" y2="15"/>
+    <line x1="9" y1="9" x2="15" y2="15"/>
+  </svg>
+);
+
+const UserIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+    <circle cx="12" cy="7" r="4"/>
+  </svg>
+);
+
+const ShieldIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+  </svg>
+);
+
+// Token icon component
+const TokenIcon = ({ token, size = 32 }) => {
+  const getTokenColor = (token) => {
+    const colors = {
+      'ETH': 'linear-gradient(135deg, #627EEA 0%, #8B9FFF 100%)',
+      'USDC': 'linear-gradient(135deg, #2775CA 0%, #4A9FE8 100%)',
+      'LP': 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)',
+    };
+    return colors[token] || 'linear-gradient(135deg, #6b7280 0%, #9ca3af 100%)';
+  };
+
+  const getTokenSymbol = (token) => {
+    if (token === 'ETH') return 'Ξ';
+    if (token === 'USDC') return '$';
+    if (token === 'LP') return '◈';
+    return token.charAt(0);
+  };
+
+  return (
+    <div style={{
+      width: size,
+      height: size,
+      borderRadius: '50%',
+      background: getTokenColor(token),
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      fontSize: size * 0.45,
+      fontWeight: '600',
+      color: 'white',
+    }}>
+      {getTokenSymbol(token)}
+    </div>
+  );
+};
+
+// Token pair icon
+const TokenPairIcon = ({ token1, token2 }) => (
+  <div style={{ display: 'flex', alignItems: 'center' }}>
+    <TokenIcon token={token1} size={28} />
+    <div style={{ marginLeft: -8, zIndex: 1 }}>
+      <TokenIcon token={token2} size={28} />
+    </div>
+  </div>
+);
+
+// Status badge component
+const StatusBadge = ({ status, type = 'default' }) => {
+  const configs = {
+    'Manual': { color: '#6b7280', bg: 'rgba(107, 114, 128, 0.1)' },
+    'Active': { color: '#10b981', bg: 'rgba(16, 185, 129, 0.1)' },
+    'Paused': { color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.1)' },
+    'Out of range': { color: '#ef4444', bg: 'rgba(239, 68, 68, 0.1)' },
+    'Pending': { color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.1)' },
+    'Completed': { color: '#10b981', bg: 'rgba(16, 185, 129, 0.1)' },
+    'Failed': { color: '#ef4444', bg: 'rgba(239, 68, 68, 0.1)' },
+    'Standard': { color: '#6b7280', bg: 'rgba(107, 114, 128, 0.1)' },
+    'MEV Protection': { color: '#8b5cf6', bg: 'rgba(139, 92, 246, 0.1)' },
+    'JiT Rebalance': { color: '#10b981', bg: 'rgba(16, 185, 129, 0.1)' },
+    'Directional Fee': { color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.1)' },
+  };
+
+  const config = configs[status] || configs['default'];
+
+  return (
+    <span style={{
+      display: 'inline-flex',
+      alignItems: 'center',
+      gap: '4px',
+      padding: '4px 10px',
+      borderRadius: '6px',
+      background: config.bg,
+      color: config.color,
+      fontSize: '12px',
+      fontWeight: '600',
+    }}>
+      {status === 'Active' && <span style={{ width: 6, height: 6, borderRadius: '50%', background: config.color }} />}
+      {status}
+    </span>
+  );
+};
+
+// Chain badge
+const ChainBadge = () => (
+  <div style={{
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '6px',
+    padding: '6px 12px',
+    borderRadius: '8px',
+    background: 'rgba(59, 130, 246, 0.1)',
+    color: '#3b82f6',
+    fontSize: '12px',
+    fontWeight: '600',
+  }}>
+    <div style={{
+      width: '8px',
+      height: '8px',
+      borderRadius: '50%',
+      background: '#3b82f6',
+    }} />
+    Base Sepolia
+  </div>
+);
+
+// Portfolio Summary Card
+const PortfolioSummary = ({ data }) => (
+  <div style={{
+    background: 'white',
+    borderRadius: '16px',
+    padding: '24px',
+    border: '1px solid rgba(139, 92, 246, 0.1)',
+    marginBottom: '24px',
+  }}>
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
+      <div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+          <h2 style={{ color: '#111827', fontSize: '18px', fontWeight: '700', margin: 0 }}>
+            Portfolio Summary
+          </h2>
+        </div>
+        <ChainBadge />
+      </div>
+      <div style={{ textAlign: 'right' }}>
+        <div style={{ color: '#6b7280', fontSize: '13px', marginBottom: '4px' }}>Total Value</div>
+        <div style={{ 
+          color: '#111827', 
+          fontSize: '32px', 
+          fontWeight: '700',
+          fontFamily: 'SF Mono, Monaco, monospace',
+        }}>
+          ${data.totalValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+        </div>
+      </div>
+    </div>
+
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
+      <div style={{
+        padding: '16px',
+        background: 'rgba(249, 250, 251, 0.8)',
+        borderRadius: '12px',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+          <TokenIcon token="ETH" size={24} />
+          <span style={{ color: '#6b7280', fontSize: '13px', fontWeight: '500' }}>ETH Balance</span>
+        </div>
+        <div style={{ 
+          color: '#111827', 
+          fontSize: '20px', 
+          fontWeight: '700',
+          fontFamily: 'SF Mono, Monaco, monospace',
+        }}>
+          {data.ethBalance.toFixed(4)} ETH
+        </div>
+        <div style={{ color: '#6b7280', fontSize: '12px', marginTop: '2px' }}>
+          ${(data.ethBalance * data.ethPrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+        </div>
+      </div>
+
+      <div style={{
+        padding: '16px',
+        background: 'rgba(249, 250, 251, 0.8)',
+        borderRadius: '12px',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+          <TokenIcon token="USDC" size={24} />
+          <span style={{ color: '#6b7280', fontSize: '13px', fontWeight: '500' }}>USDC Balance</span>
+        </div>
+        <div style={{ 
+          color: '#111827', 
+          fontSize: '20px', 
+          fontWeight: '700',
+          fontFamily: 'SF Mono, Monaco, monospace',
+        }}>
+          {data.usdcBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+        </div>
+        <div style={{ color: '#6b7280', fontSize: '12px', marginTop: '2px' }}>
+          ${data.usdcBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+        </div>
+      </div>
+
+      <div style={{
+        padding: '16px',
+        background: 'rgba(249, 250, 251, 0.8)',
+        borderRadius: '12px',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+          <TokenIcon token="LP" size={24} />
+          <span style={{ color: '#6b7280', fontSize: '13px', fontWeight: '500' }}>LP Positions</span>
+        </div>
+        <div style={{ 
+          color: '#111827', 
+          fontSize: '20px', 
+          fontWeight: '700',
+          fontFamily: 'SF Mono, Monaco, monospace',
+        }}>
+          {data.lpPositions}
+        </div>
+        <div style={{ color: '#6b7280', fontSize: '12px', marginTop: '2px' }}>
+          ${data.lpValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} value
+        </div>
+      </div>
+
+      <div style={{
+        padding: '16px',
+        background: data.netPnl >= 0 ? 'rgba(16, 185, 129, 0.08)' : 'rgba(239, 68, 68, 0.08)',
+        borderRadius: '12px',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+          {data.netPnl >= 0 ? <TrendUpIcon /> : <TrendDownIcon />}
+          <span style={{ color: '#6b7280', fontSize: '13px', fontWeight: '500' }}>Net PnL</span>
+        </div>
+        <div style={{ 
+          color: data.netPnl >= 0 ? '#10b981' : '#ef4444', 
+          fontSize: '20px', 
+          fontWeight: '700',
+          fontFamily: 'SF Mono, Monaco, monospace',
+        }}>
+          {data.netPnl >= 0 ? '+' : ''}{data.netPnl.toFixed(2)}%
+        </div>
+        <div style={{ color: data.netPnl >= 0 ? '#10b981' : '#ef4444', fontSize: '12px', marginTop: '2px' }}>
+          {data.netPnl >= 0 ? '+' : ''}${data.netPnlUsd.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+// Assets Table
+const AssetsTable = ({ assets }) => (
+  <div style={{
+    background: 'white',
+    borderRadius: '16px',
+    border: '1px solid rgba(139, 92, 246, 0.1)',
+    marginBottom: '24px',
+    overflow: 'hidden',
+  }}>
+    <div style={{ padding: '20px 24px', borderBottom: '1px solid rgba(139, 92, 246, 0.1)' }}>
+      <h3 style={{ color: '#111827', fontSize: '16px', fontWeight: '700', margin: 0 }}>Assets</h3>
+    </div>
+    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+      <thead>
+        <tr style={{ background: 'rgba(249, 250, 251, 0.5)' }}>
+          <th style={{ padding: '12px 24px', textAlign: 'left', color: '#6b7280', fontSize: '12px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Asset</th>
+          <th style={{ padding: '12px 24px', textAlign: 'right', color: '#6b7280', fontSize: '12px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Balance</th>
+          <th style={{ padding: '12px 24px', textAlign: 'right', color: '#6b7280', fontSize: '12px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>USD Value</th>
+          <th style={{ padding: '12px 24px', textAlign: 'right', color: '#6b7280', fontSize: '12px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>% of Portfolio</th>
+        </tr>
+      </thead>
+      <tbody>
+        {assets.map((asset, index) => (
+          <tr key={index} style={{ borderBottom: '1px solid rgba(139, 92, 246, 0.08)' }}>
+            <td style={{ padding: '16px 24px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <TokenIcon token={asset.symbol} size={36} />
+                <div>
+                  <div style={{ color: '#111827', fontWeight: '600', fontSize: '14px' }}>{asset.name}</div>
+                  <div style={{ color: '#6b7280', fontSize: '12px' }}>{asset.symbol}</div>
+                </div>
+              </div>
+            </td>
+            <td style={{ padding: '16px 24px', textAlign: 'right' }}>
+              <span style={{ color: '#111827', fontFamily: 'SF Mono, Monaco, monospace', fontSize: '14px', fontWeight: '500' }}>
+                {asset.balance.toLocaleString(undefined, { minimumFractionDigits: asset.symbol === 'ETH' ? 4 : 2, maximumFractionDigits: asset.symbol === 'ETH' ? 4 : 2 })}
+              </span>
+            </td>
+            <td style={{ padding: '16px 24px', textAlign: 'right' }}>
+              <span style={{ color: '#111827', fontFamily: 'SF Mono, Monaco, monospace', fontSize: '14px', fontWeight: '500' }}>
+                ${asset.usdValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </span>
+            </td>
+            <td style={{ padding: '16px 24px', textAlign: 'right' }}>
+              <div style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+              }}>
+                <div style={{
+                  width: '60px',
+                  height: '6px',
+                  background: 'rgba(139, 92, 246, 0.1)',
+                  borderRadius: '3px',
+                  overflow: 'hidden',
+                }}>
+                  <div style={{
+                    width: `${asset.percentage}%`,
+                    height: '100%',
+                    background: 'linear-gradient(90deg, #8b5cf6, #6366f1)',
+                    borderRadius: '3px',
+                  }} />
+                </div>
+                <span style={{ color: '#374151', fontSize: '13px', fontWeight: '600', minWidth: '45px' }}>
+                  {asset.percentage.toFixed(1)}%
+                </span>
+              </div>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+);
+
+// Liquidity Positions
+const LiquidityPositions = ({ positions }) => (
+  <div style={{
+    background: 'white',
+    borderRadius: '16px',
+    border: '1px solid rgba(139, 92, 246, 0.1)',
+    marginBottom: '24px',
+    overflow: 'hidden',
+  }}>
+    <div style={{ padding: '20px 24px', borderBottom: '1px solid rgba(139, 92, 246, 0.1)' }}>
+      <h3 style={{ color: '#111827', fontSize: '16px', fontWeight: '700', margin: 0 }}>Liquidity Positions</h3>
+    </div>
+    
+    {positions.length === 0 ? (
+      <div style={{ padding: '48px', textAlign: 'center', color: '#6b7280' }}>
+        <p style={{ fontSize: '14px' }}>No liquidity positions yet</p>
+      </div>
+    ) : (
+      <div style={{ padding: '16px' }}>
+        {positions.map((position, index) => (
+          <div
+            key={index}
+            style={{
+              padding: '16px',
+              background: 'rgba(249, 250, 251, 0.5)',
+              borderRadius: '12px',
+              marginBottom: index < positions.length - 1 ? '12px' : 0,
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <TokenPairIcon token1={position.token1} token2={position.token2} />
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                    <span style={{ color: '#111827', fontWeight: '600', fontSize: '15px' }}>
+                      {position.token1} / {position.token2}
+                    </span>
+                    <StatusBadge status={position.status} />
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <StatusBadge status={position.hookName || 'Standard'} />
+                  </div>
+                </div>
+              </div>
+              
+              <div style={{ textAlign: 'right' }}>
+                <div style={{ color: '#6b7280', fontSize: '12px', marginBottom: '2px' }}>TVL in Position</div>
+                <div style={{ 
+                  color: '#111827', 
+                  fontSize: '18px', 
+                  fontWeight: '700',
+                  fontFamily: 'SF Mono, Monaco, monospace',
+                }}>
+                  ${position.tvl.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </div>
+              </div>
+            </div>
+            
+            <div style={{ 
+              display: 'flex', 
+              gap: '24px', 
+              marginTop: '12px', 
+              paddingTop: '12px',
+              borderTop: '1px solid rgba(139, 92, 246, 0.1)',
+            }}>
+              <div>
+                <span style={{ color: '#6b7280', fontSize: '12px' }}>Fees Earned</span>
+                <div style={{ color: '#10b981', fontSize: '14px', fontWeight: '600', fontFamily: 'SF Mono, Monaco, monospace' }}>
+                  +${position.feesEarned.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </div>
+              </div>
+              <div>
+                <span style={{ color: '#6b7280', fontSize: '12px' }}>Fee Tier</span>
+                <div style={{ color: '#374151', fontSize: '14px', fontWeight: '600' }}>
+                  {position.feeTier}%
+                </div>
+              </div>
+              <div>
+                <span style={{ color: '#6b7280', fontSize: '12px' }}>Range</span>
+                <div style={{ color: '#374151', fontSize: '14px', fontWeight: '600', fontFamily: 'SF Mono, Monaco, monospace' }}>
+                  {position.rangeLow} - {position.rangeHigh}
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    )}
+  </div>
+);
+
+// Activity Item
+const ActivityItem = ({ activity }) => {
+  const getActionIcon = (type) => {
+    switch (type) {
+      case 'Swap': return <SwapIcon />;
+      case 'Add Liquidity': return <PlusCircleIcon />;
+      case 'Remove Liquidity': return <MinusCircleIcon />;
+      case 'Hook Action': return <BoltIcon />;
+      default: return <SwapIcon />;
+    }
+  };
+
+  const getActionColor = (type) => {
+    switch (type) {
+      case 'Swap': return '#3b82f6';
+      case 'Add Liquidity': return '#10b981';
+      case 'Remove Liquidity': return '#f59e0b';
+      case 'Hook Action': return '#8b5cf6';
+      default: return '#6b7280';
+    }
+  };
+
+  const getStatusIcon = (status) => {
+    switch (status) {
+      case 'Completed': return <CheckCircleIcon />;
+      case 'Pending': return <ClockIcon />;
+      case 'Failed': return <XCircleIcon />;
+      default: return <CheckCircleIcon />;
+    }
+  };
+
+  return (
+    <div style={{
+      display: 'flex',
+      alignItems: 'flex-start',
+      gap: '12px',
+      padding: '16px',
+      borderBottom: '1px solid rgba(139, 92, 246, 0.08)',
+    }}>
+      <div style={{
+        width: '36px',
+        height: '36px',
+        borderRadius: '10px',
+        background: `${getActionColor(activity.type)}15`,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: getActionColor(activity.type),
+        flexShrink: 0,
+      }}>
+        {getActionIcon(activity.type)}
+      </div>
+      
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+          <span style={{ color: '#111827', fontWeight: '600', fontSize: '14px' }}>
+            {activity.type}
+          </span>
+          <StatusBadge status={activity.status} />
+        </div>
+        <div style={{ color: '#374151', fontSize: '13px', marginBottom: '4px' }}>
+          {activity.description}
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+          <div style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '4px',
+            color: '#6b7280',
+            fontSize: '12px',
+          }}>
+            {activity.initiator === 'Agent' ? <BotIcon /> : <UserIcon />}
+            {activity.initiator}
+          </div>
+          <span style={{ color: '#9ca3af', fontSize: '12px' }}>
+            {activity.timestamp}
+          </span>
+          <a
+            href={`https://sepolia.basescan.org/tx/${activity.txHash}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              color: '#8b5cf6',
+              fontSize: '12px',
+              textDecoration: 'none',
+            }}
+          >
+            {activity.txHash.slice(0, 6)}...{activity.txHash.slice(-4)}
+            <ExternalLinkIcon />
+          </a>
+        </div>
+      </div>
+      
+      <div style={{ textAlign: 'right', flexShrink: 0 }}>
+        <div style={{ 
+          color: '#111827', 
+          fontSize: '14px', 
+          fontWeight: '600',
+          fontFamily: 'SF Mono, Monaco, monospace',
+        }}>
+          {activity.amount}
+        </div>
+        {activity.amountUsd && (
+          <div style={{ color: '#6b7280', fontSize: '12px' }}>
+            ${activity.amountUsd}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// Activity Feed
+const ActivityFeed = ({ activities, filter, setFilter }) => {
+  const filters = ['All', 'Swaps', 'Liquidity'];
+  
+  const filteredActivities = activities.filter(a => {
+    if (filter === 'All') return true;
+    if (filter === 'Swaps') return a.type === 'Swap';
+    if (filter === 'Liquidity') return a.type === 'Add Liquidity' || a.type === 'Remove Liquidity';
+    return true;
+  });
+
+  return (
+    <div style={{
+      background: 'white',
+      borderRadius: '16px',
+      border: '1px solid rgba(139, 92, 246, 0.1)',
+      marginBottom: '24px',
+      overflow: 'hidden',
+    }}>
+      <div style={{ 
+        padding: '20px 24px', 
+        borderBottom: '1px solid rgba(139, 92, 246, 0.1)',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+      }}>
+        <h3 style={{ color: '#111827', fontSize: '16px', fontWeight: '700', margin: 0 }}>Activity</h3>
+        <div style={{ display: 'flex', gap: '8px' }}>
+          {filters.map(f => (
+            <button
+              key={f}
+              onClick={() => setFilter(f)}
+              style={{
+                padding: '6px 12px',
+                borderRadius: '8px',
+                border: 'none',
+                background: filter === f ? 'rgba(139, 92, 246, 0.1)' : 'transparent',
+                color: filter === f ? '#8b5cf6' : '#6b7280',
+                fontSize: '13px',
+                fontWeight: '600',
+                cursor: 'pointer',
+              }}
+            >
+              {f}
+            </button>
+          ))}
+        </div>
+      </div>
+      
+      {filteredActivities.length === 0 ? (
+        <div style={{ padding: '48px', textAlign: 'center', color: '#6b7280' }}>
+          <p style={{ fontSize: '14px' }}>No activity yet</p>
+        </div>
+      ) : (
+        <div>
+          {filteredActivities.map((activity, index) => (
+            <ActivityItem key={index} activity={activity} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Main Portfolio Component
+export default function MantuaPortfolioInterface() {
+  const [activityFilter, setActivityFilter] = useState('All');
+
+  // Sample data
+  const portfolioData = {
+    totalValue: 12450.85,
+    ethBalance: 2.4521,
+    ethPrice: 3245.50,
+    usdcBalance: 4500.00,
+    lpPositions: 2,
+    lpValue: 3950.85,
+    netPnl: 8.45,
+    netPnlUsd: 972.35,
+  };
+
+  const assets = [
+    { name: 'Ethereum', symbol: 'ETH', balance: 2.4521, usdValue: 7960.35, percentage: 63.9 },
+    { name: 'USD Coin', symbol: 'USDC', balance: 4500.00, usdValue: 4500.00, percentage: 36.1 },
+    { name: 'LP Positions', symbol: 'LP', balance: 2, usdValue: 3950.85, percentage: 0 },
+  ];
+
+  const liquidityPositions = [
+    {
+      token1: 'ETH',
+      token2: 'USDC',
+      status: 'Active',
+      hookEnabled: true,
+      hookName: 'MEV Protection',
+      tvl: 2500.00,
+      feesEarned: 45.23,
+      feeTier: 0.3,
+      rangeLow: '2,800',
+      rangeHigh: '3,600',
+    },
+    {
+      token1: 'ETH',
+      token2: 'USDC',
+      status: 'Out of range',
+      hookEnabled: true,
+      hookName: 'JiT Rebalance',
+      tvl: 1450.85,
+      feesEarned: 12.50,
+      feeTier: 0.05,
+      rangeLow: '3,400',
+      rangeHigh: '3,800',
+    },
+  ];
+
+  const activities = [
+    {
+      type: 'Swap',
+      description: '0.5 ETH → 1,622.75 USDC',
+      amount: '0.5 ETH',
+      amountUsd: '1,622.75',
+      initiator: 'Agent',
+      timestamp: '2 min ago',
+      txHash: '0x1234567890abcdef1234567890abcdef12345678',
+      status: 'Completed',
+    },
+    {
+      type: 'Hook Action',
+      description: 'MEV Protection triggered - saved $4.50',
+      amount: '+$4.50',
+      amountUsd: null,
+      initiator: 'Agent',
+      timestamp: '2 min ago',
+      txHash: '0x1234567890abcdef1234567890abcdef12345678',
+      status: 'Completed',
+    },
+    {
+      type: 'Add Liquidity',
+      description: 'Added to ETH/USDC pool (MEV Protection)',
+      amount: '$2,500.00',
+      amountUsd: null,
+      initiator: 'You',
+      timestamp: '1 hour ago',
+      txHash: '0xabcdef1234567890abcdef1234567890abcdef12',
+      status: 'Completed',
+    },
+    {
+      type: 'Swap',
+      description: '1,000 USDC → 0.31 ETH',
+      amount: '1,000 USDC',
+      amountUsd: '1,000.00',
+      initiator: 'You',
+      timestamp: '3 hours ago',
+      txHash: '0x567890abcdef1234567890abcdef1234567890ab',
+      status: 'Completed',
+    },
+    {
+      type: 'Remove Liquidity',
+      description: 'Removed from ETH/USDC pool',
+      amount: '$850.00',
+      amountUsd: null,
+      initiator: 'Agent',
+      timestamp: '1 day ago',
+      txHash: '0x890abcdef1234567890abcdef1234567890abcdef',
+      status: 'Completed',
+    },
+    {
+      type: 'Swap',
+      description: '2.0 ETH → 6,491.00 USDC',
+      amount: '2.0 ETH',
+      amountUsd: '6,491.00',
+      initiator: 'You',
+      timestamp: '2 days ago',
+      txHash: '0xcdef1234567890abcdef1234567890abcdef1234',
+      status: 'Completed',
+    },
+  ];
+
+  return (
+    <div style={{
+      padding: '24px',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+      background: '#fafafa',
+      minHeight: '100vh',
+    }}>
+      <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+        {/* Header */}
+        <div style={{ marginBottom: '24px' }}>
+          <h1 style={{ 
+            color: '#111827', 
+            fontSize: '24px', 
+            fontWeight: '700', 
+            margin: '0 0 4px 0' 
+          }}>
+            Portfolio
+          </h1>
+          <p style={{ 
+            color: '#6b7280', 
+            fontSize: '14px', 
+            margin: 0 
+          }}>
+            View your assets, positions, and activity.
+          </p>
+        </div>
+
+        {/* Portfolio Summary */}
+        <PortfolioSummary data={portfolioData} />
+
+        {/* Two column layout */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+          <div>
+            {/* Assets Table */}
+            <AssetsTable assets={assets} />
+          </div>
+          <div>
+            {/* Liquidity Positions */}
+            <LiquidityPositions positions={liquidityPositions} />
+          </div>
+        </div>
+
+        {/* Activity Feed (Full width) */}
+        <ActivityFeed 
+          activities={activities} 
+          filter={activityFilter}
+          setFilter={setActivityFilter}
+        />
+      </div>
+    </div>
+  );
+}

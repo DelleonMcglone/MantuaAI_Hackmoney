@@ -1,0 +1,1323 @@
+import React, { useState } from 'react';
+
+// Icons
+const SwapIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M7 16V4M7 4L3 8M7 4L11 8"/>
+    <path d="M17 8v12m0 0l4-4m-4 4l-4-4"/>
+  </svg>
+);
+
+const ChevronDown = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M6 9l6 6 6-6"/>
+  </svg>
+);
+
+const ChevronUp = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M18 15l-6-6-6 6"/>
+  </svg>
+);
+
+const InfoIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <circle cx="12" cy="12" r="10"/>
+    <path d="M12 16v-4"/>
+    <path d="M12 8h.01"/>
+  </svg>
+);
+
+const ShieldIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+  </svg>
+);
+
+const BoltIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+  </svg>
+);
+
+const TrendIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+    <polyline points="17 6 23 6 23 12"/>
+  </svg>
+);
+
+const CodeIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <polyline points="16 18 22 12 16 6"/>
+    <polyline points="8 6 2 12 8 18"/>
+  </svg>
+);
+
+const CheckIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <polyline points="20 6 9 17 4 12"/>
+  </svg>
+);
+
+const LoaderIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ animation: 'spin 1s linear infinite' }}>
+    <path d="M21 12a9 9 0 11-6.219-8.56"/>
+  </svg>
+);
+
+const AlertIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <circle cx="12" cy="12" r="10"/>
+    <line x1="12" y1="8" x2="12" y2="12"/>
+    <line x1="12" y1="16" x2="12.01" y2="16"/>
+  </svg>
+);
+
+const ExternalLinkIcon = () => (
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+    <polyline points="15 3 21 3 21 9"/>
+    <line x1="10" y1="14" x2="21" y2="3"/>
+  </svg>
+);
+
+const StarIcon = () => (
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2">
+    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+  </svg>
+);
+
+const SettingsIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <circle cx="12" cy="12" r="3"/>
+    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+  </svg>
+);
+
+const CloseIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <line x1="18" y1="6" x2="6" y2="18"/>
+    <line x1="6" y1="6" x2="18" y2="18"/>
+  </svg>
+);
+
+// Mini sparkline chart component
+const MiniChart = ({ data, color = "#10b981" }) => {
+  const max = Math.max(...data);
+  const min = Math.min(...data);
+  const range = max - min || 1;
+  const width = 100;
+  const height = 40;
+  
+  const points = data.map((val, i) => {
+    const x = (i / (data.length - 1)) * width;
+    const y = height - ((val - min) / range) * height;
+    return `${x},${y}`;
+  }).join(' ');
+
+  return (
+    <svg width={width} height={height} style={{ overflow: 'visible' }}>
+      <defs>
+        <linearGradient id="chartGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor={color} stopOpacity="0.3"/>
+          <stop offset="100%" stopColor={color} stopOpacity="0"/>
+        </linearGradient>
+      </defs>
+      <polygon
+        points={`0,${height} ${points} ${width},${height}`}
+        fill="url(#chartGradient)"
+      />
+      <polyline
+        points={points}
+        fill="none"
+        stroke={color}
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+};
+
+// Price Chart Component
+const PriceChart = ({ pair }) => {
+  const generatePriceData = () => {
+    const data = [];
+    let price = 3245.50;
+    for (let i = 0; i < 48; i++) {
+      const change = (Math.random() - 0.48) * 30;
+      price = Math.max(3100, Math.min(3400, price + change));
+      data.push({
+        time: i,
+        open: price,
+        close: price + (Math.random() - 0.5) * 20,
+        high: price + Math.random() * 15,
+        low: price - Math.random() * 15,
+      });
+    }
+    return data;
+  };
+
+  const priceData = generatePriceData();
+  const currentPrice = priceData[priceData.length - 1].close.toFixed(2);
+  const priceChange = ((priceData[priceData.length - 1].close - priceData[0].open) / priceData[0].open * 100).toFixed(2);
+  const isPositive = parseFloat(priceChange) >= 0;
+
+  return (
+    <div style={{
+      background: 'linear-gradient(145deg, rgba(250, 250, 252, 0.9) 0%, rgba(243, 244, 246, 0.8) 100%)',
+      borderRadius: '16px',
+      padding: '20px',
+      border: '1px solid rgba(139, 92, 246, 0.15)',
+    }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
+        <div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <div style={{
+                width: '28px',
+                height: '28px',
+                borderRadius: '50%',
+                background: 'linear-gradient(135deg, #627EEA 0%, #8B9FFF 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '14px',
+                fontWeight: '600',
+                color: 'white',
+                marginRight: '-8px',
+                zIndex: 2,
+                border: '2px solid #fff',
+              }}>Ξ</div>
+              <div style={{
+                width: '28px',
+                height: '28px',
+                borderRadius: '50%',
+                background: 'linear-gradient(135deg, #2775CA 0%, #4A9FE8 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '11px',
+                fontWeight: '700',
+                color: 'white',
+                border: '2px solid #fff',
+              }}>$</div>
+            </div>
+            <span style={{ color: '#1f2937', fontWeight: '600', fontSize: '16px' }}>{pair}</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px' }}>
+            <span style={{ color: '#111827', fontSize: '28px', fontWeight: '700', fontFamily: 'SF Mono, Monaco, monospace' }}>
+              ${currentPrice}
+            </span>
+            <span style={{
+              color: isPositive ? '#10b981' : '#ef4444',
+              fontSize: '14px',
+              fontWeight: '600',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '2px',
+            }}>
+              {isPositive ? '↑' : '↓'} {Math.abs(priceChange)}%
+            </span>
+          </div>
+        </div>
+        <div style={{ display: 'flex', gap: '4px' }}>
+          {['1H', '4H', '1D', '1W'].map((tf, i) => (
+            <button
+              key={tf}
+              style={{
+                padding: '6px 10px',
+                borderRadius: '6px',
+                border: 'none',
+                background: i === 2 ? 'rgba(139, 92, 246, 0.15)' : 'transparent',
+                color: i === 2 ? '#8b5cf6' : '#6b7280',
+                fontSize: '12px',
+                fontWeight: '500',
+                cursor: 'pointer',
+              }}
+            >
+              {tf}
+            </button>
+          ))}
+        </div>
+      </div>
+      
+      <div style={{ height: '180px', position: 'relative' }}>
+        <svg width="100%" height="100%" style={{ overflow: 'visible' }}>
+          {priceData.map((candle, i) => {
+            const x = (i / priceData.length) * 100;
+            const isGreen = candle.close >= candle.open;
+            return (
+              <g key={i}>
+                <line
+                  x1={`${x + 1}%`}
+                  y1={`${100 - ((candle.high - 3100) / 300) * 100}%`}
+                  x2={`${x + 1}%`}
+                  y2={`${100 - ((candle.low - 3100) / 300) * 100}%`}
+                  stroke={isGreen ? '#10b981' : '#ef4444'}
+                  strokeWidth="1"
+                />
+                <rect
+                  x={`${x + 0.3}%`}
+                  y={`${100 - ((Math.max(candle.open, candle.close) - 3100) / 300) * 100}%`}
+                  width="1.4%"
+                  height={`${(Math.abs(candle.close - candle.open) / 300) * 100}%`}
+                  fill={isGreen ? '#10b981' : '#ef4444'}
+                  rx="1"
+                />
+              </g>
+            );
+          })}
+        </svg>
+        
+        <div style={{
+          position: 'absolute',
+          right: '0',
+          top: '0',
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          fontSize: '10px',
+          color: '#9ca3af',
+          fontFamily: 'SF Mono, Monaco, monospace',
+        }}>
+          <span>$3,400</span>
+          <span>$3,250</span>
+          <span>$3,100</span>
+        </div>
+      </div>
+      
+      <div style={{ 
+        display: 'flex', 
+        alignItems: 'flex-end', 
+        height: '30px', 
+        gap: '2px',
+        marginTop: '8px',
+        opacity: 0.5,
+      }}>
+        {priceData.slice(-24).map((_, i) => (
+          <div
+            key={i}
+            style={{
+              flex: 1,
+              height: `${20 + Math.random() * 80}%`,
+              background: 'rgba(139, 92, 246, 0.25)',
+              borderRadius: '2px 2px 0 0',
+            }}
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// Token Select Component
+const TokenSelect = ({ token, balance, usdValue, side, amount }) => (
+  <div style={{
+    background: 'rgba(249, 250, 251, 0.8)',
+    borderRadius: '12px',
+    padding: '16px',
+    border: '1px solid rgba(139, 92, 246, 0.1)',
+  }}>
+    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+      <span style={{ color: '#6b7280', fontSize: '13px', fontWeight: '500' }}>{side}</span>
+      <span style={{ color: '#9ca3af', fontSize: '12px' }}>Balance: {balance}</span>
+    </div>
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <input
+        type="text"
+        defaultValue={amount}
+        style={{
+          background: 'transparent',
+          border: 'none',
+          color: '#111827',
+          fontSize: '28px',
+          fontWeight: '600',
+          width: '60%',
+          outline: 'none',
+          fontFamily: 'SF Mono, Monaco, monospace',
+        }}
+      />
+      <button style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px',
+        padding: '8px 12px',
+        borderRadius: '10px',
+        border: '1px solid rgba(139, 92, 246, 0.2)',
+        background: 'white',
+        color: '#1f2937',
+        cursor: 'pointer',
+        fontSize: '15px',
+        fontWeight: '600',
+      }}>
+        <div style={{
+          width: '24px',
+          height: '24px',
+          borderRadius: '50%',
+          background: token === 'ETH' 
+            ? 'linear-gradient(135deg, #627EEA 0%, #8B9FFF 100%)'
+            : 'linear-gradient(135deg, #2775CA 0%, #4A9FE8 100%)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: token === 'ETH' ? '14px' : '10px',
+          fontWeight: '700',
+          color: 'white',
+        }}>
+          {token === 'ETH' ? 'Ξ' : '$'}
+        </div>
+        {token}
+        <ChevronDown />
+      </button>
+    </div>
+    <div style={{ color: '#9ca3af', fontSize: '13px', marginTop: '4px' }}>
+      ≈ ${usdValue}
+    </div>
+  </div>
+);
+
+// Hook Option Component
+const HookOption = ({ name, description, icon, benefit, recommended, selected, onClick, tag, compact }) => (
+  <button
+    onClick={onClick}
+    style={{
+      display: 'flex',
+      alignItems: 'flex-start',
+      gap: '12px',
+      padding: compact ? '12px' : '14px',
+      borderRadius: '12px',
+      border: selected 
+        ? '2px solid #8b5cf6' 
+        : '1px solid rgba(139, 92, 246, 0.15)',
+      background: selected 
+        ? 'rgba(139, 92, 246, 0.08)' 
+        : 'rgba(249, 250, 251, 0.8)',
+      cursor: 'pointer',
+      width: '100%',
+      textAlign: 'left',
+      transition: 'all 0.2s',
+      position: 'relative',
+    }}
+  >
+    {recommended && (
+      <div style={{
+        position: 'absolute',
+        top: '-8px',
+        right: '12px',
+        background: 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)',
+        color: 'white',
+        fontSize: '9px',
+        fontWeight: '700',
+        padding: '3px 8px',
+        borderRadius: '4px',
+        textTransform: 'uppercase',
+        letterSpacing: '0.5px',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '4px',
+      }}>
+        <StarIcon /> Recommended
+      </div>
+    )}
+    {tag && !recommended && (
+      <div style={{
+        position: 'absolute',
+        top: '-8px',
+        right: '12px',
+        background: tag === 'New' ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)' : 'rgba(107, 114, 128, 0.8)',
+        color: 'white',
+        fontSize: '9px',
+        fontWeight: '700',
+        padding: '3px 8px',
+        borderRadius: '4px',
+        textTransform: 'uppercase',
+        letterSpacing: '0.5px',
+      }}>
+        {tag}
+      </div>
+    )}
+    <div style={{
+      width: compact ? '36px' : '40px',
+      height: compact ? '36px' : '40px',
+      borderRadius: '10px',
+      background: selected 
+        ? 'rgba(139, 92, 246, 0.15)' 
+        : 'rgba(139, 92, 246, 0.08)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      color: selected ? '#8b5cf6' : '#6b7280',
+      flexShrink: 0,
+    }}>
+      {icon}
+    </div>
+    <div style={{ flex: 1, minWidth: 0 }}>
+      <div style={{ 
+        color: '#1f2937', 
+        fontWeight: '600', 
+        fontSize: compact ? '13px' : '14px',
+        marginBottom: '2px',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '6px',
+      }}>
+        {name}
+        {selected && <CheckIcon />}
+      </div>
+      <div style={{ color: '#6b7280', fontSize: compact ? '11px' : '12px', lineHeight: '1.4' }}>
+        {description}
+      </div>
+      {benefit && !compact && (
+        <div style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '4px',
+          marginTop: '6px',
+          padding: '4px 10px',
+          borderRadius: '6px',
+          background: 'rgba(16, 185, 129, 0.1)',
+          color: '#10b981',
+          fontSize: '11px',
+          fontWeight: '600',
+        }}>
+          {benefit}
+        </div>
+      )}
+    </div>
+  </button>
+);
+
+// Custom Hook Entry Component
+const CustomHookEntry = ({ onValidate, validationState, address, setAddress }) => {
+  return (
+    <div style={{
+      background: 'rgba(249, 250, 251, 0.9)',
+      borderRadius: '12px',
+      border: validationState === 'valid' 
+        ? '2px solid #10b981'
+        : validationState === 'invalid'
+        ? '2px solid #ef4444'
+        : '1px solid rgba(139, 92, 246, 0.2)',
+      padding: '16px',
+      marginTop: '8px',
+    }}>
+      <div style={{ position: 'relative' }}>
+        <input
+          type="text"
+          placeholder="Enter hook contract address (0x...)"
+          value={address}
+          onChange={(e) => setAddress(e.target.value)}
+          style={{
+            width: '100%',
+            padding: '14px 16px',
+            paddingRight: validationState ? '44px' : '16px',
+            borderRadius: '10px',
+            border: validationState === 'valid'
+              ? '1px solid rgba(16, 185, 129, 0.5)'
+              : validationState === 'invalid'
+              ? '1px solid rgba(239, 68, 68, 0.5)'
+              : '1px solid rgba(139, 92, 246, 0.2)',
+            background: 'white',
+            color: '#1f2937',
+            fontSize: '14px',
+            fontFamily: 'SF Mono, Monaco, Consolas, monospace',
+            outline: 'none',
+            boxSizing: 'border-box',
+          }}
+        />
+        {validationState && (
+          <div style={{
+            position: 'absolute',
+            right: '14px',
+            top: '50%',
+            transform: 'translateY(-50%)',
+            color: validationState === 'valid' ? '#10b981' : 
+                   validationState === 'invalid' ? '#ef4444' : '#6b7280',
+          }}>
+            {validationState === 'loading' ? <LoaderIcon /> :
+             validationState === 'valid' ? <CheckIcon /> :
+             <AlertIcon />}
+          </div>
+        )}
+      </div>
+
+      {validationState === 'valid' && (
+        <div style={{
+          marginTop: '12px',
+          padding: '12px',
+          borderRadius: '8px',
+          background: 'rgba(16, 185, 129, 0.08)',
+          border: '1px solid rgba(16, 185, 129, 0.2)',
+        }}>
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            alignItems: 'center',
+            marginBottom: '8px',
+          }}>
+            <span style={{ color: '#10b981', fontWeight: '600', fontSize: '13px' }}>
+              ✓ Valid Uniswap v4 Hook
+            </span>
+            <a href="#" style={{ 
+              color: '#6b7280', 
+              fontSize: '11px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              textDecoration: 'none',
+            }}>
+              View on Etherscan <ExternalLinkIcon />
+            </a>
+          </div>
+          <div style={{ fontSize: '12px', color: '#6b7280' }}>
+            <div style={{ marginBottom: '4px' }}>
+              <span style={{ color: '#9ca3af' }}>Hook Name:</span>{' '}
+              <span style={{ color: '#374151' }}>DirectionalFeeHook</span>
+            </div>
+            <div style={{ marginBottom: '4px' }}>
+              <span style={{ color: '#9ca3af' }}>Permissions:</span>{' '}
+              <span style={{ color: '#374151' }}>beforeSwap, afterSwap</span>
+            </div>
+            <div>
+              <span style={{ color: '#9ca3af' }}>Audited:</span>{' '}
+              <span style={{ color: '#f59e0b' }}>Unverified</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {validationState === 'invalid' && (
+        <div style={{
+          marginTop: '12px',
+          padding: '12px',
+          borderRadius: '8px',
+          background: 'rgba(239, 68, 68, 0.08)',
+          border: '1px solid rgba(239, 68, 68, 0.2)',
+          color: '#dc2626',
+          fontSize: '12px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+        }}>
+          <AlertIcon />
+          Invalid hook address. Make sure this is a deployed Uniswap v4 hook contract.
+        </div>
+      )}
+
+      <button
+        onClick={onValidate}
+        disabled={!address || address.length < 42}
+        style={{
+          width: '100%',
+          marginTop: '12px',
+          padding: '12px',
+          borderRadius: '10px',
+          border: 'none',
+          background: (!address || address.length < 42) 
+            ? 'rgba(209, 213, 219, 0.5)' 
+            : 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)',
+          color: (!address || address.length < 42) ? '#9ca3af' : 'white',
+          fontSize: '14px',
+          fontWeight: '600',
+          cursor: (!address || address.length < 42) ? 'not-allowed' : 'pointer',
+        }}
+      >
+        {validationState === 'loading' ? 'Validating...' : 'Validate Address'}
+      </button>
+
+      {/* Recent Custom Hooks */}
+      <div style={{ marginTop: '16px', borderTop: '1px solid rgba(139, 92, 246, 0.1)', paddingTop: '12px' }}>
+        <div style={{ color: '#9ca3af', fontSize: '11px', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+          Recent Custom Hooks
+        </div>
+        {[
+          { name: 'TWAMM Hook', address: '0x1234...5678', lastUsed: '2 days ago' },
+          { name: 'Custom Fee Hook', address: '0xabcd...efgh', lastUsed: '1 week ago' },
+        ].map((hook, i) => (
+          <button
+            key={i}
+            onClick={() => setAddress(hook.address)}
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              width: '100%',
+              padding: '10px 12px',
+              marginBottom: '6px',
+              borderRadius: '8px',
+              border: '1px solid rgba(139, 92, 246, 0.1)',
+              background: 'white',
+              cursor: 'pointer',
+            }}
+          >
+            <div style={{ textAlign: 'left' }}>
+              <div style={{ color: '#374151', fontSize: '13px', fontWeight: '500' }}>{hook.name}</div>
+              <div style={{ color: '#9ca3af', fontSize: '11px', fontFamily: 'monospace' }}>{hook.address}</div>
+            </div>
+            <span style={{ color: '#9ca3af', fontSize: '11px' }}>{hook.lastUsed}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// Hook Selector Modal
+const HookSelectorModal = ({ isOpen, onClose, selectedHook, setSelectedHook, hooks }) => {
+  const [showCustom, setShowCustom] = useState(false);
+  const [customAddress, setCustomAddress] = useState('');
+  const [validationState, setValidationState] = useState(null);
+
+  const handleValidate = () => {
+    setValidationState('loading');
+    setTimeout(() => {
+      if (customAddress.startsWith('0x') && customAddress.length >= 42) {
+        setValidationState('valid');
+        setSelectedHook('custom');
+      } else {
+        setValidationState('invalid');
+      }
+    }, 1500);
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div style={{
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      background: 'rgba(0, 0, 0, 0.4)',
+      backdropFilter: 'blur(4px)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: 1000,
+      padding: '20px',
+    }}>
+      <div style={{
+        width: '100%',
+        maxWidth: '480px',
+        maxHeight: '90vh',
+        overflow: 'auto',
+        background: 'white',
+        borderRadius: '24px',
+        padding: '24px',
+        border: '1px solid rgba(139, 92, 246, 0.1)',
+        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.15)',
+      }}>
+        {/* Header */}
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'center',
+          marginBottom: '20px',
+        }}>
+          <h2 style={{ color: '#111827', fontSize: '20px', fontWeight: '700', margin: 0 }}>
+            Select Swap Hook
+          </h2>
+          <button
+            onClick={onClose}
+            style={{
+              background: 'rgba(243, 244, 246, 0.8)',
+              border: 'none',
+              borderRadius: '10px',
+              padding: '8px',
+              cursor: 'pointer',
+              color: '#6b7280',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <CloseIcon />
+          </button>
+        </div>
+
+        {/* AI Suggestion Banner */}
+        <div style={{
+          padding: '14px 16px',
+          background: 'linear-gradient(90deg, rgba(139, 92, 246, 0.08) 0%, rgba(99, 102, 241, 0.05) 100%)',
+          borderRadius: '12px',
+          border: '1px solid rgba(139, 92, 246, 0.15)',
+          marginBottom: '16px',
+          display: 'flex',
+          alignItems: 'flex-start',
+          gap: '12px',
+        }}>
+          <div style={{
+            width: '28px',
+            height: '28px',
+            borderRadius: '50%',
+            background: 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexShrink: 0,
+            fontSize: '14px',
+          }}>
+            ✨
+          </div>
+          <div style={{ fontSize: '13px', color: '#4b5563', lineHeight: '1.5' }}>
+            <strong style={{ color: '#8b5cf6' }}>Mantua recommends MEV Protection</strong> for this 1.5 ETH swap. 
+            Large trades are often targeted by MEV bots.
+          </div>
+        </div>
+
+        {/* Hook Options */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          {hooks.map(hook => (
+            <HookOption
+              key={hook.id}
+              {...hook}
+              selected={selectedHook === hook.id}
+              onClick={() => {
+                setSelectedHook(hook.id);
+                setShowCustom(false);
+              }}
+            />
+          ))}
+
+          {/* Custom Hook Toggle */}
+          <button
+            onClick={() => setShowCustom(!showCustom)}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '14px',
+              borderRadius: '12px',
+              border: showCustom || selectedHook === 'custom'
+                ? '2px solid #8b5cf6' 
+                : '1px solid rgba(139, 92, 246, 0.15)',
+              background: showCustom || selectedHook === 'custom'
+                ? 'rgba(139, 92, 246, 0.08)' 
+                : 'rgba(249, 250, 251, 0.8)',
+              cursor: 'pointer',
+              width: '100%',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <div style={{
+                width: '40px',
+                height: '40px',
+                borderRadius: '10px',
+                background: showCustom || selectedHook === 'custom'
+                  ? 'rgba(139, 92, 246, 0.15)' 
+                  : 'rgba(139, 92, 246, 0.08)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: showCustom || selectedHook === 'custom' ? '#8b5cf6' : '#6b7280',
+              }}>
+                <CodeIcon />
+              </div>
+              <div style={{ textAlign: 'left' }}>
+                <div style={{ color: '#1f2937', fontWeight: '600', fontSize: '14px' }}>
+                  Custom Hook Address
+                </div>
+                <div style={{ color: '#6b7280', fontSize: '12px' }}>
+                  Use your own deployed hook contract
+                </div>
+              </div>
+            </div>
+            <div style={{ color: '#6b7280' }}>
+              {showCustom ? <ChevronUp /> : <ChevronDown />}
+            </div>
+          </button>
+
+          {showCustom && (
+            <CustomHookEntry
+              address={customAddress}
+              setAddress={setCustomAddress}
+              validationState={validationState}
+              onValidate={handleValidate}
+            />
+          )}
+        </div>
+
+        {/* Apply Button */}
+        <button
+          onClick={onClose}
+          style={{
+            width: '100%',
+            padding: '16px',
+            marginTop: '20px',
+            borderRadius: '14px',
+            border: 'none',
+            background: 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)',
+            color: 'white',
+            fontSize: '16px',
+            fontWeight: '700',
+            cursor: 'pointer',
+            boxShadow: '0 4px 14px rgba(139, 92, 246, 0.3)',
+          }}
+        >
+          Apply Hook Selection
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// Main Swap Interface Component
+export default function MantuaSwapInterface() {
+  const [selectedHook, setSelectedHook] = useState('mev');
+  const [showHookModal, setShowHookModal] = useState(false);
+  const [showAllHooks, setShowAllHooks] = useState(false);
+
+  const hooks = [
+    {
+      id: 'auto',
+      name: 'Auto (Smart Routing)',
+      description: 'Mantua selects the optimal hook based on trade parameters',
+      icon: <BoltIcon />,
+      benefit: 'Best execution guaranteed',
+    },
+    {
+      id: 'mev',
+      name: 'MEV Protection',
+      description: 'Randomized execution timing protects against sandwich attacks',
+      icon: <ShieldIcon />,
+      benefit: 'Save ~0.3% on trades >$1k',
+      recommended: true,
+    },
+    {
+      id: 'directional',
+      name: 'Directional Fee',
+      description: 'Dynamic fees based on trade direction (Nezlobin algorithm)',
+      icon: <TrendIcon />,
+      benefit: 'Lower fees in stable markets',
+      tag: 'New',
+    },
+    {
+      id: 'jit',
+      name: 'JIT Rebalancing',
+      description: 'Concentrates liquidity around your trade for better execution',
+      icon: <BoltIcon />,
+      benefit: 'Better rates on large trades',
+    },
+    {
+      id: 'none',
+      name: 'No Hook',
+      description: 'Standard Uniswap v4 swap without modifications',
+      icon: <SwapIcon />,
+    },
+  ];
+
+  const getSelectedHookName = () => {
+    if (selectedHook === 'custom') return 'Custom Hook';
+    return hooks.find(h => h.id === selectedHook)?.name || 'Select Hook';
+  };
+
+  const getSelectedHookIcon = () => {
+    if (selectedHook === 'custom') return <CodeIcon />;
+    return hooks.find(h => h.id === selectedHook)?.icon || <SwapIcon />;
+  };
+
+  return (
+    <div style={{
+      padding: '24px',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+      background: '#fafafa',
+      minHeight: '100vh',
+    }}>
+      <style>{`
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
+
+      {/* AI Response Banner */}
+      <div style={{
+        maxWidth: '900px',
+        margin: '0 auto 20px',
+        padding: '16px 20px',
+        background: 'linear-gradient(90deg, rgba(139, 92, 246, 0.08) 0%, rgba(99, 102, 241, 0.05) 100%)',
+        borderRadius: '12px',
+        border: '1px solid rgba(139, 92, 246, 0.15)',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '12px',
+      }}>
+        <div style={{
+          width: '32px',
+          height: '32px',
+          borderRadius: '50%',
+          background: 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          flexShrink: 0,
+        }}>
+          <span style={{ fontSize: '16px' }}>✨</span>
+        </div>
+        <div style={{ flex: 1 }}>
+          <span style={{ color: '#4b5563', fontSize: '14px', lineHeight: '1.5' }}>
+            <span style={{ color: '#8b5cf6', fontWeight: '600' }}>Swapping 1.5 ETH → USDC</span>
+            {' '}• I've enabled MEV Protection for this trade since it's over $1,000. This will protect you from sandwich attacks and save approximately 0.3% on execution.
+          </span>
+        </div>
+        <MiniChart data={[3200, 3180, 3220, 3250, 3230, 3280, 3245]} color="#8b5cf6" />
+      </div>
+
+      {/* Main Content */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: '420px 1fr',
+        gap: '24px',
+        maxWidth: '900px',
+        margin: '0 auto',
+      }}>
+        {/* Swap Panel */}
+        <div style={{
+          background: 'white',
+          borderRadius: '20px',
+          padding: '24px',
+          border: '1px solid rgba(139, 92, 246, 0.1)',
+          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.04)',
+        }}>
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            alignItems: 'center',
+            marginBottom: '20px',
+          }}>
+            <h2 style={{ color: '#111827', fontSize: '18px', fontWeight: '700', margin: 0 }}>Swap</h2>
+            <button style={{
+              background: 'transparent',
+              border: 'none',
+              color: '#9ca3af',
+              cursor: 'pointer',
+              padding: '4px',
+            }}>
+              <SettingsIcon />
+            </button>
+          </div>
+
+          <TokenSelect token="ETH" balance="3.245" usdValue="4,868.25" side="Sell" amount="1.5" />
+          
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'center', 
+            margin: '-8px 0',
+            position: 'relative',
+            zIndex: 2,
+          }}>
+            <button style={{
+              width: '36px',
+              height: '36px',
+              borderRadius: '10px',
+              border: '2px solid rgba(139, 92, 246, 0.2)',
+              background: 'white',
+              color: '#8b5cf6',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)',
+            }}>
+              <SwapIcon />
+            </button>
+          </div>
+
+          <TokenSelect token="USDC" balance="12,450.00" usdValue="4,868.25" side="Buy" amount="4,868.25" />
+
+          {/* Hook Selection - Inline Preview */}
+          <div style={{ marginTop: '20px' }}>
+            <div style={{ 
+              display: 'flex', 
+              justifyContent: 'space-between', 
+              alignItems: 'center',
+              marginBottom: '12px',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span style={{ color: '#374151', fontSize: '14px', fontWeight: '600' }}>Swap Hook</span>
+                <div style={{ color: '#9ca3af', cursor: 'help' }}>
+                  <InfoIcon />
+                </div>
+              </div>
+              <button
+                onClick={() => setShowAllHooks(!showAllHooks)}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  color: '#8b5cf6',
+                  fontSize: '12px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                }}
+              >
+                {showAllHooks ? 'Collapse' : 'Show All'}
+              </button>
+            </div>
+
+            {/* Compact Hook Preview or Expanded List */}
+            {!showAllHooks ? (
+              <button
+                onClick={() => setShowHookModal(true)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  width: '100%',
+                  padding: '14px 16px',
+                  borderRadius: '12px',
+                  border: '2px solid rgba(139, 92, 246, 0.2)',
+                  background: 'rgba(139, 92, 246, 0.04)',
+                  cursor: 'pointer',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <div style={{
+                    width: '36px',
+                    height: '36px',
+                    borderRadius: '8px',
+                    background: 'rgba(139, 92, 246, 0.1)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#8b5cf6',
+                  }}>
+                    {getSelectedHookIcon()}
+                  </div>
+                  <div style={{ textAlign: 'left' }}>
+                    <div style={{ color: '#1f2937', fontWeight: '600', fontSize: '14px' }}>
+                      {getSelectedHookName()}
+                    </div>
+                    <div style={{ color: '#10b981', fontSize: '12px', fontWeight: '500' }}>
+                      +$14.60 estimated savings
+                    </div>
+                  </div>
+                </div>
+                <div style={{ color: '#6b7280', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <span style={{ fontSize: '12px' }}>Change</span>
+                  <ChevronDown />
+                </div>
+              </button>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                {hooks.slice(0, 3).map(hook => (
+                  <HookOption
+                    key={hook.id}
+                    {...hook}
+                    selected={selectedHook === hook.id}
+                    onClick={() => setSelectedHook(hook.id)}
+                    compact
+                  />
+                ))}
+                <button
+                  onClick={() => setShowHookModal(true)}
+                  style={{
+                    padding: '10px',
+                    borderRadius: '8px',
+                    border: '1px dashed rgba(139, 92, 246, 0.3)',
+                    background: 'transparent',
+                    color: '#8b5cf6',
+                    fontSize: '13px',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '6px',
+                  }}
+                >
+                  View All Hooks & Custom Address
+                  <ChevronDown />
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Swap Details */}
+          <div style={{
+            marginTop: '16px',
+            padding: '12px',
+            background: 'rgba(249, 250, 251, 0.8)',
+            borderRadius: '10px',
+            fontSize: '13px',
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+              <span style={{ color: '#6b7280' }}>Rate</span>
+              <span style={{ color: '#374151' }}>1 ETH = 3,245.50 USDC</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+              <span style={{ color: '#6b7280' }}>Network Fee</span>
+              <span style={{ color: '#374151' }}>~$2.45</span>
+            </div>
+            
+            {/* Fee Architecture - v4 Fees */}
+            <div style={{ 
+              borderTop: '1px solid rgba(139, 92, 246, 0.1)', 
+              marginTop: '8px', 
+              paddingTop: '8px',
+              marginBottom: '8px',
+            }}>
+              <div style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '6px', 
+                marginBottom: '8px',
+                color: '#9ca3af',
+                fontSize: '11px',
+                textTransform: 'uppercase',
+                letterSpacing: '0.5px',
+              }}>
+                <span>Fee Breakdown</span>
+                <div style={{ flex: 1, height: '1px', background: 'rgba(139, 92, 246, 0.1)' }} />
+              </div>
+              
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <div style={{
+                    width: '8px',
+                    height: '8px',
+                    borderRadius: '2px',
+                    background: '#8b5cf6',
+                  }} />
+                  <span style={{ color: '#6b7280' }}>LP Fee</span>
+                  <span style={{ 
+                    color: '#8b5cf6', 
+                    fontSize: '10px',
+                    padding: '1px 4px',
+                    background: 'rgba(139, 92, 246, 0.1)',
+                    borderRadius: '3px',
+                  }}>Dynamic</span>
+                </div>
+                <span style={{ color: '#374151' }}>0.05% (~$2.43)</span>
+              </div>
+              
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <div style={{
+                    width: '8px',
+                    height: '8px',
+                    borderRadius: '2px',
+                    background: '#6366f1',
+                  }} />
+                  <span style={{ color: '#6b7280' }}>Protocol Fee</span>
+                </div>
+                <span style={{ color: '#374151' }}>0.01% (~$0.49)</span>
+              </div>
+              
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <div style={{
+                    width: '8px',
+                    height: '8px',
+                    borderRadius: '2px',
+                    background: '#10b981',
+                  }} />
+                  <span style={{ color: '#6b7280' }}>Hook Fee</span>
+                  <span style={{ 
+                    color: '#10b981', 
+                    fontSize: '10px',
+                    padding: '1px 4px',
+                    background: 'rgba(16, 185, 129, 0.1)',
+                    borderRadius: '3px',
+                  }}>MEV Protected</span>
+                </div>
+                <span style={{ color: '#374151' }}>0.00%</span>
+              </div>
+            </div>
+            
+            <div style={{ 
+              borderTop: '1px solid rgba(139, 92, 246, 0.1)', 
+              marginTop: '8px', 
+              paddingTop: '8px',
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                <span style={{ color: '#6b7280' }}>Price Impact</span>
+                <span style={{ color: '#10b981' }}>&lt;0.01%</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                <span style={{ color: '#6b7280' }}>Max Slippage</span>
+                <span style={{ color: '#374151' }}>0.5%</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ color: '#6b7280' }}>Hook Benefit</span>
+                <span style={{ color: '#10b981', fontWeight: '600' }}>+$14.60 saved</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Swap Button */}
+          <button
+            style={{
+              width: '100%',
+              padding: '16px',
+              marginTop: '16px',
+              borderRadius: '12px',
+              border: 'none',
+              background: 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)',
+              color: 'white',
+              fontSize: '16px',
+              fontWeight: '700',
+              cursor: 'pointer',
+              boxShadow: '0 4px 14px rgba(139, 92, 246, 0.3)',
+            }}
+          >
+            Swap ETH → USDC with {getSelectedHookName()}
+          </button>
+        </div>
+
+        {/* Chart Panel */}
+        <div>
+          <PriceChart pair="ETH / USDC" />
+          
+          {/* Info Cards */}
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(3, 1fr)', 
+            gap: '12px',
+            marginTop: '16px',
+          }}>
+            <div style={{
+              background: 'white',
+              borderRadius: '12px',
+              padding: '16px',
+              border: '1px solid rgba(139, 92, 246, 0.1)',
+            }}>
+              <div style={{ color: '#6b7280', fontSize: '12px', marginBottom: '4px' }}>24h Volume</div>
+              <div style={{ color: '#111827', fontSize: '18px', fontWeight: '700' }}>$2.4B</div>
+            </div>
+            <div style={{
+              background: 'white',
+              borderRadius: '12px',
+              padding: '16px',
+              border: '1px solid rgba(139, 92, 246, 0.1)',
+            }}>
+              <div style={{ color: '#6b7280', fontSize: '12px', marginBottom: '4px' }}>Pool TVL</div>
+              <div style={{ color: '#111827', fontSize: '18px', fontWeight: '700' }}>$847M</div>
+            </div>
+            <div style={{
+              background: 'white',
+              borderRadius: '12px',
+              padding: '16px',
+              border: '1px solid rgba(139, 92, 246, 0.1)',
+            }}>
+              <div style={{ color: '#6b7280', fontSize: '12px', marginBottom: '4px' }}>Current Fee</div>
+              <div style={{ color: '#111827', fontSize: '18px', fontWeight: '700' }}>0.05%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Hook Selector Modal */}
+      <HookSelectorModal
+        isOpen={showHookModal}
+        onClose={() => setShowHookModal(false)}
+        selectedHook={selectedHook}
+        setSelectedHook={setSelectedHook}
+        hooks={hooks}
+      />
+    </div>
+  );
+}

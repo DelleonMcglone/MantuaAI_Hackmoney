@@ -142,6 +142,12 @@
   --font-serif: Georgia, serif;
   --font-mono: Menlo, monospace;
   --radius: .5rem; /* 8px */
+
+  /* AppKit Wallet Modal Theme Variables */
+  --wallet-modal-bg: #ffffff;
+  --wallet-modal-text: #000000;
+  --wallet-button-bg: #3B82F6;
+  --wallet-button-hover: #2563EB;
   --shadow-2xs: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0.00); /*replace with H S L */
   --shadow-xs: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0.00); /*replace with H S L */
   --shadow-sm: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0.00), 0px 1px 2px -1px hsl(202.8169 89.1213% 53.1373% / 0.00);
@@ -266,6 +272,11 @@
   --shadow-xl: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0.00), 0px 8px 10px -1px hsl(202.8169 89.1213% 53.1373% / 0.00);
   --shadow-2xl: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0.00);
 
+  /* AppKit Wallet Modal Theme Variables (Dark Mode) */
+  --wallet-modal-bg: #1a1a1a;
+  --wallet-modal-text: #ffffff;
+  --wallet-button-bg: #3B82F6;
+  --wallet-button-hover: #2563EB;
 }
 
 @layer base {

@@ -14,6 +14,8 @@ import AnalysisCard from '../components/chat/AnalysisCard';
 import AddLiquidityModal from '../components/liquidity/AddLiquidityModal';
 import { classifyQuery } from '../utils/queryClassifier';
 import { TrendingUp, BarChart2, PieChart as PieIcon, Activity } from 'lucide-react';
+import { ConnectButton } from '../components/wallet/ConnectButton';
+import { useWalletConnection } from '../hooks/useWalletConnection';
 import { 
   getPriceData, 
   getVolumeData, 
@@ -2292,10 +2294,12 @@ export default function MantuaApp() {
     localStorage.setItem('mantua-theme', isDark ? 'dark' : 'light');
   }, [isDark]);
 
+  // Real wallet connection using AppKit
+  const { isConnected, address, truncatedAddress } = useWalletConnection();
+
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [recentChatsOpen, setRecentChatsOpen] = useState(true);
   const [portfolioOpen, setPortfolioOpen] = useState(false);
-  const [isConnected, setIsConnected] = useState(false);
   const [inputValue, setInputValue] = useState('');
   const [showSwap, setShowSwap] = useState(false);
   const [showLiquidity, setShowLiquidity] = useState(false);
@@ -2306,9 +2310,9 @@ export default function MantuaApp() {
   const [swapDetails, setSwapDetails] = useState(null);
   const [messages, setMessages] = useState([]);
   const [currentSessionId, setCurrentSessionId] = useState(null);
-  
-  const walletAddress = '0xbaac...DC87';
-  const walletBalance = '0.0021 ETH';
+
+  const walletAddress = truncatedAddress || '0xbaac...DC87';
+  const walletBalance = '0.0021 ETH'; // TODO: Fetch real balance
   
   const [recentChats, setRecentChats] = useState([]);
 
@@ -2777,16 +2781,7 @@ export default function MantuaApp() {
               {isDark ? <SunIcon /> : <MoonIcon />}
             </button>
 
-            {isConnected ? (
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', padding: '8px 16px', border: `1px solid ${theme.border}`, borderRadius: 8 }}>
-                <span style={{ fontSize: 14, fontWeight: 500 }}>{walletAddress}</span>
-                <span style={{ fontSize: 12, color: theme.textMuted }}>{walletBalance}</span>
-              </div>
-            ) : (
-              <button onClick={() => setIsConnected(true)} style={{ background: 'linear-gradient(135deg, #a855f7, #9333ea)', border: 'none', borderRadius: 8, padding: '10px 20px', color: '#fff', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
-                Connect wallet
-              </button>
-            )}
+            <ConnectButton />
           </div>
         </header>
 
@@ -2833,7 +2828,7 @@ export default function MantuaApp() {
                 <div style={{ width: '100%', maxWidth: showLiquidity ? '1200px' : 700, transition: 'max-width 0.3s ease', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 32 }}>
                   {!hasInteracted && !showSwap && !showLiquidity && !showAgentBuilder && (
                     <div style={{ textAlign: 'center' }}>
-                      <h1 style={{ fontFamily: '"Outfit", sans-serif', fontSize: 'clamp(28px, 4vw, 40px)', fontWeight: 600, marginBottom: 12, letterSpacing: '-0.02em' }}>Hi, {walletAddress}</h1>
+                      <h1 style={{ fontFamily: '"Outfit", sans-serif', fontSize: 'clamp(28px, 4vw, 40px)', fontWeight: 600, marginBottom: 12, letterSpacing: '-0.02em' }}>Hi, {truncatedAddress || 'there'}</h1>
                       <p style={{ fontSize: 16, color: theme.textSecondary }}>What can I help you with today?</p>
                     </div>
                   )}

@@ -23,14 +23,20 @@
   <body>
     <div id="root"></div>
     <script>
-      // Suppress errors from browser wallet extensions before any other code loads
+      // Suppress errors from browser wallet extensions and WalletConnect API failures
       window.addEventListener('error', function(e) {
         if (e.filename && e.filename.includes('chrome-extension://')) {
           e.preventDefault();
           e.stopImmediatePropagation();
           return true;
         }
-        if (e.message && (e.message.includes('chrome.runtime') || e.message.includes('Extension ID'))) {
+        if (e.message && (
+          e.message.includes('chrome.runtime') || 
+          e.message.includes('Extension ID') ||
+          e.message.includes('HTTP status code: 403') ||
+          e.message.includes('HTTP status code: 401') ||
+          e.message.includes('fetchWallets')
+        )) {
           e.preventDefault();
           e.stopImmediatePropagation();
           return true;
@@ -38,7 +44,15 @@
       }, true);
       window.addEventListener('unhandledrejection', function(e) {
         var reason = e.reason ? e.reason.toString() : '';
-        if (reason.includes('chrome.runtime') || reason.includes('Extension ID')) {
+        if (
+          reason.includes('chrome.runtime') || 
+          reason.includes('Extension ID') ||
+          reason.includes('403') ||
+          reason.includes('401') ||
+          reason.includes('Unauthorized') ||
+          reason.includes('invalid key') ||
+          reason.includes('fetchWallets')
+        ) {
           e.preventDefault();
         }
       }, true);

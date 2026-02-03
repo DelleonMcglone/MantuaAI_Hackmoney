@@ -1,0 +1,93 @@
+You are implementing a PostgreSQL database schema for Mantua.AI, an AI-powered DeFi trading platform built for the ETHGlobal HackMoney 2026 hackathon.
+
+## Project Context
+- Platform: Conversational DeFi interface with voice (OpenAI Whisper) and text input
+- Wallet: Reown (formerly WalletConnect) - session-based identity
+- Chain: Base Sepolia testnet (Uniswap v4)
+- Agent: Coinbase AgentKit for autonomous LP operations
+- Hooks: MEV protection, directional fees, JIT rebalancing
+
+## Database Requirements
+- Provider: Replit PostgreSQL (fresh instance)
+- ORM: Drizzle (type-safe, TypeScript)
+
+## Design Decisions
+1. Conversations: Persistent across sessions
+2. Identity: Session-based (connected wallet = user identity, no linking)
+3. Hook events: Store all events (for demo visualization)
+4. Agent actions: Configurable approval threshold (auto-approve under user-set USD value)
+
+## Required Tables
+
+### 1. users
+- wallet_address (text, PK) - Ethereum address
+- chain_id (integer) - Currently connected chain
+- created_at (timestamp)
+- last_active_at (timestamp)
+
+### 2. conversations
+- id (uuid, PK)
+- wallet_address (text, FK → users)
+- title (text) - Auto-generated or user-defined
+- context (jsonb) - AI conversation state
+- created_at (timestamp)
+- updated_at (timestamp)
+
+### 3. messages
+- id (uuid, PK)
+- conversation_id (uuid, FK → conversations)
+- role (text) - 'user' | 'assistant' | 'system'
+- content (text)
+- input_type (text) - 'voice' | 'text'
+- created_at (timestamp)
+
+### 4. positions
+- id (uuid, PK)
+- wallet_address (text, FK → users)
+- pool_address (text)
+- token0 (text)
+- token1 (text)
+- tick_lower (integer)
+- tick_upper (integer)
+- liquidity (numeric)
+- status (text) - 'active' | 'closed' | 'rebalancing'
+- created_at (timestamp)
+
+### 5. agent_actions
+- id (uuid, PK)
+- wallet_address (text, FK → users)
+- action_type (text) - 'rebalance' | 'add_liquidity' | 'remove_liquidity' | 'swap'
+- params (jsonb) - Action parameters
+- requires_approval (boolean)
+- approved_at (timestamp, nullable)
+- tx_hash (text, nullable)
+- status (text) - 'pending' | 'approved' | 'executed' | 'failed'
+- created_at (timestamp)
+
+### 6. user_settings
+- wallet_address (text, PK, FK → users)
+- auto_approve_threshold (numeric) - USD value for auto-approval
+- default_slippage (numeric) - Percentage
+- preferred_chains (jsonb) - Array of chain IDs
+- theme (text) - 'light' | 'dark'
+
+### 7. hook_events
+- id (uuid, PK)
+- hook_type (text) - 'mev_protection' | 'directional_fee' | 'jit'
+- pool_address (text)
+- event_data (jsonb) - Flexible payload for different hook types
+- block_number (bigint)
+- tx_hash (text)
+- created_at (timestamp)
+
+## Deliverables
+1. Drizzle schema file (src/db/schema.ts)
+2. Database connection setup (src/db/index.ts)
+3. Migration file
+4. Type exports for all tables
+
+## Constraints
+- Use uuid_generate_v4() for UUIDs
+- All timestamps default to now()
+- Add indexes on: wallet_address (all tables), conversation_id (messages), pool_address (positions, hook_events)
+- Use enums for status fields where appropriate

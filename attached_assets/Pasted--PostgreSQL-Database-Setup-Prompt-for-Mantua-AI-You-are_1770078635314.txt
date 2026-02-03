@@ -1,0 +1,119 @@
+# PostgreSQL Database Setup Prompt for Mantua.AI
+
+```
+You are setting up a PostgreSQL database for Mantua.AI, an AI-powered DeFi trading platform.
+
+## Environment
+- Database: Replit PostgreSQL (fresh instance)
+- ORM: Drizzle
+- Stack: React/TypeScript
+- Chain: Base Sepolia testnet
+
+## Database Connection
+Use Replit's DATABASE_URL environment variable for connection.
+
+## Tables to Create
+
+### 1. users
+| Column | Type | Constraints |
+|--------|------|-------------|
+| wallet_address | TEXT | PRIMARY KEY |
+| chain_id | INTEGER | DEFAULT 84532 (Base Sepolia) |
+| created_at | TIMESTAMP | DEFAULT NOW() |
+| updated_at | TIMESTAMP | DEFAULT NOW() |
+
+### 2. user_preferences
+| Column | Type | Constraints |
+|--------|------|-------------|
+| wallet_address | TEXT | PRIMARY KEY, REFERENCES users(wallet_address) ON DELETE CASCADE |
+| theme | TEXT | DEFAULT 'dark' |
+| slippage | NUMERIC | DEFAULT 0.5 |
+| auto_approve_threshold | NUMERIC | DEFAULT 0 (0 = always require approval) |
+| notifications | JSONB | DEFAULT '{}' |
+
+### 3. chat_sessions
+| Column | Type | Constraints |
+|--------|------|-------------|
+| id | UUID | PRIMARY KEY DEFAULT gen_random_uuid() |
+| wallet_address | TEXT | REFERENCES users(wallet_address) ON DELETE CASCADE |
+| title | TEXT | DEFAULT 'New Chat' |
+| context | JSONB | DEFAULT '{}' |
+| created_at | TIMESTAMP | DEFAULT NOW() |
+| updated_at | TIMESTAMP | DEFAULT NOW() |
+
+### 4. chat_messages
+| Column | Type | Constraints |
+|--------|------|-------------|
+| id | UUID | PRIMARY KEY DEFAULT gen_random_uuid() |
+| session_id | UUID | REFERENCES chat_sessions(id) ON DELETE CASCADE |
+| role | TEXT | NOT NULL, CHECK (role IN ('user', 'assistant', 'system')) |
+| content | TEXT | NOT NULL |
+| input_type | TEXT | DEFAULT 'text', CHECK (input_type IN ('text', 'voice')) |
+| created_at | TIMESTAMP | DEFAULT NOW() |
+
+### 5. positions
+| Column | Type | Constraints |
+|--------|------|-------------|
+| id | UUID | PRIMARY KEY DEFAULT gen_random_uuid() |
+| wallet_address | TEXT | REFERENCES users(wallet_address) ON DELETE CASCADE |
+| pool_address | TEXT | NOT NULL |
+| token0 | TEXT | NOT NULL |
+| token1 | TEXT | NOT NULL |
+| tick_lower | INTEGER | NOT NULL |
+| tick_upper | INTEGER | NOT NULL |
+| liquidity | NUMERIC | NOT NULL |
+| status | TEXT | DEFAULT 'active', CHECK (status IN ('active', 'closed', 'rebalancing')) |
+| created_at | TIMESTAMP | DEFAULT NOW() |
+
+### 6. agent_actions
+| Column | Type | Constraints |
+|--------|------|-------------|
+| id | UUID | PRIMARY KEY DEFAULT gen_random_uuid() |
+| wallet_address | TEXT | REFERENCES users(wallet_address) ON DELETE CASCADE |
+| action_type | TEXT | NOT NULL, CHECK (action_type IN ('rebalance', 'add_liquidity', 'remove_liquidity', 'swap')) |
+| params | JSONB | NOT NULL |
+| requires_approval | BOOLEAN | DEFAULT true |
+| approved_at | TIMESTAMP | NULL |
+| tx_hash | TEXT | NULL |
+| status | TEXT | DEFAULT 'pending', CHECK (status IN ('pending', 'approved', 'executed', 'failed')) |
+| created_at | TIMESTAMP | DEFAULT NOW() |
+
+### 7. hook_events
+| Column | Type | Constraints |
+|--------|------|-------------|
+| id | UUID | PRIMARY KEY DEFAULT gen_random_uuid() |
+| hook_type | TEXT | NOT NULL, CHECK (hook_type IN ('mev_protection', 'directional_fee', 'jit')) |
+| pool_address | TEXT | NOT NULL |
+| event_data | JSONB | NOT NULL |
+| block_number | BIGINT | NOT NULL |
+| tx_hash | TEXT | NOT NULL |
+| created_at | TIMESTAMP | DEFAULT NOW() |
+
+## Indexes to Create
+- users: none needed (wallet_address is PK)
+- chat_sessions: CREATE INDEX idx_chat_sessions_wallet ON chat_sessions(wallet_address)
+- chat_messages: CREATE INDEX idx_chat_messages_session ON chat_messages(session_id)
+- positions: CREATE INDEX idx_positions_wallet ON positions(wallet_address)
+- positions: CREATE INDEX idx_positions_pool ON positions(pool_address)
+- agent_actions: CREATE INDEX idx_agent_actions_wallet ON agent_actions(wallet_address)
+- agent_actions: CREATE INDEX idx_agent_actions_status ON agent_actions(status)
+- hook_events: CREATE INDEX idx_hook_events_pool ON hook_events(pool_address)
+- hook_events: CREATE INDEX idx_hook_events_type ON hook_events(hook_type)
+
+## Deliverables
+1. src/db/schema.ts - Drizzle schema definitions
+2. src/db/index.ts - Database connection setup
+3. src/db/migrate.ts - Migration runner script
+4. package.json - Add drizzle-orm and drizzle-kit dependencies
+
+## Verification
+After setup, confirm:
+- [ ] All 7 tables created
+- [ ] Foreign key relationships working
+- [ ] Indexes created
+- [ ] Can insert and query test data
+```
+
+---
+
+Want me to save this to `/mnt/user-data/outputs/` as a markdown file?

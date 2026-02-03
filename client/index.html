@@ -22,6 +22,27 @@
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      // Suppress errors from browser wallet extensions before any other code loads
+      window.addEventListener('error', function(e) {
+        if (e.filename && e.filename.includes('chrome-extension://')) {
+          e.preventDefault();
+          e.stopImmediatePropagation();
+          return true;
+        }
+        if (e.message && (e.message.includes('chrome.runtime') || e.message.includes('Extension ID'))) {
+          e.preventDefault();
+          e.stopImmediatePropagation();
+          return true;
+        }
+      }, true);
+      window.addEventListener('unhandledrejection', function(e) {
+        var reason = e.reason ? e.reason.toString() : '';
+        if (reason.includes('chrome.runtime') || reason.includes('Extension ID')) {
+          e.preventDefault();
+        }
+      }, true);
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

@@ -23,39 +23,56 @@
   <body>
     <div id="root"></div>
     <script>
-      // Suppress errors from browser wallet extensions and WalletConnect API failures
-      window.addEventListener('error', function(e) {
-        if (e.filename && e.filename.includes('chrome-extension://')) {
-          e.preventDefault();
-          e.stopImmediatePropagation();
-          return true;
-        }
-        if (e.message && (
-          e.message.includes('chrome.runtime') || 
-          e.message.includes('Extension ID') ||
-          e.message.includes('HTTP status code: 403') ||
-          e.message.includes('HTTP status code: 401') ||
-          e.message.includes('fetchWallets')
-        )) {
-          e.preventDefault();
-          e.stopImmediatePropagation();
-          return true;
-        }
-      }, true);
-      window.addEventListener('unhandledrejection', function(e) {
-        var reason = e.reason ? e.reason.toString() : '';
-        if (
-          reason.includes('chrome.runtime') || 
-          reason.includes('Extension ID') ||
-          reason.includes('403') ||
-          reason.includes('401') ||
-          reason.includes('Unauthorized') ||
-          reason.includes('invalid key') ||
-          reason.includes('fetchWallets')
-        ) {
-          e.preventDefault();
-        }
-      }, true);
+      // Override window.onerror before any other scripts load
+      (function() {
+        var originalOnError = window.onerror;
+        window.onerror = function(message, source, lineno, colno, error) {
+          var msg = String(message || '');
+          var src = String(source || '');
+          if (src.includes('chrome-extension://') || 
+              msg.includes('chrome.runtime') || 
+              msg.includes('Extension ID') ||
+              msg.includes('HTTP status code: 403') ||
+              msg.includes('HTTP status code: 401') ||
+              msg.includes('inpage.js')) {
+            return true; // Suppress the error
+          }
+          if (originalOnError) {
+            return originalOnError.apply(this, arguments);
+          }
+          return false;
+        };
+        
+        // Also handle unhandled promise rejections
+        window.addEventListener('unhandledrejection', function(e) {
+          var reason = e.reason ? String(e.reason) : '';
+          if (reason.includes('chrome.runtime') || 
+              reason.includes('Extension ID') ||
+              reason.includes('403') ||
+              reason.includes('401') ||
+              reason.includes('Unauthorized') ||
+              reason.includes('invalid key') ||
+              reason.includes('inpage.js')) {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            return;
+          }
+        }, true);
+        
+        // Capture phase listener for error events
+        window.addEventListener('error', function(e) {
+          var src = e.filename || '';
+          var msg = e.message || '';
+          if (src.includes('chrome-extension://') || 
+              msg.includes('chrome.runtime') || 
+              msg.includes('Extension ID') ||
+              msg.includes('inpage.js')) {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            return true;
+          }
+        }, true);
+      })();
     </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>

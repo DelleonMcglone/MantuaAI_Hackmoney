@@ -1,7 +1,8 @@
 /**
  * Wallet Connect Button
  *
- * Displays "Connect Wallet" when disconnected.
+ * Displays "Connect Wallet" with purple styling and wallet icon.
+ * Button remains purple in all states (connected/disconnected, light/dark mode).
  * Shows truncated address (0x1234...5678) when connected.
  * Provides disconnect functionality via modal.
  */
@@ -61,24 +62,40 @@ export function ConnectButton({
       <button
         onClick={handleClick}
         data-testid="connect-button"
-        className={`
-          px-4 py-2.5 rounded-xl font-medium transition-all duration-200
+        className="
+          px-5 py-2.5 rounded-full font-medium transition-all duration-200
           flex items-center gap-2
-          ${isConnected
-            ? 'bg-gray-800 dark:bg-gray-700 hover:bg-gray-700 dark:hover:bg-gray-600 text-white'
-            : 'bg-blue-600 hover:bg-blue-700 text-white'
-          }
-        `}
+          bg-[#8B5CF6] hover:bg-[#7C3AED] active:bg-[#6D28D9] text-white
+          shadow-lg shadow-purple-500/25
+        "
       >
         {isConnected ? (
           <>
-            {/* Green status dot */}
-            <span className="w-2 h-2 rounded-full bg-green-500" />
+            {/* Wallet Icon */}
+            <svg
+              className="w-4 h-4"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z" />
+              <path fillRule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clipRule="evenodd" />
+            </svg>
             {/* Truncated address */}
             <span data-testid="wallet-address">{truncateAddress(address!)}</span>
           </>
         ) : (
-          'Connect Wallet'
+          <>
+            {/* Wallet Icon */}
+            <svg
+              className="w-4 h-4"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z" />
+              <path fillRule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clipRule="evenodd" />
+            </svg>
+            <span>Connect wallet</span>
+          </>
         )}
       </button>
 

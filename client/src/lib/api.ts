@@ -1,4 +1,4 @@
-import type { ChatSession, ChatMessage, InsertChatSession, InsertChatMessage } from "@shared/schema";
+import type { ChatSession, ChatMessage, InsertChatSession, InsertChatMessage } from "../../../shared/schema";
 
 const API_BASE = "/api";
 

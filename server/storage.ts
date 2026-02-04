@@ -20,7 +20,7 @@ import {
   positions,
   agentActions,
   hookEvents
-} from "@shared/schema";
+} from "../shared/schema";
 import { drizzle } from "drizzle-orm/node-postgres";
 import pkg from "pg";
 const { Pool } = pkg;

@@ -2,7 +2,17 @@
 src = "contracts"
 out = "out"
 libs = ["lib"]
-solc = "0.8.24"
+solc_version = "0.8.26"
+evm_version = "cancun"
+optimizer = true
+optimizer_runs = 800
+via_ir = false
+ffi = true
+
+remappings = [
+    "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/",
+    "forge-std/=lib/openzeppelin-contracts/lib/forge-std/src/"
+]
 
 [rpc_endpoints]
 base_sepolia = "${BASE_SEPOLIA_RPC_URL}"

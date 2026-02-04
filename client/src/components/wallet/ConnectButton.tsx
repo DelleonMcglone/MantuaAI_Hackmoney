@@ -4,12 +4,12 @@
  * Displays "Connect Wallet" with purple styling and wallet icon.
  * Button remains purple in all states (connected/disconnected, light/dark mode).
  * Shows truncated address (0x1234...5678) when connected.
- * Provides disconnect functionality via modal.
+ * Provides disconnect functionality via dropdown menu.
  */
 
-import { useEffect } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useAppKit, useAppKitAccount, useDisconnect } from '@reown/appkit/react';
-import { LogOut } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 
 interface ConnectButtonProps {
   className?: string;
@@ -33,6 +33,8 @@ export function ConnectButton({
   const { open } = useAppKit();
   const { address, isConnected } = useAppKitAccount();
   const { disconnect } = useDisconnect();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Callback when connection state changes
   useEffect(() => {
@@ -41,10 +43,21 @@ export function ConnectButton({
     }
   }, [isConnected, address, onConnect]);
 
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   const handleClick = () => {
     if (isConnected) {
-      // Open account modal for disconnect option
-      open({ view: 'Account' });
+      // Toggle dropdown menu for disconnect option
+      setDropdownOpen(!dropdownOpen);
     } else {
       // Open connect modal
       open({ view: 'Connect' });
@@ -53,11 +66,12 @@ export function ConnectButton({
 
   const handleDisconnect = async () => {
     await disconnect();
+    setDropdownOpen(false);
     onDisconnect?.();
   };
 
   return (
-    <div className={`flex items-center gap-2 ${className}`}>
+    <div className={`relative ${className}`} ref={dropdownRef}>
       {/* Main Connect/Address Button */}
       <button
         onClick={handleClick}
@@ -82,6 +96,8 @@ export function ConnectButton({
             </svg>
             {/* Truncated address */}
             <span data-testid="wallet-address">{truncateAddress(address!)}</span>
+            {/* Chevron icon to indicate dropdown */}
+            <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} />
           </>
         ) : (
           <>
@@ -99,21 +115,27 @@ export function ConnectButton({
         )}
       </button>
 
-      {/* Explicit Disconnect Button (shown when connected) */}
-      {isConnected && (
-        <button
-          onClick={handleDisconnect}
-          data-testid="disconnect-button"
-          className="
-            p-2.5 rounded-xl transition-colors
-            bg-gray-800 dark:bg-gray-700
-            hover:bg-red-600 dark:hover:bg-red-600
-            text-gray-400 hover:text-white
-          "
-          aria-label="Disconnect wallet"
-        >
-          <LogOut className="w-5 h-5" />
-        </button>
+      {/* Dropdown Menu (shown when connected and dropdown is open) */}
+      {isConnected && dropdownOpen && (
+        <div className="
+          absolute right-0 top-full mt-2
+          min-w-[160px] py-2
+          bg-white dark:bg-gray-800
+          rounded-xl shadow-lg border border-gray-200 dark:border-gray-700
+          z-50
+        ">
+          <button
+            onClick={handleDisconnect}
+            data-testid="disconnect-button"
+            className="
+              w-full px-4 py-2 text-left
+              text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20
+              transition-colors
+            "
+          >
+            Disconnect
+          </button>
+        </div>
       )}
     </div>
   );

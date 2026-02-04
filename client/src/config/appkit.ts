@@ -11,62 +11,32 @@
 
 import { createAppKit } from '@reown/appkit/react';
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi';
-import {
-  mainnet,
-  base,
-  baseSepolia
-} from '@reown/appkit/networks';
+import { baseSepolia } from '@reown/appkit/networks';
 import type { AppKitNetwork } from '@reown/appkit/networks';
 
-// Custom network definition for Unichain Sepolia
-const unichainSepolia: AppKitNetwork = {
-  id: 1301,
-  name: 'Unichain Sepolia',
-  nativeCurrency: {
-    name: 'Ethereum',
-    symbol: 'ETH',
-    decimals: 18,
-  },
-  rpcUrls: {
-    default: {
-      http: ['https://sepolia.unichain.org'],
-    },
-  },
-  blockExplorers: {
-    default: {
-      name: 'Uniscan',
-      url: 'https://sepolia.uniscan.xyz',
-    },
-  },
-  testnet: true,
-};
-
-// Get project ID - use placeholder for development if not set
-const projectId = import.meta.env.VITE_REOWN_PROJECT_ID || 'development-placeholder';
+// Get project ID - REQUIRED for WalletConnect QR code
+const projectId = import.meta.env.VITE_REOWN_PROJECT_ID || 'ad3378514000476f8321eef10f16882e';
 const isDevMode = !import.meta.env.VITE_REOWN_PROJECT_ID;
 
 if (isDevMode) {
   console.warn(
-    '[AppKit] VITE_REOWN_PROJECT_ID not set. Wallet connection will not work. ' +
-    'Get your project ID from https://dashboard.reown.com'
+    '[AppKit] Using fallback project ID. For production, set VITE_REOWN_PROJECT_ID in .env'
   );
 }
 
-// Application metadata for wallet display
+// Application metadata for wallet display (REQUIRED for WalletConnect QR pairing)
 const metadata = {
   name: 'Mantua.AI',
   description: 'AI-powered DeFi trading platform with Uniswap v4 hooks',
-  url: import.meta.env.VITE_APP_URL || 'http://localhost:5000',
+  // Must match actual domain for WalletConnect verification
+  url: typeof window !== 'undefined' ? window.location.origin : 'http://localhost:5000',
   icons: ['https://mantua.ai/favicon.png'],
 };
 
-// Supported networks - Base Sepolia MUST be first as it's the default
-// The defaultNetwork option below ensures all wallets connect here initially
+// Supported networks - ONLY Base Sepolia (no network switching)
+// Single network configuration prevents network selection UI from appearing
 const networks: [AppKitNetwork, ...AppKitNetwork[]] = [
-  baseSepolia,  // DEFAULT: All wallet connections start here
-  mainnet,
-  base,
-  unichainSepolia,
+  baseSepolia,  // ONLY network - auto-defaults here, no switching needed
 ];
 
 // Initialize Wagmi adapter
@@ -84,8 +54,9 @@ export const appKit = createAppKit({
 
   // DEFAULT NETWORK CONFIGURATION
   // This ensures ALL wallet connections default to Base Sepolia
-  // regardless of the wallet's current network setting
+  // Single network = no network selection UI appears
   defaultNetwork: baseSepolia,
+  allowUnsupportedChain: false,           // Prevent connections to other networks
 
   // Theme configuration - follows system preference by default
   // DO NOT hardcode 'dark' or 'light' - let it be dynamic
@@ -110,14 +81,20 @@ export const appKit = createAppKit({
     onramp: false,                        // Disable for MVP
   },
 
-  // Wallet display options
-  allWallets: 'SHOW',                     // Show "All Wallets" option (540+)
+  // Wallet display options - CRITICAL for search functionality
+  allWallets: 'SHOW',                     // REQUIRED: Show "All Wallets" with search (540+)
+
+  // Featured wallets appear at top, but search still works across all wallets
   featuredWalletIds: [
     'c57ca95b47569778a828d19178114f4db188b89b763c899ba0be274e97267d96', // MetaMask
     '1ae92b26df02f0abca6304df07debccd18262fdf5fe82daa81593582dac9a369', // Rainbow
     '4622a2b2d6af1c9844944291e5e7351a6aa24cd7b23099efac1b2fd875da31a0', // Trust
     'a797aa35c0fadbfc1a53e7f675162ed5226968b44a19ee3d24385c64d1d3c393', // Phantom
   ],
+
+  // DO NOT use includeWalletIds or excludeWalletIds - they break search
+  // includeWalletIds: undefined,
+  // excludeWalletIds: undefined,
 });
 
 // Export wagmi config for WagmiProvider

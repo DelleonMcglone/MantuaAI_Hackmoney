@@ -25,17 +25,31 @@
     <script>
       // Override window.onerror before any other scripts load
       (function() {
+        function shouldSuppress(msg) {
+          var patterns = [
+            'chrome-extension://',
+            'chrome.runtime',
+            'Extension ID',
+            'HTTP status code: 403',
+            'HTTP status code: 401',
+            'inpage.js',
+            'WebSocket connection closed',
+            'Unauthorized',
+            'invalid key',
+            'fetchWallets',
+            'code: 3000'
+          ];
+          for (var i = 0; i < patterns.length; i++) {
+            if (msg.includes(patterns[i])) return true;
+          }
+          return false;
+        }
+        
         var originalOnError = window.onerror;
         window.onerror = function(message, source, lineno, colno, error) {
-          var msg = String(message || '');
-          var src = String(source || '');
-          if (src.includes('chrome-extension://') || 
-              msg.includes('chrome.runtime') || 
-              msg.includes('Extension ID') ||
-              msg.includes('HTTP status code: 403') ||
-              msg.includes('HTTP status code: 401') ||
-              msg.includes('inpage.js')) {
-            return true; // Suppress the error
+          var msg = String(message || '') + ' ' + String(source || '');
+          if (shouldSuppress(msg)) {
+            return true;
           }
           if (originalOnError) {
             return originalOnError.apply(this, arguments);
@@ -46,13 +60,7 @@
         // Also handle unhandled promise rejections
         window.addEventListener('unhandledrejection', function(e) {
           var reason = e.reason ? String(e.reason) : '';
-          if (reason.includes('chrome.runtime') || 
-              reason.includes('Extension ID') ||
-              reason.includes('403') ||
-              reason.includes('401') ||
-              reason.includes('Unauthorized') ||
-              reason.includes('invalid key') ||
-              reason.includes('inpage.js')) {
+          if (shouldSuppress(reason)) {
             e.preventDefault();
             e.stopImmediatePropagation();
             return;
@@ -61,12 +69,8 @@
         
         // Capture phase listener for error events
         window.addEventListener('error', function(e) {
-          var src = e.filename || '';
-          var msg = e.message || '';
-          if (src.includes('chrome-extension://') || 
-              msg.includes('chrome.runtime') || 
-              msg.includes('Extension ID') ||
-              msg.includes('inpage.js')) {
+          var msg = (e.filename || '') + ' ' + (e.message || '');
+          if (shouldSuppress(msg)) {
             e.preventDefault();
             e.stopImmediatePropagation();
             return true;

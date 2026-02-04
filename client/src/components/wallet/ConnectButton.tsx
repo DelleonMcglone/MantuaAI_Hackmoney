@@ -117,20 +117,15 @@ export function ConnectButton({
 
       {/* Dropdown Menu (shown when connected and dropdown is open) */}
       {isConnected && dropdownOpen && (
-        <div className="
-          absolute right-0 top-full mt-2
-          min-w-[160px] py-2
-          bg-white dark:bg-gray-800
-          rounded-xl shadow-lg border border-gray-200 dark:border-gray-700
-          z-50
-        ">
+        <div className="absolute right-0 top-full mt-2 z-50">
           <button
             onClick={handleDisconnect}
             data-testid="disconnect-button"
             className="
-              w-full px-4 py-2 text-left
-              text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20
-              transition-colors
+              px-5 py-2.5 rounded-full font-medium transition-all duration-200
+              flex items-center gap-2 whitespace-nowrap
+              bg-[#8B5CF6] hover:bg-[#7C3AED] active:bg-[#6D28D9] text-white
+              shadow-lg shadow-purple-500/25
             "
           >
             Disconnect

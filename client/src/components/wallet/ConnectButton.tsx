@@ -24,16 +24,6 @@ function truncateAddress(address: string): string {
 }
 
 /**
- * Generates a simple identicon color based on address
- */
-function getIdenticonColor(address: string): string {
-  if (!address) return '#a855f7';
-  const hash = address.slice(2, 8);
-  const hue = parseInt(hash, 16) % 360;
-  return `hsl(${hue}, 70%, 60%)`;
-}
-
-/**
  * Exit/Arrow icon for disconnect button
  */
 function ExitIcon() {
@@ -124,30 +114,9 @@ export function ConnectButton({
         }}
       >
         {isConnected ? (
-          <>
-            {/* Avatar/Identicon placeholder */}
-            <div
-              data-testid="wallet-avatar"
-              style={{
-                width: 28,
-                height: 28,
-                borderRadius: 6,
-                background: `linear-gradient(135deg, ${getIdenticonColor(address!)}, ${getIdenticonColor(address!.split('').reverse().join(''))})`,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: 12,
-                fontWeight: 700,
-                color: '#fff',
-                textTransform: 'uppercase',
-              }}
-            >
-              {address!.slice(2, 4)}
-            </div>
-            <span data-testid="wallet-address" style={{ fontWeight: 500 }}>
-              {truncateAddress(address!)}
-            </span>
-          </>
+          <span data-testid="wallet-address" style={{ fontWeight: 500 }}>
+            {truncateAddress(address!)}
+          </span>
         ) : (
           <span>Connect Wallet</span>
         )}

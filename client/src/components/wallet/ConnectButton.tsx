@@ -77,13 +77,17 @@ export function ConnectButton({
         data-testid="connect-button"
         aria-haspopup={isConnected ? 'menu' : undefined}
         aria-label={isConnected ? `Wallet ${address}` : 'Connect wallet'}
-        className={
-          "px-5 py-2.5 rounded-lg font-semibold transition-all duration-200 " +
-          "text-white border-none focus:outline-none focus:ring-2 focus:ring-purple-300/40 " +
-          "bg-gradient-to-br from-[#a855f7] to-[#9333ea] " +
-          "hover:brightness-110"
-        }
-        style={{ fontFamily: '"DM Sans", sans-serif', fontSize: '14px' }}
+        style={{
+          background: 'linear-gradient(135deg, #a855f7, #9333ea)',
+          border: 'none',
+          borderRadius: 8,
+          padding: '10px 20px',
+          color: '#fff',
+          fontFamily: '"DM Sans", sans-serif',
+          fontSize: 14,
+          fontWeight: 600,
+          cursor: 'pointer',
+        }}
       >
         {isConnected ? (
           <span data-testid="wallet-address">{truncateAddress(address!)}</span>
@@ -98,12 +102,18 @@ export function ConnectButton({
           <button
             onClick={handleDisconnect}
             data-testid="disconnect-button"
-            className={
-              "px-5 py-2.5 rounded-lg font-semibold transition-all duration-150 " +
-              "whitespace-nowrap text-white border-none focus:outline-none " +
-              "bg-gradient-to-br from-[#a855f7] to-[#9333ea] hover:brightness-110"
-            }
-            style={{ fontFamily: '"DM Sans", sans-serif', fontSize: '14px' }}
+            style={{
+              background: 'linear-gradient(135deg, #a855f7, #9333ea)',
+              border: 'none',
+              borderRadius: 8,
+              padding: '10px 20px',
+              color: '#fff',
+              fontFamily: '"DM Sans", sans-serif',
+              fontSize: 14,
+              fontWeight: 600,
+              cursor: 'pointer',
+              whiteSpace: 'nowrap',
+            }}
           >
             Disconnect
           </button>

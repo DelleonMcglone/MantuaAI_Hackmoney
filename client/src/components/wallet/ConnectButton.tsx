@@ -92,6 +92,8 @@ export function ConnectButton({
     cursor: 'pointer',
     boxShadow: '0 2px 8px rgba(168, 85, 247, 0.25)',
     transition: 'all 0.2s ease',
+    minWidth: 145,
+    padding: '10px 16px',
   };
 
   return (
@@ -106,9 +108,9 @@ export function ConnectButton({
         aria-label={isConnected ? `Wallet ${address}` : 'Connect wallet'}
         style={{
           ...baseButtonStyle,
-          padding: isConnected ? '8px 14px' : '10px 20px',
           display: 'flex',
           alignItems: 'center',
+          justifyContent: 'center',
           gap: 10,
           filter: isHovered ? 'brightness(1.1)' : 'brightness(1)',
         }}
@@ -140,9 +142,9 @@ export function ConnectButton({
             data-testid="disconnect-button"
             style={{
               ...baseButtonStyle,
-              padding: '10px 16px',
               display: 'flex',
               alignItems: 'center',
+              justifyContent: 'center',
               gap: 8,
               whiteSpace: 'nowrap',
               filter: isDisconnectHovered ? 'brightness(1.15)' : 'brightness(1)',

@@ -1,15 +1,14 @@
 /**
  * Wallet Connect Button
  *
- * Displays "Connect Wallet" with purple styling and wallet icon.
- * Button remains purple in all states (connected/disconnected, light/dark mode).
+ * Displays "Connect Wallet" with purple gradient styling matching the Launch App button.
+ * Text-only design (no icons) with medium rounded corners for a clean, modern look.
  * Shows truncated address (0x1234...5678) when connected.
  * Provides disconnect functionality via dropdown menu.
  */
 
 import { useEffect, useState, useRef } from 'react';
 import { useAppKit, useAppKitAccount, useDisconnect } from '@reown/appkit/react';
-import { ChevronDown } from 'lucide-react';
 
 interface ConnectButtonProps {
   className?: string;
@@ -76,42 +75,20 @@ export function ConnectButton({
       <button
         onClick={handleClick}
         data-testid="connect-button"
-        className="
-          px-5 py-2.5 rounded-full font-medium transition-all duration-200
-          flex items-center gap-2
-          bg-[#8B5CF6] hover:bg-[#7C3AED] active:bg-[#6D28D9] text-white
-          shadow-lg shadow-purple-500/25
-        "
+        aria-haspopup={isConnected ? 'menu' : undefined}
+        aria-label={isConnected ? `Wallet ${address}` : 'Connect wallet'}
+        className={
+          "px-5 py-2.5 rounded-lg font-semibold transition-all duration-200 " +
+          "text-white border-none focus:outline-none focus:ring-2 focus:ring-purple-300/40 " +
+          "bg-gradient-to-br from-[#a855f7] to-[#9333ea] " +
+          "hover:brightness-110"
+        }
+        style={{ fontFamily: '"DM Sans", sans-serif', fontSize: '14px' }}
       >
         {isConnected ? (
-          <>
-            {/* Wallet Icon */}
-            <svg
-              className="w-4 h-4"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-            >
-              <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z" />
-              <path fillRule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clipRule="evenodd" />
-            </svg>
-            {/* Truncated address */}
-            <span data-testid="wallet-address">{truncateAddress(address!)}</span>
-            {/* Chevron icon to indicate dropdown */}
-            <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} />
-          </>
+          <span data-testid="wallet-address">{truncateAddress(address!)}</span>
         ) : (
-          <>
-            {/* Wallet Icon */}
-            <svg
-              className="w-4 h-4"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-            >
-              <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z" />
-              <path fillRule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clipRule="evenodd" />
-            </svg>
-            <span>Connect wallet</span>
-          </>
+          <span>Connect Wallet</span>
         )}
       </button>
 
@@ -121,12 +98,12 @@ export function ConnectButton({
           <button
             onClick={handleDisconnect}
             data-testid="disconnect-button"
-            className="
-              px-5 py-2.5 rounded-full font-medium transition-all duration-200
-              flex items-center gap-2 whitespace-nowrap
-              bg-[#8B5CF6] hover:bg-[#7C3AED] active:bg-[#6D28D9] text-white
-              shadow-lg shadow-purple-500/25
-            "
+            className={
+              "px-5 py-2.5 rounded-lg font-semibold transition-all duration-150 " +
+              "whitespace-nowrap text-white border-none focus:outline-none " +
+              "bg-gradient-to-br from-[#a855f7] to-[#9333ea] hover:brightness-110"
+            }
+            style={{ fontFamily: '"DM Sans", sans-serif', fontSize: '14px' }}
           >
             Disconnect
           </button>

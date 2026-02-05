@@ -6,8 +6,9 @@
  * chat interface, and swap functionality for DeFi interactions.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useLocation } from 'wouter';
+import { useAccount } from 'wagmi';
 import logoWhite from '@assets/Mantua_logo_white_1768946648374.png';
 import logoBlack from '@assets/Mantua_logo_black_1768946648374.png';
 import AnalysisCard from '../components/chat/AnalysisCard';
@@ -16,6 +17,12 @@ import { classifyQuery } from '../utils/queryClassifier';
 import { TrendingUp, BarChart2, PieChart as PieIcon, Activity } from 'lucide-react';
 import { ConnectButton } from '../components/wallet/ConnectButton';
 import { useWalletConnection } from '../hooks/useWalletConnection';
+import { useTokenApproval } from '../hooks/useTokenApproval';
+import { useSwapQuote, getPriceImpactSeverity } from '../hooks/useSwapQuote';
+import { useSwapExecution } from '../hooks/useSwapExecution';
+import { PriceImpact, SwapButton, SwapButtonStyles, SwapConfirmation } from '../components/swap';
+import { parseTokenAmount, formatTokenAmount, isNativeEth, getZeroAddress, getHookAddress } from '../lib/swap-utils';
+import { ALL_TOKENS, NATIVE_ETH } from '../config/tokens';
 import { 
   getPriceData, 
   getVolumeData, 
@@ -1502,9 +1509,13 @@ const HookSelectorModal = ({ isOpen, onClose, hooks, selectedHook, onSelect, the
 
 // ============ SWAP INTERFACE ============
 const SwapInterface = ({ onClose, swapDetails, theme, isDark }) => {
-  const [selectedHook, setSelectedHook] = useState(swapDetails?.hook || 'mev');
+  const { isConnected, address } = useAccount();
+  const { openModal } = useWalletConnection();
+  const [selectedHook, setSelectedHook] = useState(swapDetails?.hook || 'alo');
   const [isHookModalOpen, setIsHookModalOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [slippageTolerance] = useState(0.5);
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 900);
@@ -1519,20 +1530,105 @@ const SwapInterface = ({ onClose, swapDetails, theme, isDark }) => {
   
   // Swap state
   const [fromToken, setFromToken] = useState(swapDetails?.fromToken || "ETH");
-  const [toToken, setToToken] = useState(swapDetails?.toToken || "USDC");
+  const [toToken, setToToken] = useState(swapDetails?.toToken || "mUSDC");
   const [fromAmount, setFromAmount] = useState(swapDetails?.fromAmount || "");
-  // To amount is just a placeholder for now as we don't have real pricing logic in this mock
   const [toAmount, setToAmount] = useState(swapDetails?.toAmount || ""); 
+
+  // Find token data from ALL_TOKENS
+  const fromTokenData = useMemo(() => {
+    return ALL_TOKENS.find(t => t.symbol === fromToken || t.symbol === `m${fromToken}`) || NATIVE_ETH;
+  }, [fromToken]);
+
+  const toTokenData = useMemo(() => {
+    return ALL_TOKENS.find(t => t.symbol === toToken || t.symbol === `m${toToken}`) || ALL_TOKENS[1];
+  }, [toToken]);
+
+  // Parse amount for hooks
+  const parsedAmount = useMemo(() => {
+    try {
+      return parseTokenAmount(fromAmount || '0', fromTokenData.decimals);
+    } catch {
+      return BigInt(0);
+    }
+  }, [fromAmount, fromTokenData.decimals]);
+
+  // Token approval hook
+  const {
+    status: approvalStatus,
+    needsApproval,
+    isApproved,
+    approve,
+    error: approvalError,
+  } = useTokenApproval({
+    tokenAddress: fromTokenData.address,
+    amount: parsedAmount,
+    enabled: isConnected && parsedAmount > BigInt(0),
+  });
+
+  // Swap quote hook
+  const { quote, isLoading: isQuoteLoading } = useSwapQuote({
+    tokenIn: fromTokenData.address,
+    tokenOut: toTokenData.address,
+    amountIn: fromAmount,
+    inputDecimals: fromTokenData.decimals,
+    outputDecimals: toTokenData.decimals,
+    slippageTolerance,
+    hookAddress: getHookAddress(selectedHook),
+    enabled: parsedAmount > BigInt(0),
+  });
+
+  // Swap execution hook
+  const {
+    status: swapStatus,
+    txHash,
+    error: swapError,
+    isExecuting,
+    execute: executeSwap,
+    retry: retrySwap,
+    reset: resetSwap,
+  } = useSwapExecution();
+
+  // Update toAmount when quote changes
+  useEffect(() => {
+    if (quote && quote.outputAmount > BigInt(0)) {
+      setToAmount(formatTokenAmount(quote.outputAmount, toTokenData.decimals));
+    } else if (!fromAmount) {
+      setToAmount('');
+    }
+  }, [quote, fromAmount, toTokenData.decimals]);
   
   // Update local state when props change
   useEffect(() => {
      if (swapDetails) {
         setFromToken(swapDetails.fromToken || "ETH");
-        setToToken(swapDetails.toToken || "USDC");
+        setToToken(swapDetails.toToken || "mUSDC");
         setFromAmount(swapDetails.fromAmount || "");
         setToAmount(swapDetails.toAmount || "");
      }
   }, [swapDetails]);
+
+  // Handle swap execution
+  const handleSwap = async () => {
+    if (!isConnected || !quote) return;
+    
+    setShowConfirmation(true);
+    await executeSwap({
+      tokenIn: fromTokenData.address,
+      tokenOut: toTokenData.address,
+      amountIn: parsedAmount,
+      hookAddress: getHookAddress(selectedHook),
+      hookId: selectedHook,
+    });
+  };
+
+  const handleCloseConfirmation = () => {
+    setShowConfirmation(false);
+    if (swapStatus === 'confirmed') {
+      setFromAmount('');
+      setToAmount('');
+      resetSwap();
+    }
+  };
 
   const handleTokenSelect = (tokenSymbol) => {
     if (selectingSide === 'from') {
@@ -1890,11 +1986,23 @@ const SwapInterface = ({ onClose, swapDetails, theme, isDark }) => {
             <div style={{ borderTop: `1px solid ${theme.border}`, paddingTop: '8px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px', fontSize: '13px' }}>
                 <span style={{ color: theme.textSecondary }}>Price Impact</span>
-                <span style={{ color: '#10b981' }}>&lt;0.01%</span>
+                <span style={{ 
+                  color: quote ? (quote.priceImpact < 1 ? '#10b981' : quote.priceImpact < 5 ? '#f59e0b' : '#ef4444') : '#10b981',
+                  fontWeight: quote && quote.priceImpact >= 5 ? '700' : '500'
+                }}>
+                  {quote ? `${quote.priceImpact.toFixed(2)}%` : '<0.01%'}
+                  {quote && quote.priceImpact >= 5 && ' ⚠️'}
+                </span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px', fontSize: '13px' }}>
                 <span style={{ color: theme.textSecondary }}>Max Slippage</span>
-                <span style={{ color: theme.textPrimary }}>0.5%</span>
+                <span style={{ color: theme.textPrimary }}>{slippageTolerance}%</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px', fontSize: '13px' }}>
+                <span style={{ color: theme.textSecondary }}>Min. Received</span>
+                <span style={{ color: theme.textPrimary }}>
+                  {quote ? `${formatTokenAmount(quote.minimumReceived, toTokenData.decimals)} ${toToken}` : '-'}
+                </span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
                 <span style={{ color: theme.textSecondary }}>Hook Benefit</span>
@@ -1903,25 +2011,89 @@ const SwapInterface = ({ onClose, swapDetails, theme, isDark }) => {
             </div>
           </div>
 
-          {/* Swap Execution Button */}
-          <button style={{
-            width: '100%',
-            padding: '16px',
-            marginTop: '12px',
-            borderRadius: '16px',
-            border: 'none',
-            background: 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)',
-            color: 'white',
-            fontSize: '16px',
-            fontWeight: '700',
-            cursor: 'pointer',
-            boxShadow: '0 8px 20px rgba(139, 92, 246, 0.3)',
-            transition: 'transform 0.1s',
-          }}>
-            Swap ETH → USDC with {selectedHookObj.name.replace(' (Smart Routing)', '')}
-          </button>
+          {/* Swap Button with approval/execution states */}
+          <SwapButtonStyles />
+          <div style={{ marginTop: '12px' }}>
+            <SwapButton
+              isConnected={isConnected}
+              hasAmount={parsedAmount > BigInt(0)}
+              hasTokens={!!fromToken && !!toToken}
+              approvalStatus={approvalStatus}
+              swapStatus={swapStatus}
+              tokenSymbol={fromToken}
+              priceImpact={quote?.priceImpact || 0}
+              onConnect={openModal}
+              onApprove={() => approve(true)}
+              onSwap={handleSwap}
+              disabled={isExecuting || !quote}
+              theme={theme}
+              isDark={isDark}
+            />
+          </div>
+
+          {/* Approval/Error Status */}
+          {approvalError && (
+            <div style={{ 
+              marginTop: '8px', 
+              padding: '10px 12px', 
+              borderRadius: '10px',
+              background: 'rgba(239, 68, 68, 0.1)',
+              border: '1px solid rgba(239, 68, 68, 0.2)',
+              color: '#ef4444',
+              fontSize: '13px'
+            }}>
+              {approvalError.message}
+            </div>
+          )}
+
+          {swapError && (
+            <div style={{ 
+              marginTop: '8px', 
+              padding: '10px 12px', 
+              borderRadius: '10px',
+              background: 'rgba(239, 68, 68, 0.1)',
+              border: '1px solid rgba(239, 68, 68, 0.2)',
+              color: '#ef4444',
+              fontSize: '13px'
+            }}>
+              {swapError.message}
+            </div>
+          )}
         </div>
       </div>
+
+      {/* Swap Confirmation Modal */}
+      {showConfirmation && (swapStatus === 'pending' || swapStatus === 'confirming' || swapStatus === 'confirmed' || swapStatus === 'failed') && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0, 0, 0, 0.6)',
+          backdropFilter: 'blur(4px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000,
+        }}>
+          <div style={{ maxWidth: '400px', width: '90%' }}>
+            <SwapConfirmation
+              status={swapStatus}
+              txHash={txHash}
+              error={swapError}
+              inputAmount={fromAmount}
+              outputAmount={toAmount}
+              inputSymbol={fromToken}
+              outputSymbol={toToken}
+              onRetry={retrySwap}
+              onClose={handleCloseConfirmation}
+              theme={theme}
+              isDark={isDark}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

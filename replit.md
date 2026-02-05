@@ -66,6 +66,11 @@ Preferred communication style: Simple, everyday language.
 - **Vite Plugins**: React plugin, Tailwind CSS plugin, custom meta-images plugin for OpenGraph
 - **Replit Plugins**: Runtime error overlay, cartographer, dev banner (development only)
 
+### AI Integration
+- **OpenAI via Replit AI Integrations**: Set up using `AI_INTEGRATIONS_OPENAI_API_KEY` and `AI_INTEGRATIONS_OPENAI_BASE_URL` environment variables (auto-managed by Replit)
+- Available models: gpt-5.2 (recommended), gpt-5.1, gpt-5-mini, gpt-image-1, gpt-audio
+- Server utilities: `server/replit_integrations/` contains ready-to-use helpers for chat, image generation, and audio processing
+
 ### Planned Integrations (Referenced in UI)
 - **Wallet Connection**: UI references wallet connection for DeFi operations
 - **Uniswap v4**: Hook selection for swaps and liquidity (MEV Protection, Directional Fee, JIT Rebalancing)

@@ -1,0 +1,67 @@
+---
+
+## Mantua AI v2 - Swap Interface Implementation Sprint
+
+### Context
+You are building the swap interface for Mantua AI v2, a voice-controlled DeFi platform integrating with Uniswap v4 hooks on Base Sepolia testnet. The project uses React 19 with TypeScript, Vite, TailwindCSS with Shadcn/ui components, and integrates with Wagmi/Viem for wallet connectivity.
+
+### Tasks to Complete
+
+**P1-002: Implement Token Approval Flow**
+- Check current allowance before swap execution
+- Create approval transaction flow for ERC-20 tokens
+- Handle unlimited vs exact approval options
+- Show approval status and pending state
+- Skip approval for native ETH swaps
+
+**P1-003: Integrate with PoolSwapTest Contract**
+- Connect to deployed PoolSwapTest contract on Base Sepolia
+- Build swap parameters (PoolKey, SwapParams, hookData)
+- Encode swap calldata correctly for Uniswap v4 structure
+- Handle zeroForOne direction based on token order
+- Pass hook address in PoolKey for custom hook integration
+
+**P1-004: Display Price Impact Estimation**
+- Calculate expected output amount based on pool reserves
+- Show price impact percentage with color coding (green < 1%, yellow 1-5%, red > 5%)
+- Display exchange rate (1 TOKEN_A = X TOKEN_B)
+- Update calculations on input amount change with debouncing
+- Show minimum received with slippage tolerance
+
+**P1-005: Implement Swap Execution with Transaction Status**
+- Execute swap through Wagmi useWriteContract hook
+- Track transaction states: idle, pending, confirming, confirmed, failed
+- Show transaction hash with block explorer link
+- Handle user rejection gracefully
+- Implement retry mechanism for failed transactions
+
+**P1-006: Add Toast Notifications for Transaction Events**
+- Use Sonner or similar toast library compatible with Shadcn/ui
+- Show toast on: transaction submitted, transaction confirmed, transaction failed
+- Include relevant details (tx hash, token amounts, error messages)
+- Auto-dismiss success toasts, persist error toasts until dismissed
+
+### Technical Requirements
+- All components must be TypeScript with proper type definitions
+- Use Wagmi hooks for all blockchain interactions
+- Implement proper error boundaries and loading states
+- Follow existing project structure and naming conventions
+- Ensure mobile responsiveness for all UI components
+
+### File Structure Suggestion
+```
+src/
+├── components/
+│   └── swap/
+│       ├── SwapButton.tsx
+│       ├── PriceImpact.tsx
+│       └── SwapConfirmation.tsx
+├── hooks/
+│   ├── useTokenApproval.ts
+│   ├── useSwapQuote.ts
+│   └── useSwapExecution.ts
+└── lib/
+    └── swap-utils.ts
+```
+
+---

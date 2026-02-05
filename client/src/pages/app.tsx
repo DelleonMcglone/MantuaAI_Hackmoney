@@ -867,33 +867,88 @@ const PriceChart = ({ pair, theme }) => {
 // Token Select Modal
 const TokenSelectModal = ({ isOpen, onClose, onSelect, theme, isDark }) => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
 
   if (!isOpen) return null;
 
-  const tokens = [
-    { symbol: 'mUSDC', name: 'Mock USDC', address: '0x9F78...9b4d', balance: '0.00', usdValue: '$0.00', icon: '$' },
-    { symbol: 'mETH', name: 'Mock ETH', address: '0x3a2c...1e4f', balance: '0.00', usdValue: '$0.00', icon: 'Ξ' },
-    { symbol: 'ETH', name: 'Ethereum', address: '0x0000...0000', balance: '0.00', usdValue: '$0.00', icon: 'Ξ' },
-    { symbol: 'mDAI', name: 'Mock DAI', address: '0x5d3a...8c2b', balance: '0.00', usdValue: '$0.00', icon: '◈' },
-    { symbol: 'mBTC', name: 'Mock BTC', address: '0x2b1a...7d9e', balance: '0.00', usdValue: '$0.00', icon: '₿' },
-    { symbol: 'mLINK', name: 'Mock LINK', address: '0x8f4e...2a1c', balance: '0.00', usdValue: '$0.00', icon: '⬡' },
+  // Full 22-token list organized by category
+  const allTokens = [
+    // Native
+    { symbol: 'ETH', name: 'Ethereum', address: '0x0000...0000', balance: '0.00', usdValue: '$0.00', icon: 'Ξ', category: 'native' },
+    // Stablecoins
+    { symbol: 'mUSDC', name: 'Mock USDC', address: '0x9F78...9b4d', balance: '0.00', usdValue: '$0.00', icon: '$', category: 'stablecoin' },
+    { symbol: 'mUSDT', name: 'Mock USDT', address: '0x7A3b...4c2e', balance: '0.00', usdValue: '$0.00', icon: '$', category: 'stablecoin' },
+    { symbol: 'mDAI', name: 'Mock DAI', address: '0x5d3a...8c2b', balance: '0.00', usdValue: '$0.00', icon: '◇', category: 'stablecoin' },
+    { symbol: 'mUSDe', name: 'Mock USDe', address: '0x4E2f...1a3d', balance: '0.00', usdValue: '$0.00', icon: '$', category: 'stablecoin' },
+    { symbol: 'mFRAX', name: 'Mock FRAX', address: '0x6B4c...9e2f', balance: '0.00', usdValue: '$0.00', icon: 'F', category: 'stablecoin' },
+    // RWAs (Real World Assets)
+    { symbol: 'mOUSG', name: 'Mock OUSG', address: '0x1A2b...3c4d', balance: '0.00', usdValue: '$0.00', icon: 'O', category: 'rwa' },
+    { symbol: 'mUSDY', name: 'Mock USDY', address: '0x2B3c...4d5e', balance: '0.00', usdValue: '$0.00', icon: 'Y', category: 'rwa' },
+    { symbol: 'mBUIDL', name: 'Mock BUIDL', address: '0x3C4d...5e6f', balance: '0.00', usdValue: '$0.00', icon: 'B', category: 'rwa' },
+    { symbol: 'mTBILL', name: 'Mock TBILL', address: '0x4D5e...6f7a', balance: '0.00', usdValue: '$0.00', icon: 'T', category: 'rwa' },
+    { symbol: 'mSTEUR', name: 'Mock stEUR', address: '0x5E6f...7a8b', balance: '0.00', usdValue: '$0.00', icon: '€', category: 'rwa' },
+    // LSTs (Liquid Staking Tokens)
+    { symbol: 'mstETH', name: 'Mock stETH', address: '0x6F7a...8b9c', balance: '0.00', usdValue: '$0.00', icon: 'Ξ', category: 'lst' },
+    { symbol: 'mcbETH', name: 'Mock cbETH', address: '0x7A8b...9c0d', balance: '0.00', usdValue: '$0.00', icon: 'Ξ', category: 'lst' },
+    { symbol: 'mrETH', name: 'Mock rETH', address: '0x8B9c...0d1e', balance: '0.00', usdValue: '$0.00', icon: 'Ξ', category: 'lst' },
+    { symbol: 'mwstETH', name: 'Mock wstETH', address: '0x9C0d...1e2f', balance: '0.00', usdValue: '$0.00', icon: 'Ξ', category: 'lst' },
+    // Wrapped Tokens
+    { symbol: 'mWBTC', name: 'Mock WBTC', address: '0x0D1e...2f3a', balance: '0.00', usdValue: '$0.00', icon: '₿', category: 'wrapped' },
+    { symbol: 'mWETH', name: 'Mock WETH', address: '0x1E2f...3a4b', balance: '0.00', usdValue: '$0.00', icon: 'Ξ', category: 'wrapped' },
+    { symbol: 'mWSOL', name: 'Mock WSOL', address: '0x2F3a...4b5c', balance: '0.00', usdValue: '$0.00', icon: 'S', category: 'wrapped' },
+    { symbol: 'mWAVAX', name: 'Mock WAVAX', address: '0x3A4b...5c6d', balance: '0.00', usdValue: '$0.00', icon: 'A', category: 'wrapped' },
+    { symbol: 'mWMATIC', name: 'Mock WMATIC', address: '0x4B5c...6d7e', balance: '0.00', usdValue: '$0.00', icon: 'M', category: 'wrapped' },
+    // Core
+    { symbol: 'mBTC', name: 'Mock BTC', address: '0x2b1a...7d9e', balance: '0.00', usdValue: '$0.00', icon: '₿', category: 'wrapped' },
   ];
 
-  const filteredTokens = tokens.filter(token => 
-    token.symbol.toLowerCase().includes(searchQuery.toLowerCase()) || 
-    token.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    token.address.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const categories = [
+    { id: 'all', label: 'All' },
+    { id: 'stablecoin', label: 'Stables' },
+    { id: 'rwa', label: 'RWAs' },
+    { id: 'lst', label: 'LSTs' },
+    { id: 'wrapped', label: 'Wrapped' },
+  ];
+
+  // Filter tokens by category and search
+  const filteredTokens = allTokens.filter(token => {
+    const matchesCategory = selectedCategory === 'all' || token.category === selectedCategory;
+    const matchesSearch = !searchQuery || 
+      token.symbol.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      token.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      token.address.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
 
   const getTokenIcon = (token) => {
-    // Reuse base asset icons logic
-    const baseSymbol = token.symbol.replace('m', '');
+    const symbol = token.symbol;
     
-    let background = 'linear-gradient(135deg, #627EEA 0%, #8B9FFF 100%)'; // Default ETH
-    if (baseSymbol === 'USDC') background = 'linear-gradient(135deg, #2775CA 0%, #4A9FE8 100%)';
-    if (baseSymbol === 'DAI') background = 'linear-gradient(135deg, #F5AC37 0%, #FFD166 100%)';
-    if (baseSymbol === 'BTC') background = 'linear-gradient(135deg, #F7931A 0%, #FFAB4A 100%)';
-    if (baseSymbol === 'LINK') background = 'linear-gradient(135deg, #2A5ADA 0%, #5480F0 100%)';
+    // Color mapping for different token types
+    const colorMap = {
+      ETH: 'linear-gradient(135deg, #627EEA 0%, #8B9FFF 100%)',
+      mUSDC: 'linear-gradient(135deg, #2775CA 0%, #4A9FE8 100%)',
+      mUSDT: 'linear-gradient(135deg, #26A17B 0%, #50C878 100%)',
+      mDAI: 'linear-gradient(135deg, #F5AC37 0%, #FFD166 100%)',
+      mUSDe: 'linear-gradient(135deg, #2775CA 0%, #4A9FE8 100%)',
+      mFRAX: 'linear-gradient(135deg, #000000 0%, #333333 100%)',
+      mOUSG: 'linear-gradient(135deg, #1a237e 0%, #3949ab 100%)',
+      mUSDY: 'linear-gradient(135deg, #2775CA 0%, #4A9FE8 100%)',
+      mBUIDL: 'linear-gradient(135deg, #000000 0%, #333333 100%)',
+      mTBILL: 'linear-gradient(135deg, #26A17B 0%, #50C878 100%)',
+      mSTEUR: 'linear-gradient(135deg, #FF6B35 0%, #F7931A 100%)',
+      mstETH: 'linear-gradient(135deg, #00A3FF 0%, #5AC8FA 100%)',
+      mcbETH: 'linear-gradient(135deg, #0052FF 0%, #3B7BF7 100%)',
+      mrETH: 'linear-gradient(135deg, #FF6B35 0%, #F7931A 100%)',
+      mwstETH: 'linear-gradient(135deg, #00A3FF 0%, #5AC8FA 100%)',
+      mWBTC: 'linear-gradient(135deg, #F7931A 0%, #FFAB4A 100%)',
+      mWETH: 'linear-gradient(135deg, #627EEA 0%, #8B9FFF 100%)',
+      mWSOL: 'linear-gradient(135deg, #9945FF 0%, #14F195 100%)',
+      mWAVAX: 'linear-gradient(135deg, #E84142 0%, #FF6B6B 100%)',
+      mWMATIC: 'linear-gradient(135deg, #8247E5 0%, #A47AE8 100%)',
+      mBTC: 'linear-gradient(135deg, #F7931A 0%, #FFAB4A 100%)',
+    };
+
+    const background = colorMap[symbol] || 'linear-gradient(135deg, #627EEA 0%, #8B9FFF 100%)';
 
     return (
       <div style={{
@@ -904,7 +959,7 @@ const TokenSelectModal = ({ isOpen, onClose, onSelect, theme, isDark }) => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        fontSize: '20px',
+        fontSize: '18px',
         fontWeight: '700',
         color: 'white',
         flexShrink: 0,
@@ -980,6 +1035,31 @@ const TokenSelectModal = ({ isOpen, onClose, onSelect, theme, isDark }) => {
               }} 
             />
           </div>
+        </div>
+
+        {/* Category Filter Tabs */}
+        <div style={{ padding: '0 16px 12px', display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+          {categories.map(cat => (
+            <button
+              key={cat.id}
+              onClick={() => setSelectedCategory(cat.id)}
+              style={{
+                padding: '6px 12px',
+                borderRadius: '8px',
+                border: 'none',
+                fontSize: '13px',
+                fontWeight: '500',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                background: selectedCategory === cat.id 
+                  ? 'linear-gradient(135deg, #a855f7, #9333ea)' 
+                  : isDark ? 'rgba(255,255,255,0.05)' : '#f3f4f6',
+                color: selectedCategory === cat.id ? '#fff' : theme.textSecondary,
+              }}
+            >
+              {cat.label}
+            </button>
+          ))}
         </div>
 
         <div style={{ height: '1px', background: theme.border, opacity: 0.5, marginBottom: '8px' }}></div>

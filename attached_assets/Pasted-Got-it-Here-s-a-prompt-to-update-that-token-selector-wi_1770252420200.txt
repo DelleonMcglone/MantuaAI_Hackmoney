@@ -1,0 +1,96 @@
+Got it! Here's a prompt to update that token selector with the full 22-token categorized list:
+
+---
+
+**PROMPT: Update Token Selector List in Swap Modal**
+
+The current token selector (shown when clicking token in swap modal) displays: mUSDC, mETH, ETH, mDAI, mBTC, mLINK
+
+**Replace with the following 22 tokens, organized by category:**
+
+---
+
+## New Token List
+
+### Native
+| Symbol | Name | Address Display |
+|--------|------|-----------------|
+| ETH | Ethereum | 0x0000...0000 |
+
+### Stablecoins
+| Symbol | Name | Icon Color |
+|--------|------|------------|
+| mUSDC | Mock USDC | Blue ($) |
+| mUSDT | Mock USDT | Green ($) |
+| mDAI | Mock DAI | Yellow (◇) |
+| mUSDe | Mock USDe | Blue |
+| mFRAX | Mock FRAX | Black |
+
+### RWAs (Real World Assets)
+| Symbol | Name | Icon Color |
+|--------|------|------------|
+| mOUSG | Mock OUSG | Navy |
+| mUSDY | Mock USDY | Blue |
+| mBUIDL | Mock BUIDL | Black |
+| mTBILL | Mock TBILL | Green |
+| mSTEUR | Mock stEUR | Orange |
+
+### LSTs (Liquid Staking Tokens)
+| Symbol | Name | Icon Color |
+|--------|------|------------|
+| mstETH | Mock stETH | Light Blue |
+| mcbETH | Mock cbETH | Blue |
+| mrETH | Mock rETH | Orange |
+| mwstETH | Mock wstETH | Light Blue |
+
+### Wrapped Tokens
+| Symbol | Name | Icon Color |
+|--------|------|------------|
+| mWBTC | Mock WBTC | Orange (₿) |
+| mWETH | Mock WETH | Blue (Ξ) |
+| mWSOL | Mock WSOL | Purple |
+| mWAVAX | Mock WAVAX | Red |
+| mWMATIC | Mock WMATIC | Purple |
+
+### Core
+| Symbol | Name | Icon Color |
+|--------|------|------------|
+| mBTC | Mock BTC | Orange (₿) |
+
+---
+
+## UI Updates Required
+
+1. **Add Category Headers** — Group tokens under section headers:
+   - "Stablecoins"
+   - "RWAs"
+   - "LSTs"
+   - "Wrapped"
+   
+2. **Or Add Filter Tabs** — Below search bar, add clickable filters:
+   ```
+   [All] [Stables] [RWAs] [LSTs] [Wrapped]
+   ```
+
+3. **Remove mLINK** — Not in the new token list
+
+4. **Keep existing UI structure** — Same layout with:
+   - Icon (left)
+   - Symbol + Name (center)
+   - Balance + USD value (right)
+   - Truncated address below name
+
+---
+
+## Tokens to REMOVE
+- mLINK
+
+## Tokens to ADD
+- mUSDT, mUSDe, mFRAX (stablecoins)
+- mOUSG, mUSDY, mBUIDL, mTBILL, mSTEUR (RWAs)
+- mstETH, mcbETH, mrETH, mwstETH (LSTs)
+- mWBTC, mWETH, mWSOL, mWAVAX, mWMATIC (wrapped)
+
+---
+
+**Total: 22 tokens (currently showing 6)**

@@ -1,0 +1,71 @@
+Updated prompt:
+
+---
+
+**PROMPT: Update Hook Selector in Swap Modal & Liquidity Pool Modal**
+
+## Current Hooks (REMOVE)
+- MEV Protection
+- Directional Fee
+- JIT Rebalancing
+
+## New Hooks (ADD)
+
+| Hook Name | Abbreviation | Description | Benefit Tag |
+|-----------|--------------|-------------|-------------|
+| **Async Limit Order** | ALO | Delayed execution with price targets protects against MEV | Save ~0.3% on trades >$1k |
+| **Dynamic Fee** | DF | Fees adjust based on volatility and market conditions | Lower fees in stable markets |
+| **Stable Protection** | SP | Peg monitoring and depeg circuit breaker for stablecoins | Protects against depeg events |
+| **TWAMM Rebalance** | TWAMM-R | Time-weighted execution spreads large trades over time | Better rates on large trades |
+| **Yield Maximizer** | YM | Auto-compounds LP fees and rehypothecates idle liquidity | Maximize LP returns |
+
+---
+
+## Hook Selector UI Updates
+
+Keep the same card layout with:
+- Icon (left)
+- Hook Name + checkmark when selected
+- One-line description
+- Green benefit tag
+- "RECOMMENDED" badge for AI recommendation
+
+### AI Recommendation Logic
+| Trade Condition | Recommended Hook |
+|-----------------|------------------|
+| Trade size > $1k | Async Limit Order (ALO) |
+| Stablecoin pairs (USDC, USDT, DAI, etc.) | Stable Protection (SP) |
+| Large trades > $10k | TWAMM Rebalance (TWAMM-R) |
+| Volatile pairs | Dynamic Fee (DF) |
+| LP positions | Yield Maximizer (YM) |
+
+---
+
+## Liquidity Pool Modal Updates
+
+Update default hook assignments for pool pairs:
+
+| Pool Pair | Default Hook |
+|-----------|--------------|
+| mUSDC / mUSDT | Stable Protection (SP) |
+| mUSDC / mDAI | Stable Protection (SP) |
+| mUSDC / mFRAX | Stable Protection (SP) |
+| mUSDC / mUSDe | Stable Protection (SP) |
+| mUSDY / mUSDC | Stable Protection (SP) |
+| ETH / mUSDC | Dynamic Fee (DF) |
+| mWBTC / mUSDC | Async Limit Order (ALO) |
+| mstETH / ETH | TWAMM Rebalance (TWAMM-R) |
+| mcbETH / ETH | TWAMM Rebalance (TWAMM-R) |
+| mrETH / ETH | Async Limit Order (ALO) |
+| mOUSG / mUSDC | Yield Maximizer (YM) |
+| mBUIDL / mUSDC | Yield Maximizer (YM) |
+
+---
+
+## Keep Unchanged
+- "No Hook" option — Standard Uniswap v4 swap without modifications
+- "Custom Hook Address" option — Use your own deployed hook contract
+
+---
+
+**Summary: Replace 3 hooks with 5 new hooks, update pool defaults to match stablecoin-focused strategy. ALO assigned to mWBTC/mUSDC and mrETH/ETH pools.**

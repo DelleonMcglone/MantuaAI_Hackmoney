@@ -63,7 +63,9 @@ import {
   TrashIcon,
   PlusIcon,
   SearchIcon,
-  MenuIcon
+  MenuIcon,
+  LockIcon,
+  CoinsIcon
 } from '../components/icons';
 
 // ============ ICONS ============
@@ -139,9 +141,11 @@ const StatusBadge = ({ status, type = 'default' }) => {
     'Completed': { color: '#10b981', bg: 'rgba(16, 185, 129, 0.1)' },
     'Failed': { color: '#ef4444', bg: 'rgba(239, 68, 68, 0.1)' },
     'Standard': { color: '#6b7280', bg: 'rgba(107, 114, 128, 0.1)' },
-    'MEV Protection': { color: '#8b5cf6', bg: 'rgba(139, 92, 246, 0.1)' },
-    'JiT Rebalance': { color: '#10b981', bg: 'rgba(16, 185, 129, 0.1)' },
-    'Directional Fee': { color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.1)' },
+    'Async Limit Order': { color: '#8b5cf6', bg: 'rgba(139, 92, 246, 0.1)' },
+    'Dynamic Fee': { color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.1)' },
+    'Stable Protection': { color: '#3b82f6', bg: 'rgba(59, 130, 246, 0.1)' },
+    'TWAMM Rebalance': { color: '#10b981', bg: 'rgba(16, 185, 129, 0.1)' },
+    'Yield Maximizer': { color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.1)' },
   };
 
   const config = configs[status] || configs['default'];
@@ -695,7 +699,7 @@ const PortfolioInterface = ({ onClose, type, theme, isDark, isConnected }) => {
   ] : [];
 
   const liquidityPositions = hasData ? [
-    { token1: 'ETH', token2: 'USDC', status: 'Active', hookName: 'MEV Protection', tvl: 2450.50, feesEarned: 124.50, feeTier: 0.05, rangeLow: 2800, rangeHigh: 3600 }
+    { token1: 'ETH', token2: 'USDC', status: 'Active', hookName: 'Dynamic Fee', tvl: 2450.50, feesEarned: 124.50, feeTier: 0.05, rangeLow: 2800, rangeHigh: 3600 }
   ] : [];
 
   const activities = hasData ? [
@@ -1253,7 +1257,7 @@ const HookSelectorModal = ({ isOpen, onClose, hooks, selectedHook, onSelect, the
               <div>
                 <div style={{ fontWeight: '600', color: theme.textPrimary, marginBottom: '4px' }}>AI Recommendation</div>
                 <div style={{ fontSize: '13px', color: theme.textSecondary, lineHeight: '1.5' }}>
-                  Based on your trade size of <span style={{ fontWeight: '600', color: theme.textPrimary }}>$4,868</span>, we recommend <span style={{ fontWeight: '600', color: '#8b5cf6' }}>MEV Protection</span> to prevent sandwich attacks.
+                  Based on your trade size of <span style={{ fontWeight: '600', color: theme.textPrimary }}>$4,868</span>, we recommend <span style={{ fontWeight: '600', color: '#8b5cf6' }}>Async Limit Order</span> to prevent sandwich attacks.
                 </div>
               </div>
             </div>
@@ -1549,9 +1553,11 @@ const SwapInterface = ({ onClose, swapDetails, theme, isDark }) => {
   };
 
   const hooks = [
-    { id: 'mev', name: 'MEV Protection', description: 'Randomized execution timing protects against sandwich attacks', icon: <ShieldIcon />, benefit: 'Save ~0.3% on trades >$1k', recommended: true },
-    { id: 'directional', name: 'Directional Fee', description: 'Dynamic fees based on trade direction (Nezlobin algorithm)', icon: <TrendIcon />, benefit: 'Lower fees in stable markets' },
-    { id: 'jit', name: 'JIT Rebalancing', description: 'Concentrates liquidity around your trade for better execution', icon: <BoltIcon />, benefit: 'Better rates on large trades' },
+    { id: 'alo', name: 'Async Limit Order', abbr: 'ALO', description: 'Delayed execution with price targets protects against MEV', icon: <ShieldIcon />, benefit: 'Save ~0.3% on trades >$1k', recommended: true },
+    { id: 'df', name: 'Dynamic Fee', abbr: 'DF', description: 'Fees adjust based on volatility and market conditions', icon: <TrendIcon />, benefit: 'Lower fees in stable markets' },
+    { id: 'sp', name: 'Stable Protection', abbr: 'SP', description: 'Peg monitoring and depeg circuit breaker for stablecoins', icon: <LockIcon />, benefit: 'Protects against depeg events' },
+    { id: 'twamm', name: 'TWAMM Rebalance', abbr: 'TWAMM-R', description: 'Time-weighted execution spreads large trades over time', icon: <BoltIcon />, benefit: 'Better rates on large trades' },
+    { id: 'ym', name: 'Yield Maximizer', abbr: 'YM', description: 'Auto-compounds LP fees and rehypothecates idle liquidity', icon: <CoinsIcon />, benefit: 'Maximize LP returns' },
     { id: 'none', name: 'No Hook', description: 'Standard Uniswap v4 swap without modifications', icon: <SwapIcon /> },
   ];
 
@@ -1631,7 +1637,7 @@ const SwapInterface = ({ onClose, swapDetails, theme, isDark }) => {
               Swapping {swapDetails.fromAmount} {swapDetails.fromToken} → {swapDetails.toToken}
             </div>
             <div style={{ color: theme.textSecondary, fontSize: '13px' }}>
-              Auto-selected <span style={{ color: '#8b5cf6', fontWeight: '600' }}>MEV Protection</span> to save ~$14.60
+              Auto-selected <span style={{ color: '#8b5cf6', fontWeight: '600' }}>Async Limit Order</span> to save ~$14.60
             </div>
           </div>
           <div style={{ paddingRight: '10px' }}>
@@ -1929,40 +1935,44 @@ const LiquidityInterface = ({ onClose, theme, isDark, onAddLiquidity, onCreatePo
   
   const pools = [
     { 
-      token1: 'mUSDT', token2: 'mETH', type: 'Standard', hook: 'MEV Protection',
-      volume: 59199.58, fees: 19.60, liquidity: 318789.34, yield: '2.24'
-    },
-    { 
-      token1: 'mUSDC', token2: 'mBTC', type: 'Standard', hook: 'Directional Fee',
-      volume: 4500.00, fees: 12.50, liquidity: 368081.08, yield: '1.85'
-    },
-    { 
-      token1: 'mUSDC', token2: 'mUSDT', type: 'Stable', hook: 'Directional Fee',
+      token1: 'mUSDC', token2: 'mUSDT', type: 'Stable', hook: 'Stable Protection',
       volume: 80.55, fees: 0.40, liquidity: 971950.29, yield: '0.01'
     },
     { 
-      token1: 'ETH', token2: 'mUSDT', type: 'Standard', hook: 'JIT Rebalancing',
-      volume: 3195.71, fees: 1.20, liquidity: 1500.96, yield: '29.14'
-    },
-    { 
-      token1: 'mBTC', token2: 'mETH', type: 'Standard', hook: 'MEV Protection',
-      volume: 4366.80, fees: 1.69, liquidity: 370896.77, yield: '0.17'
-    },
-    { 
-      token1: 'mUSDC', token2: 'mDAI', type: 'Stable', hook: 'None',
+      token1: 'mUSDC', token2: 'mDAI', type: 'Stable', hook: 'Stable Protection',
       volume: 0.00, fees: 0.00, liquidity: 4040.35, yield: '0.00'
     },
     { 
-      token1: 'mDAI', token2: 'mETH', type: 'Standard', hook: 'MEV Protection',
+      token1: 'ETH', token2: 'mUSDC', type: 'Standard', hook: 'Dynamic Fee',
+      volume: 59199.58, fees: 19.60, liquidity: 318789.34, yield: '2.24'
+    },
+    { 
+      token1: 'mWBTC', token2: 'mUSDC', type: 'Standard', hook: 'Async Limit Order',
+      volume: 4500.00, fees: 12.50, liquidity: 368081.08, yield: '1.85'
+    },
+    { 
+      token1: 'mstETH', token2: 'ETH', type: 'Standard', hook: 'TWAMM Rebalance',
+      volume: 3195.71, fees: 1.20, liquidity: 1500.96, yield: '29.14'
+    },
+    { 
+      token1: 'mcbETH', token2: 'ETH', type: 'Standard', hook: 'TWAMM Rebalance',
+      volume: 4366.80, fees: 1.69, liquidity: 370896.77, yield: '0.17'
+    },
+    { 
+      token1: 'mrETH', token2: 'ETH', type: 'Standard', hook: 'Async Limit Order',
       volume: 1250.00, fees: 0.85, liquidity: 24750.85, yield: '1.12'
     },
     { 
-      token1: 'WETH', token2: 'mUSDC', type: 'Standard', hook: 'Directional Fee',
+      token1: 'mOUSG', token2: 'mUSDC', type: 'Standard', hook: 'Yield Maximizer',
       volume: 15780.25, fees: 8.45, liquidity: 125000.00, yield: '3.45'
+    },
+    { 
+      token1: 'mBUIDL', token2: 'mUSDC', type: 'Standard', hook: 'Yield Maximizer',
+      volume: 8500.00, fees: 4.25, liquidity: 85000.00, yield: '2.15'
     },
   ];
 
-  const hookOptions = ['All', 'MEV Protection', 'Directional Fee', 'JIT Rebalancing', 'None'];
+  const hookOptions = ['All', 'Async Limit Order', 'Dynamic Fee', 'Stable Protection', 'TWAMM Rebalance', 'Yield Maximizer', 'None'];
   const typeOptions = ['All', 'Standard', 'Stable'];
 
   // Filter and sort pools
@@ -2022,9 +2032,11 @@ const LiquidityInterface = ({ onClose, theme, isDark, onAddLiquidity, onCreatePo
 
   const HookBadge = ({ hook }) => {
     const hookConfig = {
-      'MEV Protection': { icon: <ShieldIcon />, color: '#8b5cf6', bg: 'rgba(139, 92, 246, 0.1)' },
-      'Directional Fee': { icon: <TrendIcon />, color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.1)' },
-      'JIT Rebalancing': { icon: <BoltIcon />, color: '#10b981', bg: 'rgba(16, 185, 129, 0.1)' },
+      'Async Limit Order': { icon: <ShieldIcon />, color: '#8b5cf6', bg: 'rgba(139, 92, 246, 0.1)' },
+      'Dynamic Fee': { icon: <TrendIcon />, color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.1)' },
+      'Stable Protection': { icon: <LockIcon />, color: '#3b82f6', bg: 'rgba(59, 130, 246, 0.1)' },
+      'TWAMM Rebalance': { icon: <BoltIcon />, color: '#10b981', bg: 'rgba(16, 185, 129, 0.1)' },
+      'Yield Maximizer': { icon: <CoinsIcon />, color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.1)' },
       'None': { icon: null, color: theme.textSecondary, bg: theme.bgSecondary },
     };
     const config = hookConfig[hook] || hookConfig['None'];
@@ -2088,7 +2100,7 @@ const LiquidityInterface = ({ onClose, theme, isDark, onAddLiquidity, onCreatePo
         <div style={{ flex: 1 }}>
           <span style={{ color: theme.textSecondary, fontSize: '14px', lineHeight: '1.5' }}>
             <span style={{ color: theme.accent, fontWeight: '600' }}>Showing {filteredPools.length} liquidity pools</span>
-            {' '}• Pools with <strong>MEV Protection</strong> hooks help shield your LP positions from sandwich attacks. 
+            {' '}• Pools with <strong>Async Limit Order</strong> hooks help shield your LP positions from sandwich attacks. 
           </span>
         </div>
       </div>
@@ -2586,7 +2598,7 @@ export default function MantuaApp() {
            case 'comparison':
              data = getComparisonData(['Nezlobin', 'JIT']);
              title = 'Fee Comparison';
-             summary = 'Nezlobin hooks demonstrated superior fee capture efficiency during high-volatility periods compared to JIT Rebalancing.';
+             summary = 'Dynamic Fee hooks demonstrated superior fee capture efficiency during high-volatility periods compared to TWAMM Rebalance.';
              chartType = 'bar';
              icon = <Activity size={20} />;
              insights = [
